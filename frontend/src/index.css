@@ -1,0 +1,41 @@
+:root {
+    --background-color: #4c585b;
+    --primary-color: #7e99a3;
+    --secondary-color: #a5bfcc;
+    --third-color: #f4edd3;
+    --warning-color: #cc6b6b;
+    --main-text-color: #4C585B;
+}
+
+html,
+#app {
+    background: var(--background-color);
+}
+
+.sub-func-btn {
+    background-color: #7E99A3 !important;
+    color: #ffffff !important;
+    border: 2px solid #A5BFCC !important;
+    font-weight: 700 !important;
+}
+
+.create-btn {
+    background-color: #A5BFCC !important;
+    color: #356780 !important;
+    border: 2px solid #7E99A3 !important;
+    font-weight: 700 !important;
+}
+
+.cancel-btn {
+    background-color: #fff !important;
+    color: #808080 !important;
+    border: 2px solid #808080 !important;
+    font-weight: 700 !important;
+}
+
+.delete-btn {
+    background-color: #fcc0c0 !important;
+    color: #cf3232 !important;
+    border: 2px solid #cf3232 !important;
+    font-weight: 700 !important;
+}
