@@ -1,0 +1,80 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.select-container {
+    width: 18%;
+    height: 57%;
+    background-color: #7E99A3;
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
+}
+
+.login-container {
+    width: 35%;
+    height: 57%;
+    background-color: #fcfcfc;
+    box-shadow: 5px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.select-layout {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 90%;
+    margin: 1rem
+}
+
+.select-label {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.select-btn {
+    width: 90% !important;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem ;
+    font-weight: normal !important; 
+}
+
+.login-layout {
+    display: flex !important;
+    flex-direction: column;
+    height: 100%;
+    margin: 1rem;
+}
+
+.login-label {
+    color: #000000;
+    font-size: 2rem;
+}
+
+.label-layout {
+    height: 30%;
+    display: flex;
+    align-items: end;
+}
+
+.form-layout {
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+    margin: 0.5rem 1rem 0 1rem;
+}
+
+.button-layout {
+    height: 30%;
+    display: flex;
+    justify-content: left;
+}
+
+input, .p-password, .p-password > div {
+    width: 100% !important;
+}

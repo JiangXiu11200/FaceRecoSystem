@@ -26,6 +26,14 @@ html,
     font-weight: 700 !important;
 }
 
+.select-btn {
+    background-color: #F4EDD3 !important;
+    color: #000000 !important;
+    border: 2px solid #E8E2C9 !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+}
+
 .cancel-btn {
     background-color: #fff !important;
     color: #808080 !important;
