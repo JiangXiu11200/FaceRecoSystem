@@ -78,3 +78,8 @@
 input, .p-password, .p-password > div {
     width: 100% !important;
 }
+
+input:focus, input:hover, input:active {
+    border-color: #7E99A3;
+    box-shadow: 0 0 3px #7E99A3;
+}

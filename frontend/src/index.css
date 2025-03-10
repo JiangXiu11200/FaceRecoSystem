@@ -12,6 +12,14 @@ html,
     background: var(--background-color);
 }
 
+.select-btn:hover {
+    box-shadow: 0 0 8px #9f9b8a;
+}
+
+.select-btn:active {
+    transform: scale(0.99);
+}
+
 .sub-func-btn {
     background-color: #7E99A3 !important;
     color: #ffffff !important;
@@ -29,7 +37,7 @@ html,
 .select-btn {
     background-color: #F4EDD3 !important;
     color: #000000 !important;
-    border: 2px solid #E8E2C9 !important;
+    border: 2px solid #E8E2C9;
     font-weight: 700 !important;
     border-radius: 10px !important;
 }
