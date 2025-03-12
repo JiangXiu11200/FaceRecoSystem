@@ -9,9 +9,25 @@ import "./login.css"
 function Login() {
     const toast = useRef(null)
     const [select_mode, setSelectedMode] = useState("")
+    const [input_error, setInputError] = useState(false)
+    const [password_error, setPasswordError] = useState(false)
+    const [login_error, setLoginError] = useState("")
+    const [userName, setUserName] = useState(null)
+    const [password, setPassword] = useState(null)
 
     const handleSelectMode = (mode) => {
         setSelectedMode(mode)
+    }
+
+    const onInputChange = (e, name) => {
+        const value = (e.target && e.target.value) || ""
+        if (name == "user_name") {
+            setUserName(value)
+        }
+        if (name == "password") {
+            setPassword(value)
+        }
+        clearError()
     }
 
     const handleLogin = () => {
@@ -19,6 +35,30 @@ function Login() {
             toast.current.show({ severity: "error", summary: "Error", detail: "Please select mode." })
             return
         }
+        if (!userName) {
+            setInputError(true)
+            setLoginError("Please enter your username.")
+            return
+        }
+        if (!password) {
+            setPasswordError(true)
+            setLoginError("Please enter your password.")
+            return
+        }
+
+        if (password !== "123123") {
+            // for testing
+            setLoginError("Incorrect username or password.")
+            return
+        }
+
+        clearError()
+    }
+
+    const clearError = () => {
+        setLoginError("")
+        setInputError(false)
+        setPasswordError(false)
     }
 
     return (
@@ -56,10 +96,33 @@ function Login() {
                     </div>
                     <div className="form-layout">
                         <div className="mb-2">
-                            <InputText id="user_name" name="user_name" keyfilter={/[^\s]/} placeholder="User Name" />
+                            <InputText
+                                id="user_name"
+                                name="user_name"
+                                className={`input-field ${input_error ? "username-error" : ""}`}
+                                value={userName}
+                                keyfilter={/[^\s]/}
+                                placeholder="User Name"
+                                onChange={(e) => onInputChange(e, "user_name")}
+                            />
                         </div>
                         <div className="mb-2">
-                            <Password id="password" name="password" feedback={false} placeholder="Password" />
+                            <Password
+                                id="password"
+                                name="password"
+                                inputClassName={password_error ? "password-error" : ""}
+                                value={password}
+                                feedback={false}
+                                placeholder="Password"
+                                onChange={(e) => onInputChange(e, "password")}
+                            />
+                        </div>
+                        <div>
+                            {login_error && (
+                                <div>
+                                    <label className="error-message">{login_error}</label>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="button-layout">

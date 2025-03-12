@@ -79,7 +79,27 @@ input, .p-password, .p-password > div {
     width: 100% !important;
 }
 
-input:focus, input:hover, input:active {
+.input-field:focus, .input-field:hover, i.input-field:active {
     border-color: #7E99A3;
     box-shadow: 0 0 3px #7E99A3;
+}
+
+.p-password input:focus, .p-password input:hover, .p-password input:active {
+    border-color: #7E99A3;
+    box-shadow: 0 0 3px #7E99A3;
+}
+
+.input-error {
+    border-color: red;
+    box-shadow: 0 0 3px red;
+}
+
+.p-password input.password-error {
+    border-color: red !important;
+    box-shadow: 0 0 3px red !important;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
 }
