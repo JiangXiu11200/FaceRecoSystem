@@ -9,13 +9,15 @@ function FaceRecognition() {
     const [roi_images, setROIImages] = useState([])
 
     // TAG: This is a mock data for testing
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         setROIImages((prevImages) => [...prevImages, "./image/roi_not_found.jpg"])
-    //     }, 1000)
-
-    //     return () => clearInterval(interval) // 清除計時器
-    // }, [])
+    useEffect(() => {
+        // const interval = setInterval(() => {
+        //     setROIImages((prevImages) => [...prevImages, "./image/roi_not_found.jpg"])
+        // }, 1000)
+        // return () => clearInterval(interval)
+        for (let i = 0; i < 10; i++) {
+            setROIImages((prevImages) => [...prevImages, "./image/roi_not_found.jpg"])
+        }
+    }, [])
 
     // useEffect(() => {
     //     const interval = setInterval(() => {
@@ -51,13 +53,15 @@ function FaceRecognition() {
                         <div>
                             <img src="./image/not_found.jpg" alt="video_stream" />
                         </div>
-                        <div ref={roi_scroll} className="roi-container g-2">
-                            <div className="roi-scroll">
-                                {roi_images.map((item, index) => (
-                                    <div key={index} className="roi-item">
-                                        <img src={item} />
-                                    </div>
-                                ))}
+                        <div>
+                            <div ref={roi_scroll} className="roi-container g-2">
+                                <div className="roi-scroll">
+                                    {roi_images.map((item, index) => (
+                                        <div key={index} className="roi-item">
+                                            <img src={item} />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

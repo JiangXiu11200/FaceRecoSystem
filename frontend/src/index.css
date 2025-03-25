@@ -27,11 +27,12 @@ html,
     font-weight: 700 !important;
 }
 
-.create-btn {
-    background-color: #A5BFCC !important;
-    color: #356780 !important;
-    border: 2px solid #7E99A3 !important;
+.func-btn {
+    background-color: #F4EDD3 !important;
+    color: #4C585B !important;
+    border: 2px solid #E8E2C9 !important;
     font-weight: 700 !important;
+    border-radius: 5px !important;
 }
 
 .select-btn {
@@ -54,4 +55,27 @@ html,
     color: #cf3232 !important;
     border: 2px solid #cf3232 !important;
     font-weight: 700 !important;
+}
+
+.tabview-layout .p-tabview-nav {
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.tabview-layout i, .tabview-layout span, .tabview-layout span {
+    vertical-align: middle;
+    margin: 0.2rem;
+}
+
+.tabview-layout .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    border-color: #7E99A3;
+    color: #ffffff;
+}
+
+.tabview-layout .p-tabview .p-tabview-panels {
+    padding: 0.5rem;
+}
+
+.p-dropdown-items {
+    padding-left: 0 !important;
 }

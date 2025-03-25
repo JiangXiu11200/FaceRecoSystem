@@ -5,6 +5,7 @@ import Sidebar from "../components/system_sidebar/system_sidebar"
 import Header from "../components/header/header"
 import Login from "../components/login/login"
 import FaceRecognition from "./face_recognition/face_recognition"
+import UserRegistration from "./user_registration/user_registration"
 
 import "./app.css"
 
@@ -36,6 +37,7 @@ function App() {
                     <Routes>
                         <Route exact path="/" element={<FaceRecognition />} />
                         <Route exact path="/login" element={<Login />} />
+                        <Route exact path="/user_registration" element={<UserRegistration />} />
                         {/* <Route path="*" element={<NotFoundComponent />} />{" "} */}
                     </Routes>
                 </div>

@@ -1,0 +1,30 @@
+.content-layout {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 80vh;
+    gap: 0.5rem;
+}
+
+
+.image-layout {
+    flex: 9;
+    overflow: hidden;
+    display: flex;
+}
+
+.image-layout img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.buttonbar-layout {
+    display: flex;
+    justify-content: start;
+    gap: 1rem;
+}
+
+.form-group {
+    height: 100%;
+}
