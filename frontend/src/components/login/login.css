@@ -33,9 +33,23 @@
     margin-bottom: 0.5rem;
 }
 
-.select-btn {
+.select-mode-btn {
+    background-color: #F4EDD3 !important;
+    color: #000000 !important;
+    border: 2px solid #E8E2C9;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
     width: 90% !important;
 }
+
+.select-mode-btn:hover {
+    box-shadow: 0 0 8px #9f9b8a;
+}
+
+.select-mode-btn:active {
+    transform: scale(0.99);
+}
+
 
 .button-wrapper {
     display: flex;

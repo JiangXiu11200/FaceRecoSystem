@@ -72,7 +72,7 @@ function Login() {
                             <div className="button-wrapper">
                                 <Button
                                     label="Standard"
-                                    className="p-button-info select-btn"
+                                    className="p-button-info select-mode-btn"
                                     onClick={() => handleSelectMode("Standard")}
                                     disabled={select_mode == "Standard"}
                                 />
@@ -80,7 +80,7 @@ function Login() {
                             <div className="button-wrapper">
                                 <Button
                                     label="Advanced"
-                                    className="p-button-info select-btn"
+                                    className="p-button-info select-mode-btn"
                                     onClick={() => handleSelectMode("Advanced")}
                                     disabled={select_mode == "Advanced"}
                                 />
@@ -128,7 +128,7 @@ function Login() {
                     <div className="button-layout">
                         <div className="col-8"></div>
                         <div className="col-4">
-                            <Button label="Login" className="select-btn" onClick={handleLogin} />
+                            <Button label="Login" className="select-mode-btn" onClick={handleLogin} />
                         </div>
                     </div>
                 </div>
