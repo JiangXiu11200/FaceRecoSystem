@@ -12,21 +12,6 @@ html,
     background: var(--background-color);
 }
 
-.select-btn:hover {
-    box-shadow: 0 0 8px #9f9b8a;
-}
-
-.select-btn:active {
-    transform: scale(0.99);
-}
-
-.sub-func-btn {
-    background-color: #7E99A3 !important;
-    color: #ffffff !important;
-    border: 2px solid #A5BFCC !important;
-    font-weight: 700 !important;
-}
-
 .func-btn {
     background-color: #F4EDD3 !important;
     color: #4C585B !important;
@@ -35,26 +20,38 @@ html,
     border-radius: 5px !important;
 }
 
-.select-btn {
-    background-color: #F4EDD3 !important;
-    color: #000000 !important;
-    border: 2px solid #E8E2C9;
-    font-weight: 700 !important;
-    border-radius: 10px !important;
+.func-btn:hover, .cancel-btn:hover, .delete-btn:hover {
+    filter: brightness(0.9);
+    transition: filter 0.2s ease;
+}
+
+.func-btn:active, .cancel-btn:active, .delete-btn:active {
+    filter: brightness(0.8);
+}
+
+.select-button .p-highlight {
+    background-color: #7E99A3 !important;
+    border: 1px solid #4C585B !important;
+}
+
+.select-button  .p-button:focus .p-button:hover {
+    background-color: #7E99A3 !important;
 }
 
 .cancel-btn {
     background-color: #fff !important;
     color: #808080 !important;
-    border: 2px solid #808080 !important;
+    border: 2px solid #BFBFBF !important;
     font-weight: 700 !important;
+    border-radius: 5px !important;
 }
 
 .delete-btn {
-    background-color: #fcc0c0 !important;
-    color: #cf3232 !important;
-    border: 2px solid #cf3232 !important;
+    background-color: #F0B4B4 !important;
+    color: #C92424 !important;
+    border: 2px solid #CC6B6B !important;
     font-weight: 700 !important;
+    border-radius: 5px !important;
 }
 
 .tabview-layout .p-tabview-nav {
@@ -78,4 +75,18 @@ html,
 
 .p-dropdown-items {
     padding-left: 0 !important;
+}
+
+.toolbar-layout {
+    border: none !important;
+    background: transparent !important;
+}
+
+.inputgroup-btn {
+    border: none !important;
+}
+
+.p-inputtext:focus, .p-inputtext:hover, i.p-inputtext:active {
+    border-color: #7E99A3;
+    box-shadow: 0 0 3px #7E99A3;
 }
