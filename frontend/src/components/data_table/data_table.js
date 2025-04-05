@@ -1,0 +1,83 @@
+import { Button } from "primereact/button"
+import { Column } from "primereact/column"
+import { DataTable } from "primereact/datatable"
+import React, { useEffect, useState } from "react"
+
+import "./data_table.css"
+
+function Table({ data, actnioEvent, columns, actionsHeader = "", viewsFlag = false, editFlag = false, deleteFlag = false, tableHeight = "60vh" }) {
+    const [window_width, setWindowWidth] = useState(window.innerWidth)
+    const [selectedRows, setSelectedRows] = useState([])
+
+    useEffect(() => {
+        setSelectedRows([])
+    }, [data])
+
+    useEffect(() => {
+        function windowResize() {
+            setWindowWidth(window.innerWidth)
+        }
+        window.addEventListener("resize", windowResize)
+    })
+
+    const actionTemplate = (data) => {
+        return (
+            <React.Fragment>
+                <div className="d-flex flex-row justify-content-center align-items-center">
+                    {viewsFlag ? (
+                        <div className="me-2">
+                            <Button
+                                icon="pi pi-ellipsis-h"
+                                className="p-button-info action-btn"
+                                onClick={() => actnioEvent({ action: "view", data })}
+                            />
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                    {editFlag ? (
+                        <div className="me-2">
+                            <Button
+                                icon="pi pi-user-edit"
+                                className="p-button-info action-btn"
+                                onClick={() => actnioEvent({ action: "edit", data })}
+                            />
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                    {deleteFlag ? (
+                        <div className="me-2">
+                            <Button icon="pi pi-trash" className="p-button-info action-btn" onClick={() => actnioEvent({ action: "delete", data })} />
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                </div>
+            </React.Fragment>
+        )
+    }
+
+    return (
+        <DataTable
+            className="w-100"
+            value={data}
+            selection={selectedRows}
+            dataKey="id"
+            paginator={true}
+            rows={10}
+            rowsPerPageOptions={[10, 50, 100]}
+            scrollHeight={window_width > 992 ? tableHeight : "60vh"}
+        >
+            {columns.map((col, index) => (
+                <Column className="data-column" key={index} field={col.field} header={col.header} />
+            ))}
+
+            {(viewsFlag || editFlag || deleteFlag) && (
+                <Column className="action-btn-column" header={actionsHeader} body={actionTemplate} exportable={false} />
+            )}
+        </DataTable>
+    )
+}
+
+export { Table }
