@@ -1,8 +1,9 @@
+import { TabPanel, TabView } from "primereact/tabview"
 import React from "react"
-import { TabView, TabPanel } from "primereact/tabview"
 
-import Register from "../../components/register/register"
 import Group from "../../components/group/group"
+import Register from "../../components/register/register"
+import Users from "../../components/users/users"
 
 import "./user_registration.css"
 
@@ -16,7 +17,9 @@ function UserRegistration() {
                 <TabPanel header="Group" leftIcon="pi pi-users">
                     <Group />
                 </TabPanel>
-                <TabPanel header="User" leftIcon="pi pi-user-plus"></TabPanel>
+                <TabPanel header="User" leftIcon="pi pi-user-plus">
+                    <Users />
+                </TabPanel>
             </TabView>
         </div>
     )

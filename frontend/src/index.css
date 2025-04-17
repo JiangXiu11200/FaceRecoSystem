@@ -90,3 +90,7 @@ html,
     border-color: #7E99A3;
     box-shadow: 0 0 3px #7E99A3;
 }
+
+.p-multiselect-panel .p-multiselect-items {
+    padding: 0 !important;
+}
