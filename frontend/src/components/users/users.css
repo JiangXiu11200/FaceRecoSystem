@@ -11,3 +11,34 @@
     align-items: center;
     gap: 0.5rem;
 }
+
+.edit-user-dialog {
+    width: 40rem;
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+
+.right-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.left-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+    overflow: hidden;
+}
+
+.left-content img {
+    height: 80%;
+    width: auto;
+    object-fit: contain;
+}
