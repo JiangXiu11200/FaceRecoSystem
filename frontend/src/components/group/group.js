@@ -87,18 +87,22 @@ function Group() {
 
     const leftContents = (
         <React.Fragment>
-            <div className="d-flex flex-row align-items-center">
-                <InputText className="p-inputtext-lg" placeholder="Group name" />
-            </div>
-            <div className="p-2">
-                <Button icon="pi pi-search" className="func-btn" label="Search" />
+            <div className="toolbar-left">
+                <div>
+                    <InputText className="p-inputtext" placeholder="Search for groups.." />
+                </div>
+                <div>
+                    <Button icon="pi pi-search" className="func-btn" label="Search" />
+                </div>
             </div>
         </React.Fragment>
     )
 
     const rightContents = (
         <React.Fragment>
-            <Button icon="pi pi-plus" className="p-button-info func-btn" label="Add Group" onClick={showCreateGroupDialog} />
+            <div className="toolbar-right">
+                <Button icon="pi pi-plus" className="p-button-info func-btn" label="Add Group" onClick={showCreateGroupDialog} />
+            </div>
         </React.Fragment>
     )
 
@@ -147,7 +151,7 @@ function Group() {
                     <div className="me-4">
                         <label>Group Name</label>
                         <span className="text-danger">*</span>
-                        <InputText className="p-inputtext-lg" placeholder="Group name" />
+                        <InputText className="p-inputtext" placeholder="Group name" />
                     </div>
                     <div>
                         <label>Enable</label>
