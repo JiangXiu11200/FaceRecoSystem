@@ -5,7 +5,17 @@ import React, { useEffect, useState } from "react"
 
 import "./data_table.css"
 
-function Table({ data, actnioEvent, columns, actionsHeader = "", viewsFlag = false, editFlag = false, deleteFlag = false, tableHeight = "60vh" }) {
+function Table({
+    data,
+    actnioEvent,
+    columns,
+    actionsHeader = "",
+    viewsFlag = false,
+    editFlag = false,
+    deleteFlag = false,
+    imageFlag = false,
+    tableHeight = "60vh",
+}) {
     const [window_width, setWindowWidth] = useState(window.innerWidth)
     const [selectedRows, setSelectedRows] = useState([])
 
@@ -53,6 +63,13 @@ function Table({ data, actnioEvent, columns, actionsHeader = "", viewsFlag = fal
                     ) : (
                         ""
                     )}
+                    {imageFlag ? (
+                        <div className="me-2">
+                            <Button icon="pi pi-image" className="p-button-info action-btn" onClick={() => actnioEvent({ action: "image", data })} />
+                        </div>
+                    ) : (
+                        ""
+                    )}
                 </div>
             </React.Fragment>
         )
@@ -69,11 +86,28 @@ function Table({ data, actnioEvent, columns, actionsHeader = "", viewsFlag = fal
             rowsPerPageOptions={[10, 50, 100]}
             scrollHeight={window_width > 992 ? tableHeight : "60vh"}
         >
-            {columns.map((col, index) => (
-                <Column className="data-column" key={index} field={col.field} header={col.header} />
-            ))}
+            {columns.map((col, index) => {
+                if (col.type === "boolean") {
+                    return (
+                        <Column
+                            className="data-column"
+                            key={index}
+                            field={col.field}
+                            header={col.header}
+                            body={(rowData) =>
+                                rowData[col.field] ? (
+                                    <i className="pi pi-check-circle" style={{ color: "green" }}></i>
+                                ) : (
+                                    <i className="pi pi-times-circle" style={{ color: "red" }}></i>
+                                )
+                            }
+                        />
+                    )
+                }
+                return <Column className="data-column" key={index} field={col.field} header={col.header} />
+            })}
 
-            {(viewsFlag || editFlag || deleteFlag) && (
+            {(viewsFlag || editFlag || deleteFlag || imageFlag) && (
                 <Column className="action-btn-column" header={actionsHeader} body={actionTemplate} exportable={false} />
             )}
         </DataTable>
