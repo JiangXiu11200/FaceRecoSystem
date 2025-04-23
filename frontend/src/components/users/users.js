@@ -106,15 +106,13 @@ function Users() {
     const leftContents = (
         <React.Fragment>
             <div className="toolbar-left">
-                <div className="field-group">
+                <div>
                     <InputText className="p-inputtext" placeholder="Search for groups.." />
                 </div>
                 <div>
-                    <div className="field-group">
-                        <MultiSelect className="w-100" placeholder="Select Group" options={[]} onChange={() => {}} optionLabel="name" />
-                    </div>
+                    <MultiSelect className="w-100" placeholder="Select Group" options={[]} onChange={() => {}} optionLabel="name" />
                 </div>
-                <div className="field-group">
+                <div>
                     <Button icon="pi pi-search" className="func-btn" label="Search" />
                 </div>
             </div>
