@@ -6,6 +6,7 @@ import Header from "../components/header/header"
 import Login from "../components/login/login"
 import FaceRecognition from "./face_recognition/face_recognition"
 import UserRegistration from "./user_registration/user_registration"
+import AlarmLogs from "./alarm_logs/alarm_logs"
 
 import "./app.css"
 
@@ -38,6 +39,7 @@ function App() {
                         <Route exact path="/" element={<FaceRecognition />} />
                         <Route exact path="/login" element={<Login />} />
                         <Route exact path="/user_registration" element={<UserRegistration />} />
+                        <Route exact path="/alarm_logs" element={<AlarmLogs />} />
                         {/* <Route path="*" element={<NotFoundComponent />} />{" "} */}
                     </Routes>
                 </div>
