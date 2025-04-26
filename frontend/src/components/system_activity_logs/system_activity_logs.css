@@ -1,0 +1,12 @@
+.activity-logs-toolbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: end;
+  /* flex-wrap: wrap; */
+}
+
+.activity-logs-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

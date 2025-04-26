@@ -2,6 +2,7 @@ import { TabPanel, TabView } from "primereact/tabview"
 import React from "react"
 
 import AlarmLogsPage from "../../components/alarm_logs/alarm_logs"
+import SystemActivityLogsPage from "../../components/system_activity_logs/system_activity_logs"
 
 import "./alarm_logs.css"
 
@@ -11,6 +12,9 @@ function AlarmLogs() {
       <TabView>
         <TabPanel header="Alarm Logs" leftIcon="pi pi-calendar">
           <AlarmLogsPage />
+        </TabPanel>
+        <TabPanel header="System Activity" leftIcon="pi pi-calendar">
+          <SystemActivityLogsPage />
         </TabPanel>
       </TabView>
     </div>
