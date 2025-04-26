@@ -94,3 +94,7 @@ html,
 .p-multiselect-panel .p-multiselect-items {
     padding: 0 !important;
 }
+
+.p-panelmenu-content ol, ul {
+    padding: 0 !important;
+}
