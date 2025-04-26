@@ -2,6 +2,7 @@ import { Button } from "primereact/button"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
 import React, { useEffect, useState } from "react"
+import { Image } from "primereact/image"
 
 import "./data_table.css"
 
@@ -29,6 +30,19 @@ function Table({
         }
         window.addEventListener("resize", windowResize)
     })
+
+    const imageBodyTemplate = (image) => {
+        return (
+            <div className="table-image">
+                <Image
+                    className="table-image-layout"
+                    src={image && image.startsWith("http") ? image : "./image/roi_not_found.jpg"}
+                    alt="headshot"
+                    preview={true}
+                />
+            </div>
+        )
+    }
 
     const actionTemplate = (data) => {
         return (
@@ -103,6 +117,9 @@ function Table({
                             }
                         />
                     )
+                }
+                if (col.type === "image") {
+                    return <Column className="image-column" header={col.header} body={(rowData) => imageBodyTemplate(rowData[col.field])} />
                 }
                 return <Column className="data-column" key={index} field={col.field} header={col.header} />
             })}

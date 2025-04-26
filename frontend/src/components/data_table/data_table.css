@@ -60,3 +60,23 @@
     font-size: 1rem !important;
 }
 
+.image-column {
+    width: 10rem !important;
+    min-width: 5rem !important;
+    max-width: 10rem !important;
+    text-align: center !important;
+    padding: 0.3rem !important;
+}
+
+.table-image .p-image-preview-container>img {
+    height: 10vh !important;
+    width: auto !important;
+}
+
+.p-image-mask {
+    --maskbg: rgba(0, 0, 0, 0.5) !important;
+}
+
+.p-image-preview {
+    max-height: 60vh !important;
+}
