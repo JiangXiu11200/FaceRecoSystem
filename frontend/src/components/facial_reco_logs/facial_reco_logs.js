@@ -52,7 +52,7 @@ function FacialRecoLogs() {
 
   const leftContents = (
     <React.Fragment>
-      <div className="toolbar-left">
+      <div className="facial-reco-toolbar-left">
         <div>
           <InputText
             className="p-inputtext"
@@ -78,7 +78,7 @@ function FacialRecoLogs() {
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Toolbar className="toolbar-layout" left={leftContents} />
+      <Toolbar className="facial-reco-oolbar-layout" left={leftContents} />
       <Table data={table_data} columns={columns} actnioEvent={setActionEvent} />
     </div>
   )

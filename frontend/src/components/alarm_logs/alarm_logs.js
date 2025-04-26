@@ -169,7 +169,7 @@ function AlarmLogs() {
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Toolbar className="toolbar-layout" left={leftContents} />
+      <Toolbar className="alarm-logs-toolbar-layout" left={leftContents} />
       <Table
         data={table_data}
         columns={columns}
@@ -183,8 +183,8 @@ function AlarmLogs() {
         footer={confirmAlarmDialogFooter}
         onHide={hideConfirmAlarmDialog}
       >
-        <div className="edit-user-dialog">
-          <div className="right-content">
+        <div className="alarm-details-dialog">
+          <div className="alarm-details-right-content">
             <div className="">
               <label>Log Time</label>
               <InputText
@@ -202,7 +202,7 @@ function AlarmLogs() {
               />
             </div>
           </div>
-          <div className="left-content">
+          <div className="alarm-details-left-content">
             <img src="./image/roi_not_found.jpg" alt="" />
           </div>
         </div>

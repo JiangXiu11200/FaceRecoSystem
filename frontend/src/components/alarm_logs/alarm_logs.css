@@ -1,29 +1,15 @@
-.toolbar-layout {
+.alarm-logs-toolbar-layout {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.toolbar-left {
-  max-width: 80rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.toolbar-right {
-  width: 10rem;
-  display: flex;
-  align-items: center;
-  justify-self: end;
-}
-
 .field-group {
   margin: 0.2rem;
 }
 
-.edit-user-dialog {
+.alarm-details-dialog {
   width: 40rem;
   display: flex;
   gap: 1rem;
@@ -31,7 +17,7 @@
   justify-content: space-between;
 }
 
-.right-content {
+.alarm-details-right-content {
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -39,7 +25,7 @@
   gap: 0.5rem;
 }
 
-.left-content {
+.alarm-details-left-content {
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -47,7 +33,7 @@
   overflow: hidden;
 }
 
-.left-content img {
+.lalarm-details-left-content img {
   height: 80%;
   width: auto;
   object-fit: contain;
