@@ -1,119 +1,124 @@
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .select-container {
-    width: 18%;
-    height: 57%;
-    background-color: #7E99A3;
-    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
+  width: 18%;
+  height: 57%;
+  background-color: #7e99a3;
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
 }
 
 .login-container {
-    width: 35%;
-    height: 57%;
-    background-color: #fcfcfc;
-    box-shadow: 5px 0 5px rgba(0, 0, 0, 0.5);
+  width: 35%;
+  height: 57%;
+  background-color: #fcfcfc;
+  box-shadow: 5px 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .select-layout {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 90%;
-    margin: 1rem
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 90%;
+  margin: 1rem;
 }
 
 .select-label {
-    color: #fff;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .select-mode-btn {
-    background-color: #F4EDD3 !important;
-    color: #000000 !important;
-    border: 2px solid #E8E2C9;
-    font-weight: 700 !important;
-    border-radius: 10px !important;
-    width: 90% !important;
+  background-color: #f4edd3 !important;
+  color: #000000 !important;
+  border: 2px solid #e8e2c9;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  width: 90% !important;
 }
 
 .select-mode-btn:hover {
-    box-shadow: 0 0 8px #9f9b8a;
+  box-shadow: 0 0 8px #9f9b8a;
 }
 
 .select-mode-btn:active {
-    transform: scale(0.99);
+  transform: scale(0.99);
 }
 
-
 .button-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 0.5rem ;
-    font-weight: normal !important; 
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  font-weight: normal !important;
 }
 
 .login-layout {
-    display: flex !important;
-    flex-direction: column;
-    height: 100%;
-    margin: 1rem;
+  display: flex !important;
+  flex-direction: column;
+  height: 100%;
+  margin: 1rem;
 }
 
 .login-label {
-    color: #000000;
-    font-size: 2rem;
+  color: #000000;
+  font-size: 2rem;
 }
 
 .label-layout {
-    height: 30%;
-    display: flex;
-    align-items: end;
+  height: 30%;
+  display: flex;
+  align-items: end;
 }
 
 .form-layout {
-    height: 30%;
-    display: flex;
-    flex-direction: column;
-    margin: 0.5rem 1rem 0 1rem;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem 1rem 0 1rem;
 }
 
 .button-layout {
-    height: 30%;
-    display: flex;
-    justify-content: left;
+  height: 30%;
+  display: flex;
+  justify-content: left;
 }
 
-input, .p-password, .p-password > div {
-    width: 100% !important;
+input,
+.p-password,
+.p-password > div {
+  width: 100% !important;
 }
 
-.input-field:focus, .input-field:hover, i.input-field:active {
-    border-color: #7E99A3;
-    box-shadow: 0 0 3px #7E99A3;
+.input-field:focus,
+.input-field:hover,
+i.input-field:active {
+  border-color: #7e99a3;
+  box-shadow: 0 0 3px #7e99a3;
 }
 
-.p-password input:focus, .p-password input:hover, .p-password input:active {
-    border-color: #7E99A3;
-    box-shadow: 0 0 3px #7E99A3;
+.p-password input:focus,
+.p-password input:hover,
+.p-password input:active {
+  border-color: #7e99a3;
+  box-shadow: 0 0 3px #7e99a3;
 }
 
 .input-error {
-    border-color: red;
-    box-shadow: 0 0 3px red;
+  border-color: red;
+  box-shadow: 0 0 3px red;
 }
 
 .p-password input.password-error {
-    border-color: red !important;
-    box-shadow: 0 0 3px red !important;
+  border-color: red !important;
+  box-shadow: 0 0 3px red !important;
 }
 
 .error-message {
-    color: red;
-    font-size: 0.9rem;
+  color: red;
+  font-size: 0.9rem;
 }

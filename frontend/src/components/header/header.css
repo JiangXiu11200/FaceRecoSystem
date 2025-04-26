@@ -1,53 +1,53 @@
 .p-breadcrumb {
-    display: flex !important;
-    background: #7E99A3 !important;
-    border-style: none !important;
-    border-radius: 0 !important;
-    align-items: center !important;
-    padding: 0 !important;
-    font-size: 1.0rem !important;
+  display: flex !important;
+  background: #7e99a3 !important;
+  border-style: none !important;
+  border-radius: 0 !important;
+  align-items: center !important;
+  padding: 0 !important;
+  font-size: 1rem !important;
 }
 
 .p-breadcrumb ol {
-    margin-bottom: 0rem !important;
-    color: var(--main-text-color) !important;
-    padding-left: 0 !important;
+  margin-bottom: 0rem !important;
+  color: var(--main-text-color) !important;
+  padding-left: 0 !important;
 }
 
 .p-breadcrumb .p-breadcrumb-chevron,
 .p-breadcrumb .pi,
 .p-breadcrumb .p-menuitem-text {
-    color: var(--main-text-color) !important;
+  color: var(--main-text-color) !important;
 }
 
 .header-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    align-items: center !important;
-    margin: 0 0 0 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  align-items: center !important;
+  margin: 0 0 0 0 !important;
 }
 
 .left-layout {
-    text-align: left !important;
-    margin-left: 0 !important;
+  text-align: left !important;
+  margin-left: 0 !important;
 }
 
 .right-layout {
-    text-align: right !important;
-    margin-right: 0 !important;
+  text-align: right !important;
+  margin-right: 0 !important;
 }
 
 .user-icon {
-    color: var(--main-text-color) !important;
-    font-size: 1.7rem !important;
+  color: var(--main-text-color) !important;
+  font-size: 1.7rem !important;
 }
 
 .user-icon:hover {
-    color: var(--main-text-color) !important;
-    background-color: #7E99A3 !important;
+  color: var(--main-text-color) !important;
+  background-color: #7e99a3 !important;
 }
 
 .user-icon:active {
-    color: #2D2D2D !important;
-    background-color: #7E99A3 !important;
+  color: #2d2d2d !important;
+  background-color: #7e99a3 !important;
 }

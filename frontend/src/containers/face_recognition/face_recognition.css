@@ -1,41 +1,41 @@
 .image-container {
-    height: 90vh;
+  height: 90vh;
 }
 
 .image-container img {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .roi-container {
-    overflow-x: auto;
-    white-space: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .roi-scroll {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .roi-item {
-    flex: 0 0 auto;
-    width: 20vh;
+  flex: 0 0 auto;
+  width: 20vh;
 }
 
 .log-container {
-    padding: 0;
+  padding: 0;
 }
 
 .log-panel {
-    background-color: #f9f9f9;
-    height: 90vh;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 0.9rem;
-    line-height: 1;
-    white-space: pre-wrap;
+  background-color: #f9f9f9;
+  height: 90vh;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+  line-height: 1;
+  white-space: pre-wrap;
 }
 
 .log-item {
-    padding: 5px 5px;
-    border-bottom: 1px solid #e6e6e6;
+  padding: 5px 5px;
+  border-bottom: 1px solid #e6e6e6;
 }

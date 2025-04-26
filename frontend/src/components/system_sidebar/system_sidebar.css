@@ -1,19 +1,20 @@
 .p-sidebar {
-    max-width: 17rem !important;
-    background-color: #6d8089;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+  max-width: 17rem !important;
+  background-color: #6d8089;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
 }
 
-.p-panelmenu, .p-component a {
-    color: var(--main-text-color)  !important;
-    text-decoration: none !important;
-    font-weight: normal !important;
-    max-height: 50px !important;
-    height: auto !important;
-    width: 100% !important;
+.p-panelmenu,
+.p-component a {
+  color: var(--main-text-color) !important;
+  text-decoration: none !important;
+  font-weight: normal !important;
+  max-height: 50px !important;
+  height: auto !important;
+  width: 100% !important;
 }
 
 .p-sidebar-content {
-    padding: 0.5rem !important;
-    margin: 0 !important;
+  padding: 0.5rem !important;
+  margin: 0 !important;
 }

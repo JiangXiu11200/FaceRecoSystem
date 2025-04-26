@@ -1,19 +1,19 @@
 .p-tabview-panel {
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
 }
 
 .p-tabview-nav {
-    margin: 0;
-    padding-left: 1rem;
-    
+  margin: 0;
+  padding-left: 1rem;
 }
 
-.tabview-header-icon i, .tabview-header-icon span {
-    vertical-align: middle;
+.tabview-header-icon i,
+.tabview-header-icon span {
+  vertical-align: middle;
 }
 
 .tabview-header-icon span {
-    margin: 0.2rem;
+  margin: 0.2rem;
 }

@@ -1,100 +1,109 @@
 :root {
-    --background-color: #4c585b;
-    --primary-color: #7e99a3;
-    --secondary-color: #a5bfcc;
-    --third-color: #f4edd3;
-    --warning-color: #cc6b6b;
-    --main-text-color: #4C585B;
+  --background-color: #4c585b;
+  --primary-color: #7e99a3;
+  --secondary-color: #a5bfcc;
+  --third-color: #f4edd3;
+  --warning-color: #cc6b6b;
+  --main-text-color: #4c585b;
 }
 
 html,
 #app {
-    background: var(--background-color);
+  background: var(--background-color);
 }
 
 .func-btn {
-    background-color: #F4EDD3 !important;
-    color: #4C585B !important;
-    border: 2px solid #E8E2C9 !important;
-    font-weight: 700 !important;
-    border-radius: 5px !important;
+  background-color: #f4edd3 !important;
+  color: #4c585b !important;
+  border: 2px solid #e8e2c9 !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
 }
 
-.func-btn:hover, .cancel-btn:hover, .delete-btn:hover {
-    filter: brightness(0.9);
-    transition: filter 0.2s ease;
+.func-btn:hover,
+.cancel-btn:hover,
+.delete-btn:hover {
+  filter: brightness(0.9);
+  transition: filter 0.2s ease;
 }
 
-.func-btn:active, .cancel-btn:active, .delete-btn:active {
-    filter: brightness(0.8);
+.func-btn:active,
+.cancel-btn:active,
+.delete-btn:active {
+  filter: brightness(0.8);
 }
 
 .select-button .p-highlight {
-    background-color: #7E99A3 !important;
-    border: 1px solid #4C585B !important;
+  background-color: #7e99a3 !important;
+  border: 1px solid #4c585b !important;
 }
 
-.select-button  .p-button:focus .p-button:hover {
-    background-color: #7E99A3 !important;
+.select-button .p-button:focus .p-button:hover {
+  background-color: #7e99a3 !important;
 }
 
 .cancel-btn {
-    background-color: #fff !important;
-    color: #808080 !important;
-    border: 2px solid #BFBFBF !important;
-    font-weight: 700 !important;
-    border-radius: 5px !important;
+  background-color: #fff !important;
+  color: #808080 !important;
+  border: 2px solid #bfbfbf !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
 }
 
 .delete-btn {
-    background-color: #F0B4B4 !important;
-    color: #C92424 !important;
-    border: 2px solid #CC6B6B !important;
-    font-weight: 700 !important;
-    border-radius: 5px !important;
+  background-color: #f0b4b4 !important;
+  color: #c92424 !important;
+  border: 2px solid #cc6b6b !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
 }
 
 .tabview-layout .p-tabview-nav {
-    margin: 0;
-    padding-left: 1rem;
+  margin: 0;
+  padding-left: 1rem;
 }
 
-.tabview-layout i, .tabview-layout span, .tabview-layout span {
-    vertical-align: middle;
-    margin: 0.2rem;
+.tabview-layout i,
+.tabview-layout span,
+.tabview-layout span {
+  vertical-align: middle;
+  margin: 0.2rem;
 }
 
 .tabview-layout .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
-    border-color: #7E99A3;
-    color: #ffffff;
+  border-color: #7e99a3;
+  color: #ffffff;
 }
 
 .tabview-layout .p-tabview .p-tabview-panels {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 .p-dropdown-items {
-    padding-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 .toolbar-layout {
-    border: none !important;
-    background: transparent !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 .inputgroup-btn {
-    border: none !important;
+  border: none !important;
 }
 
-.p-inputtext:focus, .p-inputtext:hover, i.p-inputtext:active {
-    border-color: #7E99A3;
-    box-shadow: 0 0 3px #7E99A3;
+.p-inputtext:focus,
+.p-inputtext:hover,
+i.p-inputtext:active {
+  border-color: #7e99a3;
+  box-shadow: 0 0 3px #7e99a3;
 }
 
 .p-multiselect-panel .p-multiselect-items {
-    padding: 0 !important;
+  padding: 0 !important;
 }
 
-.p-panelmenu-content ol, ul {
-    padding: 0 !important;
+.p-panelmenu-content ol,
+ul {
+  padding: 0 !important;
 }

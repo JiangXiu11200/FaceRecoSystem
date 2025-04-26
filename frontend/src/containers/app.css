@@ -2,7 +2,9 @@
   height: 100%;
   width: 100%;
   justify-content: space-between;
-  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+  transition:
+    margin-left 0.3s ease-in-out,
+    width 0.3s ease-in-out;
   background-color: var(--background-color);
 }
 
@@ -15,11 +17,11 @@
   height: 5% !important;
   display: flex;
   align-items: center;
-  background-color: #7E99A3 !important;
+  background-color: #7e99a3 !important;
 }
 
 .sidebar-btn {
-  background-color: #7E99A3 !important;
+  background-color: #7e99a3 !important;
   border: none !important;
 }
 
@@ -28,11 +30,12 @@
   font-size: 1.5rem !important;
 }
 
-
-.sidebar-btn, button:active, button:focus{
-    box-shadow: none; /* 移除發光 */
-    outline: none; /* 移除外框 */
-    box-shadow: none; /* 移除發光 */
+.sidebar-btn,
+button:active,
+button:focus {
+  box-shadow: none; /* 移除發光 */
+  outline: none; /* 移除外框 */
+  box-shadow: none; /* 移除發光 */
 }
 
 .App {

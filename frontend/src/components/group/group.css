@@ -1,21 +1,21 @@
 .toolbar-layout {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .toolbar-left {
-    max-width: 50rem;
-    display: flex;
-    align-items: center;
-    justify-self: start;
-    gap: 0.5rem;
+  max-width: 50rem;
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.5rem;
 }
 
 .toolbar-right {
-    width: 10rem;
-    display: flex;
-    align-items: center;
-    justify-self: end;
+  width: 10rem;
+  display: flex;
+  align-items: center;
+  justify-self: end;
 }
