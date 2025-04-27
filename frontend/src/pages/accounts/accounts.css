@@ -1,13 +1,3 @@
-.container-layout {
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 1rem;
-  margin: 1rem 1rem 1rem 1rem;
-  overflow: hidden;
-}
-
 .toolbar-layout {
   display: flex;
   justify-content: space-between;
@@ -16,21 +6,20 @@
 }
 
 .toolbar-left {
-  max-width: 60rem;
+  max-width: 65rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.edit-user-dialog {
-  width: 40rem;
+.account-dialog {
+  width: 65rem;
   display: flex;
-  gap: 1rem;
   align-items: stretch;
   justify-content: space-between;
 }
 
-.right-content {
+.account-dialog-left-content {
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -38,16 +27,17 @@
   gap: 0.5rem;
 }
 
-.left-content {
+.account-dialog-right-content {
   display: flex;
-  flex-direction: column;
-  justify-content: start;
-  width: 100%;
-  overflow: hidden;
+  justify-content: end;
 }
 
-.left-content img {
-  height: 80%;
-  width: auto;
+.account-dialog-right-img {
+  width: 100%;
+}
+
+.account-dialog-right-img img {
+  width: 100%;
+  height: auto;
   object-fit: contain;
 }

@@ -1,7 +1,9 @@
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
+import { InputTextarea } from "primereact/inputtextarea"
 import { MultiSelect } from "primereact/multiselect"
+import { Password } from "primereact/password"
 import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
@@ -15,14 +17,15 @@ function Accounts() {
   const toast = useRef(null)
   const [table_data, setTableData] = useState([])
   const [set_action_event, setActionEvent] = useState({})
-  const [set_user_state, setUserState] = useState(0)
-  const [set_edit_user, setEditUser] = useState(false)
+  const [set_enable_state, setEnableState] = useState(0)
+  const [set_account_dialog, setAccountDialog] = useState(true)
+  const [set_dialog_mode, setDialogMode] = useState("create")
   const [set_delete_dialog, setDeleteDialog] = useState(false)
 
-  const user_state = useMemo(() => {
+  const enable_state = useMemo(() => {
     return [
-      { code: 0, name: "No" },
-      { code: 1, name: "Yes" },
+      { code: 0, name: "Inactive" },
+      { code: 1, name: "Active" },
     ]
   }, [])
 
@@ -32,29 +35,30 @@ function Accounts() {
       field: "user",
     },
     {
-      header: "Group",
-      field: "group",
+      header: "Email",
+      field: "email",
     },
     {
-      header: "Register Time",
-      field: "register_time",
+      header: "Status",
+      field: "status",
+      type: "boolean",
     },
     {
-      header: "Enable",
-      field: "enable",
+      header: "Permission",
+      field: "permission",
     },
     {
-      header: "Annotation",
-      field: "annotation",
+      header: "Change Time",
+      field: "change_time",
     },
   ]
 
-  const _mock_data = Array.from({ length: 50 }, (_, i) => ({
+  const _mock_data = Array.from({ length: 30 }, (_, i) => ({
     user: `User ${i + 1}`,
-    group: `Group ${i + 1}`,
-    register_time: `2023-10-01`,
-    enable: i % 2 === 0 ? "Yes" : "No",
-    annotation: `Annotation ${i + 1}`,
+    email: `user${i + 1}@example.com`,
+    status: i % 2 === 0,
+    permission: `Permission ${i + 1}`,
+    change_time: `2023-10-01`,
   }))
 
   useEffect(() => {
@@ -65,7 +69,8 @@ function Accounts() {
     console.log("action event", set_action_event)
     switch (set_action_event.action) {
       case "edit":
-        setEditUser(true)
+        setDialogMode("edit")
+        setAccountDialog(true)
         break
       case "delete":
         setDeleteDialog(true)
@@ -76,16 +81,16 @@ function Accounts() {
   }, [set_action_event])
 
   const onUserStateChange = (e) => {
-    setUserState(e.value)
+    setEnableState(e.value)
   }
 
-  const doSaveUser = () => {
+  const doSaveAccount = () => {
     toast.current.show({
       severity: "success",
       summary: "Success",
-      detail: "User saved successfully.",
+      detail: "Account saved successfully.",
     })
-    setEditUser(false)
+    setAccountDialog(false)
     setDeleteDialog(false)
   }
 
@@ -97,14 +102,14 @@ function Accounts() {
     toast.current.show({
       severity: "success",
       summary: "Success",
-      detail: "User deleted successfully.",
+      detail: "Account deleted successfully.",
     })
     setDeleteDialog(false)
-    setEditUser(false)
+    setAccountDialog(false)
   }
 
-  const hideEditUserDialog = () => {
-    setEditUser(false)
+  const hideAccountDialog = () => {
+    setAccountDialog(false)
   }
 
   const hideUserDetailDialog = () => {
@@ -136,24 +141,16 @@ function Accounts() {
     </React.Fragment>
   )
 
-  const editUserDialogFooter = (
+  const accountDialogFooter = (
     <React.Fragment>
-      <div className="d-flex justify-content-between">
-        <div className="d-flex">
-          <Button
-            label="Delete"
-            icon="pi pi-times"
-            className="p-button-text delete-btn"
-            onClick={showDeleteUserDialog}
-          />
-        </div>
+      <div className="d-flex justify-content-end">
         <div className="d-flex">
           <div className="me-2">
             <Button
               label="Save"
               icon="pi pi-check"
               className="p-button-text func-btn"
-              onClick={doSaveUser}
+              onClick={doSaveAccount}
             />
           </div>
           <div>
@@ -161,13 +158,17 @@ function Accounts() {
               label="Cancel"
               icon="pi pi-times"
               className="p-button-text cancel-btn"
-              onClick={hideEditUserDialog}
+              onClick={hideAccountDialog}
             />
           </div>
         </div>
       </div>
     </React.Fragment>
   )
+
+  const onEnableStateChange = (e) => {
+    setEnableState(e.value)
+  }
 
   const deleteUserDialogFooter = (
     <React.Fragment>
@@ -193,7 +194,7 @@ function Accounts() {
   )
 
   return (
-    <div className="container-layout">
+    <div className="container-layout general-page-layout">
       <Toast ref={toast} />
       <Toolbar className="toolbar-layout" left={leftContents} />
       <Table
@@ -202,66 +203,110 @@ function Accounts() {
         actnioEvent={setActionEvent}
         editFlag={true}
         deleteFlag={true}
-        viewsFlag={false}
+        tableHeight="70vh"
       />
       <Dialog
-        visible={set_edit_user}
+        visible={set_account_dialog}
         className=""
-        header="Edit User"
-        footer={editUserDialogFooter}
-        onHide={hideEditUserDialog}
+        header={
+          set_dialog_mode === "create" ? "Create Account" : "Edit Account"
+        }
+        footer={accountDialogFooter}
+        onHide={hideAccountDialog}
       >
-        <div className="edit-user-dialog">
-          <div className="right-content">
+        <div className="account-dialog row">
+          <div className="account-dialog-left-content col-7 col-lg-7">
             <div className="">
-              <label>User Name</label>
+              <label>Account</label>
+              <span className="text-danger">*</span>
               <InputText className="p-inputtext" placeholder="" />
             </div>
             <div className="">
-              <label>Select Group</label>
+              <label>Password</label>
+              <span className="text-danger">*</span>
+              <Password placeholder="" feedback={false} />
+            </div>
+            <div className="">
+              <label>Confirm</label>
+              <span className="text-danger">*</span>
+              <Password placeholder="" feedback={false} />
+            </div>
+            <div className="row g-2">
+              <div className="col-6 col-lg-6">
+                <label>First Name </label>
+                <span className="text-danger">*</span>
+                <InputText className="p-inputtext" placeholder="" />
+              </div>
+              <div className="col-6 col-lg-6">
+                <label>Last Name</label>
+                <span className="text-danger">*</span>
+                <InputText className="p-inputtext" placeholder="" />
+              </div>
+            </div>
+            <div className="row g-2">
+              <div className="col-6 col-lg-6">
+                <label>Email </label>
+                <InputText className="p-inputtext" placeholder="" />
+              </div>
+              <div className="col-6 col-lg-6">
+                <label>Enable</label>
+                <SelectButton
+                  className="select-button"
+                  value={set_enable_state ? set_enable_state : 0}
+                  options={enable_state}
+                  optionValue="code"
+                  optionLabel="name"
+                  onChange={(e) => onEnableStateChange(e)}
+                />
+              </div>
+            </div>
+            <div>
+              <label>Select Applications</label>
               <MultiSelect
                 className="w-100"
-                placeholder="Select Group"
+                placeholder="Select Applications"
                 options={[]}
                 onChange={() => {}}
                 optionLabel="name"
               />
             </div>
             <div>
-              <label>Enable</label>
-              <SelectButton
-                className="w-100 select-button"
-                value={set_user_state ? set_user_state : 0}
-                options={user_state}
-                optionValue="code"
-                optionLabel="name"
-                onChange={(e) => onUserStateChange(e)}
-              />
-            </div>
-            <div>
-              <label>Creation Date</label>
-              <InputText
-                className="p-inputtext"
-                placeholder=""
-                disabled={true}
-              />
+              <label>Description</label>
+              <InputTextarea className="w-100" value={""} rows={3} />
             </div>
           </div>
-          <div className="left-content">
-            <img src="./assets/image/roi_not_found.jpg" alt="" />
+          {/* <div className="d-flex flex-column">
+            <div className="account-dialog-right-img">
+              <img src="/image/roi_not_found.jpg" alt="" />
+            </div>
+            <div className="d-flex justify-content-end mt-2">
+              <Button
+                className="func-btn"
+                label="Add Group"
+                icon="pi pi-plus"
+              />
+            </div>
+          </div> */}
+          <div className="col-5 col-lg-5">
+            <div className="account-dialog-right-img">
+              <img src="/image/roi_not_found.jpg" alt="" />
+            </div>
+            <div className="account-dialog-right-content mt-2">
+              <Button className="func-btn" label="Upload" icon="pi pi-upload" />
+            </div>
           </div>
         </div>
       </Dialog>
       <Dialog
         visible={set_delete_dialog}
         className=""
-        header="Delete Group"
+        header="Delete Account"
         footer={deleteUserDialogFooter}
         onHide={hideUserDetailDialog}
       >
         <div className="d-flex flex-row align-items-center">
           <div>
-            <label>Are you sure you want to delete this user?</label>
+            <label>Are you sure you want to delete this account?</label>
           </div>
         </div>
       </Dialog>
