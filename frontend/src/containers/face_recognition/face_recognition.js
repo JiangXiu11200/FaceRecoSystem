@@ -15,7 +15,10 @@ function FaceRecognition() {
     // }, 1000)
     // return () => clearInterval(interval)
     for (let i = 0; i < 10; i++) {
-      setROIImages((prevImages) => [...prevImages, "./image/roi_not_found.jpg"])
+      setROIImages((prevImages) => [
+        ...prevImages,
+        "./assets/assets/image/roi_not_found.jpg",
+      ])
     }
   }, [])
 
@@ -51,7 +54,7 @@ function FaceRecognition() {
         <div className="col-md-7 col-12 image-container">
           <div className="row g-2">
             <div>
-              <img src="./image/not_found.jpg" alt="video_stream" />
+              <img src="./assets/image/not_found.jpg" alt="video_stream" />
             </div>
             <div>
               <div ref={roi_scroll} className="roi-container g-2">

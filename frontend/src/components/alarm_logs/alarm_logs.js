@@ -203,7 +203,7 @@ function AlarmLogs() {
             </div>
           </div>
           <div className="alarm-details-left-content">
-            <img src="./image/roi_not_found.jpg" alt="" />
+            <img src="./assets/image/roi_not_found.jpg" alt="" />
           </div>
         </div>
       </Dialog>

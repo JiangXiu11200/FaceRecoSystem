@@ -38,7 +38,7 @@ function register() {
     <div className="content-layout">
       <Toast ref={toast} />
       <div className="image-layout">
-        <img src="./image/not_found.jpg" alt="video_stream" />
+        <img src="./assets/image/not_found.jpg" alt="video_stream" />
       </div>
       <div className="buttonbar-layout">
         <div>
