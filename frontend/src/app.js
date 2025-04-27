@@ -1,13 +1,16 @@
 import { Button } from "primereact/button"
 import React, { useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Header from "../components/header/header"
-import Login from "../components/login/login"
-import Sidebar from "../components/system_sidebar/system_sidebar"
-import ActivityLogs from "./activity_logs/activity_logs"
-import AlarmLogs from "./alarm_logs/alarm_logs"
-import FaceRecognition from "./face_recognition/face_recognition"
-import UserRegistration from "./user_registration/user_registration"
+
+import Header from "./components/header/header"
+import Login from "./containers/login/login"
+import Sidebar from "./components/system_sidebar/system_sidebar"
+
+import Accounts from "./pages/accounts/accounts"
+import ActivityLogs from "./pages/activity_logs/activity_logs"
+import AlarmLogs from "./pages/alarm_logs/alarm_logs"
+import FaceRecognition from "./pages/face_recognition/face_recognition"
+import UserRegistration from "./pages/user_registration/user_registration"
 
 import "./app.css"
 
@@ -55,6 +58,7 @@ function App() {
             />
             <Route exact path="/alarm_logs" element={<AlarmLogs />} />
             <Route exact path="/activity_logs" element={<ActivityLogs />} />
+            <Route exact path="/accounts" element={<Accounts />} />
             {/* <Route path="*" element={<NotFoundComponent />} />{" "} */}
           </Routes>
         </div>

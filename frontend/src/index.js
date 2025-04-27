@@ -2,12 +2,12 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import "./index.css"
 
-import App from "./containers/app"
+import App from "./app"
 
-import "primereact/resources/primereact.min.css"
-import "primereact/resources/themes/lara-light-indigo/theme.css"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "primeicons/primeicons.css"
+import "primereact/resources/primereact.min.css"
+import "primereact/resources/themes/lara-light-indigo/theme.css"
 
 const root = ReactDOM.createRoot(document.getElementById("app"))
 root.render(

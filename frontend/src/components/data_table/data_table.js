@@ -39,7 +39,7 @@ function Table({
           src={
             image && image.startsWith("http")
               ? image
-              : "./assets/image/roi_not_found.jpg"
+              : "/image/roi_not_found.jpg"
           }
           alt="headshot"
           preview={true}

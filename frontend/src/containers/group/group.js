@@ -1,11 +1,11 @@
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
-import { Toolbar } from "primereact/toolbar"
-import React, { useEffect, useState, useMemo } from "react"
 import { SelectButton } from "primereact/selectbutton"
+import { Toolbar } from "primereact/toolbar"
+import React, { useEffect, useMemo, useState } from "react"
 
-import { Table } from "../data_table/data_table"
+import { Table } from "../../components/data_table/data_table"
 
 import "./group.css"
 

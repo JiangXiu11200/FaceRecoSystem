@@ -7,11 +7,11 @@ import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
 import React, { useEffect, useMemo, useRef, useState } from "react"
 
-import { Table } from "../data_table/data_table"
+import { Table } from "../../components/data_table/data_table"
 
-import "./users.css"
+import "./accounts.css"
 
-function Users() {
+function Accounts() {
   const toast = useRef(null)
   const [table_data, setTableData] = useState([])
   const [set_action_event, setActionEvent] = useState({})
@@ -193,7 +193,7 @@ function Users() {
   )
 
   return (
-    <div className="d-flex flex-column">
+    <div className="container-layout">
       <Toast ref={toast} />
       <Toolbar className="toolbar-layout" left={leftContents} />
       <Table
@@ -269,4 +269,4 @@ function Users() {
   )
 }
 
-export default Users
+export default Accounts

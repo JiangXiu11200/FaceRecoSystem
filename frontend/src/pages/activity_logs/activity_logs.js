@@ -1,8 +1,8 @@
 import { TabPanel, TabView } from "primereact/tabview"
 import React from "react"
 
-import FacialRecognition from "../../components/facial_reco_logs/facial_reco_logs"
-import SystemActivityLogs from "../../components/system_activity_logs/system_activity_logs"
+import FacialRecognition from "../../containers/facial_reco_logs/facial_reco_logs"
+import SystemActivityLogs from "../../containers/system_activity_logs/system_activity_logs"
 
 import "./activity_logs.css"
 

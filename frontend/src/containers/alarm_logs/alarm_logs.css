@@ -1,0 +1,40 @@
+.alarm-logs-toolbar-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.field-group {
+  margin: 0.2rem;
+}
+
+.alarm-details-dialog {
+  width: 40rem;
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.alarm-details-right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.alarm-details-left-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 100%;
+  overflow: hidden;
+}
+
+.lalarm-details-left-content img {
+  height: 80%;
+  width: auto;
+  object-fit: contain;
+}

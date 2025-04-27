@@ -5,7 +5,7 @@ import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
 import React, { useEffect, useRef, useState } from "react"
 
-import { Table } from "../data_table/data_table"
+import { Table } from "../../components/data_table/data_table"
 
 import "./facial_reco_logs.css"
 

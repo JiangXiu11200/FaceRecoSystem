@@ -1,9 +1,9 @@
 import { TabPanel, TabView } from "primereact/tabview"
 import React from "react"
 
-import Group from "../../components/group/group"
-import Register from "../../components/register/register"
-import Users from "../../components/users/users"
+import Group from "../../containers/group/group"
+import Register from "../../containers/register/register"
+import Users from "../../containers/users/users"
 
 import "./user_registration.css"
 
