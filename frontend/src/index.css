@@ -38,8 +38,43 @@ html,
   border: 1px solid #4c585b !important;
 }
 
-.select-button .p-button:focus .p-button:hover {
+.select-button .p-button:focus {
   background-color: #7e99a3 !important;
+  box-shadow: 0 0 0 0 !important;
+}
+
+.select-button {
+  display: flex;
+  width: 100%;
+}
+
+.select-button .p-button {
+  flex: 1 1 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.p-multiselect {
+  box-shadow: none !important;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.p-multiselect:focus {
+  box-shadow: 0 0 0 3px rgba(123, 158, 163, 0.5) !important;
+  outline: none !important;
+}
+
+.p-multiselect:hover {
+  box-shadow: 0 0 0 3px rgba(123, 158, 163, 0.2) !important;
+}
+
+.p-multiselect:not(.p-disabled).p-focus,
+.p-multiselect:hover,
+.p-multiselect:focus {
+  border-color: #7e99a3 !important;
 }
 
 .cancel-btn {
@@ -56,6 +91,20 @@ html,
   border: 2px solid #cc6b6b !important;
   font-weight: 700 !important;
   border-radius: 5px !important;
+}
+
+.container-layout {
+  background-color: #ffffff !important;
+  display: flex !important;
+  padding: 0 !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  margin: 1rem 1rem 1rem 1rem !important;
+  overflow: hidden !important;
+}
+
+.general-page-layout {
+  padding: 0.5rem !important;
 }
 
 .tabview-layout .p-tabview-nav {
