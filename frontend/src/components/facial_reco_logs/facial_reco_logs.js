@@ -78,7 +78,10 @@ function FacialRecoLogs() {
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Toolbar className="facial-reco-oolbar-layout" left={leftContents} />
+      <Toolbar
+        className="facial-reco-oolbar-layout toolbar-layout"
+        left={leftContents}
+      />
       <Table data={table_data} columns={columns} actnioEvent={setActionEvent} />
     </div>
   )

@@ -2,7 +2,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: end;
-  /* flex-wrap: wrap; */
+  background: transparent;
+  border: none;
 }
 
 .activity-logs-toolbar-left {

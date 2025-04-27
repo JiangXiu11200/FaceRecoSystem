@@ -169,7 +169,10 @@ function AlarmLogs() {
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Toolbar className="alarm-logs-toolbar-layout" left={leftContents} />
+      <Toolbar
+        className="alarm-logs-toolbar-layout toolbar-layout"
+        left={leftContents}
+      />
       <Table
         data={table_data}
         columns={columns}
