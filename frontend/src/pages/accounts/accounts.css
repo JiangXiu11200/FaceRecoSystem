@@ -12,8 +12,14 @@
   gap: 0.5rem;
 }
 
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
 .account-dialog {
-  width: 65rem;
+  width: 50rem;
   display: flex;
   align-items: stretch;
   justify-content: space-between;

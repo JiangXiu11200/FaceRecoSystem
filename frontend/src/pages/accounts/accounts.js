@@ -18,7 +18,7 @@ function Accounts() {
   const [table_data, setTableData] = useState([])
   const [set_action_event, setActionEvent] = useState({})
   const [set_enable_state, setEnableState] = useState(0)
-  const [set_account_dialog, setAccountDialog] = useState(true)
+  const [set_account_dialog, setAccountDialog] = useState(false)
   const [set_dialog_mode, setDialogMode] = useState("create")
   const [set_delete_dialog, setDeleteDialog] = useState(false)
 
@@ -80,10 +80,6 @@ function Accounts() {
     }
   }, [set_action_event])
 
-  const onUserStateChange = (e) => {
-    setEnableState(e.value)
-  }
-
   const doSaveAccount = () => {
     toast.current.show({
       severity: "success",
@@ -94,8 +90,9 @@ function Accounts() {
     setDeleteDialog(false)
   }
 
-  const showDeleteUserDialog = () => {
-    setDeleteDialog(true)
+  const doCreateAccount = () => {
+    setAccountDialog(true)
+    setDialogMode("create")
   }
 
   const doDeleteUser = () => {
@@ -137,6 +134,19 @@ function Accounts() {
         <div>
           <Button icon="pi pi-search" className="func-btn" label="Search" />
         </div>
+      </div>
+    </React.Fragment>
+  )
+
+  const rightContents = (
+    <React.Fragment>
+      <div className="toolbar-right">
+        <Button
+          icon="pi pi-plus"
+          className="p-button-info func-btn"
+          label="Create"
+          onClick={doCreateAccount}
+        />
       </div>
     </React.Fragment>
   )
@@ -196,7 +206,11 @@ function Accounts() {
   return (
     <div className="container-layout general-page-layout">
       <Toast ref={toast} />
-      <Toolbar className="toolbar-layout" left={leftContents} />
+      <Toolbar
+        className="toolbar-layout"
+        left={leftContents}
+        right={rightContents}
+      />
       <Table
         data={table_data}
         columns={columns}
@@ -215,7 +229,7 @@ function Accounts() {
         onHide={hideAccountDialog}
       >
         <div className="account-dialog row">
-          <div className="account-dialog-left-content col-7 col-lg-7">
+          <div className="account-dialog-left-content col-8 col-lg-8">
             <div className="">
               <label>Account</label>
               <span className="text-danger">*</span>
@@ -275,19 +289,7 @@ function Accounts() {
               <InputTextarea className="w-100" value={""} rows={3} />
             </div>
           </div>
-          {/* <div className="d-flex flex-column">
-            <div className="account-dialog-right-img">
-              <img src="/image/roi_not_found.jpg" alt="" />
-            </div>
-            <div className="d-flex justify-content-end mt-2">
-              <Button
-                className="func-btn"
-                label="Add Group"
-                icon="pi pi-plus"
-              />
-            </div>
-          </div> */}
-          <div className="col-5 col-lg-5">
+          <div className="col-4 col-lg-4">
             <div className="account-dialog-right-img">
               <img src="/image/roi_not_found.jpg" alt="" />
             </div>
