@@ -8,7 +8,7 @@ import "./activity_logs.css"
 
 function ActivityLogs() {
   return (
-    <div className="container-fluid ms-0 pt-3 tabview-layout">
+    <div className="container-layout tabview-layout">
       <TabView>
         <TabPanel header="Facial Recognition" leftIcon="pi pi-calendar">
           <FacialRecognition />

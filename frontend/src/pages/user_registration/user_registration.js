@@ -9,7 +9,7 @@ import "./user_registration.css"
 
 function UserRegistration() {
   return (
-    <div className="container-fluid ms-0 pt-3 tabview-layout">
+    <div className="container-layout tabview-layout">
       <TabView>
         <TabPanel header="Register" leftIcon="pi pi-camera">
           <Register />

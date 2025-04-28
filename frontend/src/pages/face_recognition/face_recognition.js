@@ -46,7 +46,7 @@ function FaceRecognition() {
   }, [roi_images])
 
   return (
-    <div className="container-fluid p-2">
+    <div className="container-layout general-page-layout">
       <div className="row g-2">
         <div className="col-md-7 col-12 image-container">
           <div className="row g-2">
