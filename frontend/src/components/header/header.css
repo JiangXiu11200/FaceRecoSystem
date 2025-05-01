@@ -10,14 +10,14 @@
 
 .p-breadcrumb ol {
   margin-bottom: 0rem !important;
-  color: var(--main-text-color) !important;
+  color: var(--main-color) !important;
   padding-left: 0 !important;
 }
 
 .p-breadcrumb .p-breadcrumb-chevron,
 .p-breadcrumb .pi,
 .p-breadcrumb .p-menuitem-text {
-  color: var(--main-text-color) !important;
+  color: var(--main-color) !important;
 }
 
 .header-container {
@@ -38,12 +38,12 @@
 }
 
 .user-icon {
-  color: var(--main-text-color) !important;
+  color: var(--main-color) !important;
   font-size: 1.7rem !important;
 }
 
 .user-icon:hover {
-  color: var(--main-text-color) !important;
+  color: var(--main-color) !important;
   background-color: #7e99a3 !important;
 }
 

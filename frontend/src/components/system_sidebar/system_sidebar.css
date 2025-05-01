@@ -6,7 +6,7 @@
 
 .p-panelmenu,
 .p-component a {
-  color: var(--main-text-color) !important;
+  color: var(--main-color) !important;
   text-decoration: none !important;
   font-weight: normal !important;
   max-height: 50px !important;

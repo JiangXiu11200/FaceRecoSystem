@@ -28,7 +28,7 @@
 
 .p-paginator-pages .p-paginator-page.p-highlight {
   background-color: #cccccc !important;
-  color: #4c585b !important;
+  color: var(--main-color) !important;
 }
 
 .data-column {

@@ -1,10 +1,8 @@
 :root {
   --background-color: #4c585b;
-  --primary-color: #7e99a3;
+  --main-color: #4c585b;
   --secondary-color: #a5bfcc;
-  --third-color: #f4edd3;
-  --warning-color: #cc6b6b;
-  --main-text-color: #4c585b;
+  --func-btn-color: #f4edd3;
 }
 
 html,
@@ -13,7 +11,7 @@ html,
 }
 
 .func-btn {
-  background-color: #f4edd3 !important;
+  background-color: var(--func-btn-color) !important;
   color: #4c585b !important;
   border: 2px solid #e8e2c9 !important;
   font-weight: 700 !important;
@@ -41,11 +39,6 @@ html,
 .select-button .p-button:focus {
   background-color: #7e99a3 !important;
   box-shadow: 0 0 0 0 !important;
-}
-
-.select-button {
-  display: flex;
-  width: 100%;
 }
 
 .select-button .p-button {
@@ -100,7 +93,7 @@ html,
   flex-direction: column !important;
   justify-content: center !important;
   margin: 1rem 1rem 1rem 1rem !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .general-page-layout {

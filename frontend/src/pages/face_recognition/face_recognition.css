@@ -1,5 +1,5 @@
 .image-container {
-  height: 90vh;
+  height: 88vh;
 }
 
 .image-container img {
@@ -27,7 +27,7 @@
 
 .log-panel {
   background-color: #f9f9f9;
-  height: 90vh;
+  height: 88vh;
   overflow-y: auto;
   font-family: monospace;
   font-size: 0.9rem;

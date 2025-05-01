@@ -34,7 +34,7 @@
 }
 
 .select-mode-btn {
-  background-color: #f4edd3 !important;
+  background-color: var(--func-btn-color) !important;
   color: #000000 !important;
   border: 2px solid #e8e2c9;
   font-weight: 700 !important;
