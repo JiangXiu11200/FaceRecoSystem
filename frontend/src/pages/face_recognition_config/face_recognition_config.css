@@ -1,0 +1,59 @@
+.facereco-content {
+  display: flex;
+  flex-direction: row;
+  height: auto;
+}
+
+.config-card-container {
+  width: 100%;
+  border-radius: 0 !important;
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1rem;
+}
+
+.p-card .p-card-content {
+  padding: 0 !important;
+}
+
+.p-card {
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.config-card-container.p-card {
+  height: auto !important;
+}
+
+.config-card-container img {
+  max-width: 100%;
+}
+
+.input-container {
+  padding: 0.25rem 0.5rem;
+  height: 2.5rem;
+}
+
+.item-title {
+  font-size: 1.2rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.config-live-image-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  border: 1px solid #d5d5d5;
+  padding: 0.5rem;
+  border: 0;
+}
+
+.config-roi-image-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 20%;
+  border: 1px solid #d5d5d5;
+  padding-left: 0.5rem;
+  border: 0;
+}

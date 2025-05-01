@@ -1,0 +1,187 @@
+import { Button } from "primereact/button"
+import { Card } from "primereact/card"
+import { InputText } from "primereact/inputtext"
+import { SelectButton } from "primereact/selectbutton"
+import { Toast } from "primereact/toast"
+import React, { useMemo, useRef, useState } from "react"
+
+import "./face_recognition_config.css"
+
+function FaceRecognitionConfig() {
+  const toast = useRef(null)
+  const [set_debug_state, setDebugState] = useState(0)
+
+  const debug_state = useMemo(() => {
+    return [
+      { code: 0, name: "OFF" },
+      { code: 1, name: "NO" },
+    ]
+  }, [])
+
+  const onDebugStateChange = (e) => {
+    setDebugState(e.value)
+  }
+
+  const video_footer = (
+    <div className="d-flex d-flex-row justify-content-end">
+      <Button
+        icon="pi pi-eye"
+        className="func-btn"
+        label="Preview"
+        onClick={() => {
+          toast.current.show({
+            severity: "info",
+            summary: "Preview",
+            detail: "Preview is not available yet.",
+          })
+        }}
+      />
+    </div>
+  )
+
+  const reco_footer = (
+    <div className="d-flex d-flex-row justify-content-end">
+      <Button
+        icon="pi pi-check"
+        className="func-btn"
+        label="Apply"
+        onClick={() => {
+          toast.current.show({
+            severity: "info",
+            summary: "Save",
+            detail: "Apply is not available yet.",
+          })
+        }}
+      />
+    </div>
+  )
+
+  return (
+    <div className="container-layout general-page-layout">
+      <Toast ref={toast} />
+      <div className="facereco-content">
+        <div className="col-5 col-lg-5">
+          <Card
+            className="config-card-container"
+            title="Video"
+            footer={video_footer}
+          >
+            <div>
+              <label className="">RTSP</label>
+              <InputText className="input-container" placeholder="" />
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Width</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">Height</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+            <div>
+              <label className="item-title">Detection Range</label>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">x1</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">y1</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">x2</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">y2</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+          </Card>
+          <Card
+            className="config-card-container"
+            title="Recognition"
+            footer={reco_footer}
+          >
+            <div>
+              <label>Debug</label>
+              <SelectButton
+                className="select-button"
+                value={set_debug_state ? set_debug_state : 0}
+                options={debug_state}
+                optionValue="code"
+                optionLabel="name"
+                onChange={(e) => onDebugStateChange(e)}
+              />
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Dlib Model</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Reco Model</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Minimum bounding box height</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">Minimum face detection score</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Eyes detection value (Brighter)</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">Eyes detection value (Darker)</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Consecutive prediction intervals</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+              <div className="w-100">
+                <label className="">Sensitivity</label>
+                <InputText className="input-container" placeholder="" />
+              </div>
+            </div>
+          </Card>
+        </div>
+        <div className="col-7 col-lg-7">
+          <div className="config-live-image-container">
+            <img src="/image/not_found.jpg" alt="video_stream" />
+          </div>
+          <div className="d-flex">
+            <div className="config-roi-image-container">
+              <img src="/image/roi_not_found.jpg" alt="video_stream" />
+            </div>
+            <div className="config-roi-image-container">
+              <img src="/image/roi_not_found.jpg" alt="video_stream" />
+            </div>
+            <div className="d-flex  justify-content-end align-items-end w-100 gap-2">
+              <Button label="Stop" icon="pi pi-times" className="cancel-btn" />
+              <Button label="Start" icon="pi pi-check" className="func-btn" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default FaceRecognitionConfig

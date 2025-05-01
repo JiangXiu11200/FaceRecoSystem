@@ -10,6 +10,7 @@ import Accounts from "./pages/accounts/accounts"
 import ActivityLogs from "./pages/activity_logs/activity_logs"
 import AlarmLogs from "./pages/alarm_logs/alarm_logs"
 import FaceRecognition from "./pages/face_recognition/face_recognition"
+import FaceRecognitionConfig from "./pages/face_recognition_config/face_recognition_config"
 import UserRegistration from "./pages/user_registration/user_registration"
 
 import "./app.css"
@@ -53,12 +54,17 @@ function App() {
             <Route exact path="/login" element={<Login />} />
             <Route
               exact
-              path="/user_registration"
+              path="/user-registration"
               element={<UserRegistration />}
             />
-            <Route exact path="/alarm_logs" element={<AlarmLogs />} />
-            <Route exact path="/activity_logs" element={<ActivityLogs />} />
+            <Route exact path="/alarm-logs" element={<AlarmLogs />} />
+            <Route exact path="/activity-logs" element={<ActivityLogs />} />
             <Route exact path="/accounts" element={<Accounts />} />
+            <Route
+              exact
+              path="/face-recognition-config"
+              element={<FaceRecognitionConfig />}
+            />
             {/* <Route path="*" element={<NotFoundComponent />} />{" "} */}
           </Routes>
         </div>

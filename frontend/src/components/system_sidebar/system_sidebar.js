@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react"
 import { PanelMenu } from "primereact/panelmenu"
 import { Sidebar } from "primereact/sidebar"
-import { Button } from "primereact/button"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import "./system_sidebar.css"
@@ -29,24 +28,32 @@ function SystemSidebar({ setSidebarVisible, sidebarPinned: setSidebarPinned }) {
     {
       label: "User Registration",
       icon: "pi pi-user-plus",
-      command: () => navigate("/user_registration"),
+      command: () => navigate("/user-registration"),
     },
     {
       label: "Alarm Logs",
       icon: "pi pi-exclamation-triangle",
-      command: () => navigate("/alarm_logs"),
+      command: () => navigate("/alarm-logs"),
     },
     {
       label: "Activity Logs",
       icon: "pi pi-calendar-clock",
-      command: () => navigate("/activity_logs"),
+      command: () => navigate("/activity-logs"),
     },
     {
       label: "Settings",
       icon: "pi pi-wrench",
       items: [
-        { label: "Recognition", icon: "pi pi-eye" },
-        { label: "Accounts", icon: "pi pi-user" },
+        {
+          label: "Accounts",
+          icon: "pi pi-user",
+          command: () => navigate("/accounts"),
+        },
+        {
+          label: "Face Recognition ",
+          icon: "pi pi-file-edit",
+          command: () => navigate("/face-recognition-config"),
+        },
         { label: "System", icon: "pi pi-cog" },
       ],
     },

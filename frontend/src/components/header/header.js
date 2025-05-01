@@ -14,12 +14,16 @@ function Header() {
 
   const breadcrumbMap = {
     "/": [{ label: "Face Recognition" }],
-    "/user_registration": [{ label: "User Registration" }],
-    "/alarm_logs": [{ label: "Alarm Logs" }],
-    "/activity_logs": [{ label: "Activity Logs" }],
-    "/settings/recognition": [{ label: "Settings" }, { label: "Recognition" }],
-    "/settings/accounts": [{ label: "Settings" }, { label: "Accounts" }],
-    "/settings/system": [{ label: "Settings" }, { label: "System" }],
+    "/user-registration": [{ label: "User Registration" }],
+    "/alarm-logs": [{ label: "Alarm Logs" }],
+    "/activity-logs": [{ label: "Activity Logs" }],
+    "/accounts": [{ label: "Settings" }, { label: "Accounts" }],
+    "/recognition": [{ label: "Settings" }, { label: "Recognition" }],
+    "/system": [{ label: "Settings" }, { label: "System" }],
+    "/face-recognition-config": [
+      { label: "Settings" },
+      { label: "Face Recognition" },
+    ],
   }
 
   const items = useMemo(() => {
