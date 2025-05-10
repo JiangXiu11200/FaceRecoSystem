@@ -1,15 +1,28 @@
+import { cloneDeep } from "lodash"
 import { Button } from "primereact/button"
 import { Card } from "primereact/card"
 import { InputText } from "primereact/inputtext"
 import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
-import React, { useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+
+import ImageROI from "../../components/image_roi_canvas/image_roi"
 
 import "./face_recognition_config.css"
 
 function FaceRecognitionConfig() {
   const toast = useRef(null)
   const [set_debug_state, setDebugState] = useState(0)
+  const [set_image, setImage] = useState(null)
+  const empty_detection_range = {
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 0,
+  }
+  const [detection_range, setDetectionRange] = useState(
+    cloneDeep(empty_detection_range)
+  )
 
   const debug_state = useMemo(() => {
     return [
@@ -20,6 +33,58 @@ function FaceRecognitionConfig() {
 
   const onDebugStateChange = (e) => {
     setDebugState(e.value)
+  }
+
+  useEffect(() => {
+    console.log(detection_range)
+  }, [detection_range])
+
+  const onDetectionRangeChange = (e, name) => {
+    const value = (e.target && e.target.value) || ""
+    let _detectionRange = { ...detection_range }
+    if (value < 0) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: `${name} must be greater than 0`,
+      })
+      return
+    }
+    if (name === "x2" && value < _detectionRange.x1) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "x2 must be greater than x1",
+      })
+      return
+    }
+    if (name === "y2" && value < _detectionRange.y1) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "y2 must be greater than y1",
+      })
+      return
+    }
+    if (name === "x1" && value < _detectionRange.x2) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "x1 must be less than x2",
+      })
+      return
+    }
+    if (name === "y1" && value < _detectionRange.y2) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "y1 must be less than y2",
+      })
+      return
+    }
+
+    _detectionRange[name] = value
+    setDetectionRange(_detectionRange)
   }
 
   const video_footer = (
@@ -86,19 +151,35 @@ function FaceRecognitionConfig() {
             <div className="d-flex d-flex-row gap-2">
               <div className="w-100">
                 <label className="">x1</label>
-                <InputText className="input-container" placeholder="" />
+                <InputText
+                  className="input-container"
+                  onChange={(e) => onDetectionRangeChange(e, "x1")}
+                  placeholder=""
+                />
               </div>
               <div className="w-100">
                 <label className="">y1</label>
-                <InputText className="input-container" placeholder="" />
+                <InputText
+                  className="input-container"
+                  onChange={(e) => onDetectionRangeChange(e, "y1")}
+                  placeholder=""
+                />
               </div>
               <div className="w-100">
                 <label className="">x2</label>
-                <InputText className="input-container" placeholder="" />
+                <InputText
+                  className="input-container"
+                  onChange={(e) => onDetectionRangeChange(e, "x2")}
+                  placeholder=""
+                />
               </div>
               <div className="w-100">
                 <label className="">y2</label>
-                <InputText className="input-container" placeholder="" />
+                <InputText
+                  className="input-container"
+                  onChange={(e) => onDetectionRangeChange(e, "y2")}
+                  placeholder=""
+                />
               </div>
             </div>
           </Card>
@@ -164,7 +245,7 @@ function FaceRecognitionConfig() {
         </div>
         <div className="col-7 col-lg-7">
           <div className="config-live-image-container">
-            <img src="/image/not_found.jpg" alt="video_stream" />
+            <ImageROI image={set_image} detectionRange={detection_range} />
           </div>
           <div className="d-flex">
             <div className="config-roi-image-container">
