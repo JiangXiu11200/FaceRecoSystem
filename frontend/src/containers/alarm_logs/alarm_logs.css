@@ -33,7 +33,7 @@
   overflow: hidden;
 }
 
-.lalarm-details-left-content img {
+.alarm-details-left-content img {
   height: 80%;
   width: auto;
   object-fit: contain;
