@@ -51,3 +51,14 @@
   color: #2d2d2d !important;
   background-color: #7e99a3 !important;
 }
+
+.user_menu_btn .p-avatar	{
+  width: 2.2rem !important;
+  height: 2.2rem !important;
+}
+
+.avatar-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: end !important;
+}
