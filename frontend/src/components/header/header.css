@@ -52,7 +52,7 @@
   background-color: #7e99a3 !important;
 }
 
-.user_menu_btn .p-avatar	{
+.user_menu_btn .p-avatar {
   width: 2.2rem !important;
   height: 2.2rem !important;
 }
@@ -61,4 +61,42 @@
   display: flex !important;
   align-items: center !important;
   justify-content: end !important;
+}
+
+.language-option {
+  display: flex !important;
+  align-items: center !important;
+  font-size: 1rem !important
+}
+
+.country-flag {
+  margin-right: 0.3rem !important;
+  font-size: 1.1rem !important;
+}
+
+.language-dropdown.p-dropdown {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  text-align: left !important;
+}
+
+.p-dropdown-panel {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.p-dropdown-item {
+  border-radius: 0 !important;
+}
+
+.p-dropdown-item.p-highlight {
+  background-color: var(--btn-focus-color) !important;
+  color: var(--main-color) !important;
+}
+
+.p-dropdown-trigger {
+  display: none !important;
 }
