@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from "react"
 import { PanelMenu } from "primereact/panelmenu"
 import { Sidebar } from "primereact/sidebar"
-import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import "./system_sidebar.css"
@@ -18,6 +18,10 @@ function SystemSidebar({ setSidebarVisible, sidebarPinned: setSidebarPinned }) {
     setVisible(false)
     setSidebarPinned(false)
   }
+
+  const isSettingsPath = ["/accounts", "/face-recognition-config"].some(
+    (path) => location.pathname.startsWith(path)
+  )
 
   const menuItems = [
     {
@@ -42,6 +46,7 @@ function SystemSidebar({ setSidebarVisible, sidebarPinned: setSidebarPinned }) {
     },
     {
       label: "Settings",
+      expanded: isSettingsPath,
       icon: "pi pi-wrench",
       items: [
         {
