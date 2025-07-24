@@ -21,6 +21,8 @@ function Accounts() {
   const [set_account_dialog, setAccountDialog] = useState(false)
   const [set_dialog_mode, setDialogMode] = useState("create")
   const [set_delete_dialog, setDeleteDialog] = useState(false)
+  const [user_groups, setUserGroups] = useState([])
+  const [search_condition, setSearchCondition] = useState({})
 
   const enable_state = useMemo(() => {
     return [
@@ -105,6 +107,13 @@ function Accounts() {
     setAccountDialog(false)
   }
 
+  const onSearchConditionChange = (e, name) => {
+    const value = (e.target && e.target.value) || ""
+    let _new_search_condition = { ...search_condition }
+    _new_search_condition[name] = value
+    setSearchCondition(_new_search_condition)
+  }
+
   const hideAccountDialog = () => {
     setAccountDialog(false)
   }
@@ -113,7 +122,7 @@ function Accounts() {
     setDeleteDialog(false)
   }
 
-  const leftContents = (
+  const leftContents = () => (
     <React.Fragment>
       <div className="toolbar-left">
         <div>
@@ -126,9 +135,12 @@ function Accounts() {
           <MultiSelect
             className="w-100"
             placeholder="Select Group"
-            options={[]}
-            onChange={() => {}}
+            optionValue="code"
             optionLabel="name"
+            value={search_condition ? search_condition.user_group : 0}
+            options={user_groups}
+            onChange={(e) => onSearchConditionChange(e, "user_group")}
+            maxSelectedLabels={1}
           />
         </div>
         <div>
@@ -138,7 +150,7 @@ function Accounts() {
     </React.Fragment>
   )
 
-  const rightContents = (
+  const rightContents = () => (
     <React.Fragment>
       <div className="toolbar-right">
         <Button
@@ -204,7 +216,7 @@ function Accounts() {
   )
 
   return (
-    <div className="container-layout general-page-layout">
+    <div className="general-page-layout">
       <Toast ref={toast} />
       <Toolbar
         className="toolbar-layout"
@@ -275,10 +287,10 @@ function Accounts() {
               </div>
             </div>
             <div>
-              <label>Select Applications</label>
+              <label>Select Permission</label>
               <MultiSelect
                 className="w-100"
-                placeholder="Select Applications"
+                placeholder="Select Permission"
                 options={[]}
                 onChange={() => {}}
                 optionLabel="name"

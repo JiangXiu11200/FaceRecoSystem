@@ -1,13 +1,15 @@
 :root {
-  --background-color: #4c585b;
+  --page-background-color: #ffffff;
   --main-color: #4c585b;
-  --secondary-color: #a5bfcc;
   --func-btn-color: #f4edd3;
+  --btn-focus-color: #7b9ea333;
+  --btn-select-color: #6e8891;
+  --btn-select-color-border: #7e99a3;
 }
 
 html,
 #app {
-  background: var(--background-color);
+  background: #ffffff;
 }
 
 .func-btn {
@@ -32,12 +34,12 @@ html,
 }
 
 .select-button .p-highlight {
-  background-color: #7e99a3 !important;
+  background-color: var(--btn-select-color-border) !important;
   border: 1px solid #4c585b !important;
 }
 
 .select-button .p-button:focus {
-  background-color: #7e99a3 !important;
+  background-color: var(--btn-select-color-border) !important;
   box-shadow: 0 0 0 0 !important;
 }
 
@@ -67,8 +69,23 @@ html,
 .p-multiselect:not(.p-disabled).p-focus,
 .p-multiselect:hover,
 .p-multiselect:focus {
-  border-color: #7e99a3 !important;
+  border-color: var(--btn-select-color-border) !important;
 }
+
+.p-multiselect-panel .p-multiselect-item.p-highlight {
+  background-color: var(--btn-focus-color) !important;
+  color: var(--main-color) !important;
+}
+
+.p-multiselect-panel .p-checkbox.p-highlight .p-checkbox-box {
+  background-color: var(--btn-select-color) !important;
+  border-color: var(--btn-select-color-border) !important;
+}
+
+.p-checkbox:hover .p-checkbox-box {
+  border-color: var(--btn-select-color-border) !important;
+}
+
 
 .cancel-btn {
   background-color: #fff !important;
@@ -86,18 +103,9 @@ html,
   border-radius: 5px !important;
 }
 
-.container-layout {
-  background-color: #ffffff !important;
-  display: flex !important;
-  padding: 0 !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  margin: 1rem 1rem 1rem 1rem !important;
-  overflow: visible !important;
-}
-
 .general-page-layout {
   padding: 0.5rem !important;
+  background-color: var(--page-background-color) !important;
 }
 
 .tabview-layout .p-tabview-nav {
@@ -113,7 +121,7 @@ html,
 }
 
 .tabview-layout .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
-  border-color: #7e99a3;
+  border-color: var(--btn-select-color-border);
   color: #ffffff;
 }
 
@@ -123,6 +131,11 @@ html,
 
 .p-dropdown-items {
   padding-left: 0 !important;
+}
+
+.p-dropdown-item.p-highlight {
+  background-color: var(--btn-focus-color) !important;
+  color: var(--main-color) !important;
 }
 
 .toolbar-layout {
@@ -137,8 +150,8 @@ html,
 .p-inputtext:focus,
 .p-inputtext:hover,
 i.p-inputtext:active {
-  border-color: #7e99a3;
-  box-shadow: 0 0 3px #7e99a3;
+  border-color: var(--btn-select-color-border);
+  box-shadow: 0 0 3px var(--btn-select-color-border);
 }
 
 .p-multiselect-panel .p-multiselect-items {
