@@ -82,21 +82,16 @@
   text-align: left !important;
 }
 
-.p-dropdown-panel {
+.language-dropdown.p-dropdown .p-dropdown-panel {
   border: none !important;
   box-shadow: none !important;
   border-radius: 0 !important;
 }
 
-.p-dropdown-item {
+.language-dropdown.p-dropdown .p-dropdown-item {
   border-radius: 0 !important;
 }
 
-.p-dropdown-item.p-highlight {
-  background-color: var(--btn-focus-color) !important;
-  color: var(--main-color) !important;
-}
-
-.p-dropdown-trigger {
+.language-dropdown.p-dropdown .p-dropdown-trigger {
   display: none !important;
 }
