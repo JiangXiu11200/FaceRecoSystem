@@ -1,0 +1,12 @@
+# Backend
+
+## Database
+db.sqlite3
+
+## System
+*.pem
+
+## Python
+*.pyc
+__pycache__/
+.venv/
