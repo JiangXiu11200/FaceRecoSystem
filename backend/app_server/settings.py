@@ -15,9 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-PRIVATE_KEY_PATH = BASE_DIR / "ca" / "private.pem"
-PUBLIC_KEY_PATH = BASE_DIR / "ca" / "public.pem"
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -57,26 +54,15 @@ CHANNEL_LAYERS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
+        "accounts.utils.authentication.JWTAuthentication",
     ]
 }
 
-# with open(PRIVATE_KEY_PATH, "rb") as f:
-#     PRIVATE_KEY = f.read()
+with open(BASE_DIR / "ca/private.pem") as f:
+    JWT_PRIVATE_KEY = f.read()
 
-# with open(PUBLIC_KEY_PATH, "rb") as f:
-#     PUBLIC_KEY = f.read()
-
-
-# SIMPLE_JWT = {
-#     "ALGORITHM": "RS256",
-#     "SIGNING_KEY": PRIVATE_KEY,
-#     "VERIFYING_KEY": PUBLIC_KEY,
-#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-#     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-# }
+with open(BASE_DIR / "ca/public.pem") as f:
+    JWT_PUBLIC_KEY = f.read()
 
 
 MIDDLEWARE = [
