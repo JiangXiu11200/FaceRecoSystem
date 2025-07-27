@@ -1,14 +1,13 @@
 import datetime
 
+from accounts.models import UserProfile
+from accounts.serializers.auth import LoginSerializer, UserRegisterSerializer
+from accounts.utils.jwt_utils import generate_access_jwt, generate_refresh_jwt, verify_refresh_jwt
 from django.conf import settings
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
-from .models import UserProfile
-from .serializers import LoginSerializer, UserRegisterSerializer
-from .utils.jwt_utils import generate_access_jwt, generate_refresh_jwt, verify_refresh_jwt
 
 
 class RegisterViewSet(CreateModelMixin, GenericViewSet):
@@ -63,7 +62,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 class LogoutViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
 
-    def create(self):
+    def create(self, request):
         """Handle user logout by clearing the refresh token cookie."""
         # TODO: 需要透過 Redis 或 DB 來管理 Refresh Token 的有效性，登出時應該將對應的 Refresh Token 刪除
         response = Response({"detail": "Logged out successfully"}, status=status.HTTP_200_OK)

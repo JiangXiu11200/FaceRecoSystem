@@ -1,9 +1,8 @@
 import re
 
+from accounts.models import UserProfile
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework import serializers
-
-from .models import UserProfile
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import LoginViewSet, LogoutViewSet, RefreshTokenViewSet, RegisterViewSet
+from .views.auth import LoginViewSet, LogoutViewSet, RefreshTokenViewSet, RegisterViewSet
 
 router = routers.SimpleRouter()
 router.register(r"api/auth/login", LoginViewSet, basename="login")
