@@ -1,5 +1,5 @@
 from accounts.models import UserProfile
-from accounts.utils.verify_passward import format_check, make_hashed_password
+from accounts.utils.verify_passward import format_check, make_hashed_password, verify_password
 from rest_framework import serializers
 
 
@@ -27,6 +27,32 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["password"] = make_hashed_password(validated_data["password"])
         return super().create(validated_data)
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=128, write_only=True)
+    new_password = serializers.CharField(max_length=128, write_only=True)
+
+    def validate_old_password(self, value: str) -> str:
+        user = self.context["user"]
+        if not verify_password(value, user.password):
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+
+    def validate_new_password(self, value: str) -> str:
+        """Validate that new password meets security requirements."""
+        user = self.context["user"]
+        if verify_password(value, user.password):
+            raise serializers.ValidationError("New password cannot be the same as the old password.")
+        if not password_format_check(value):
+            raise serializers.ValidationError("New password does not meet security requirements.")
+        return value
+
+    def save(self):
+        user = self.context["user"]
+        user.password = make_hashed_password(self.validated_data["new_password"])
+        user.save()
+        return user
 
 
 def password_format_check(value: str) -> bool:
