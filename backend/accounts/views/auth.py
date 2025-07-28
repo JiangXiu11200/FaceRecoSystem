@@ -1,18 +1,13 @@
 import datetime
 
 from accounts.models import UserProfile
-from accounts.serializers.auth import LoginSerializer, UserRegisterSerializer
+from accounts.serializers.auth import LoginSerializer
 from accounts.utils.jwt_utils import generate_access_jwt, generate_refresh_jwt, verify_refresh_jwt
 from django.conf import settings
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
-
-class RegisterViewSet(CreateModelMixin, GenericViewSet):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserRegisterSerializer
 
 
 class LoginViewSet(CreateModelMixin, GenericViewSet):
