@@ -55,7 +55,8 @@ CHANNEL_LAYERS = {
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "accounts.utils.authentication.JWTAuthentication",
-    ]
+    ],
+    "DEFAULT_PERMISSION_CLASSES": ["accounts.utils.authentication.Permission"],
 }
 
 with open(BASE_DIR / "ca/private.pem") as f:
