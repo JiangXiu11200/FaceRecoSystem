@@ -1,5 +1,5 @@
 from accounts.models import UserProfile
-from django.contrib.auth.hashers import check_password
+from accounts.utils.verify_passward import verify_password
 from rest_framework import serializers
 
 
@@ -20,7 +20,7 @@ class LoginSerializer(serializers.Serializer):
         except UserProfile.DoesNotExist:
             raise serializers.ValidationError("Account does not exist.")
 
-        if not check_password(login_password, user_profile.password):
+        if not verify_password(login_password, user_profile.password):
             raise serializers.ValidationError("Incorrect password.")
 
         return {

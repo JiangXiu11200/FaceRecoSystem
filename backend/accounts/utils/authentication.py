@@ -2,19 +2,18 @@ from typing import Union
 
 from accounts.models import UserProfile
 from accounts.utils.jwt_utils import verify_access_jwt
-from rest_framework import authentication, exceptions
+from rest_framework import exceptions
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import BasePermission
 
 
-class JWTAuthentication(authentication.BaseAuthentication):
+class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request) -> Union[tuple, None]:
         """Authenticate the user using JWT token."""
-        authorization = request.headers.get("Authorization")
-        if not authorization or not authorization.startswith("Bearer "):
-            return None
-
-        token = authorization.split(" ")[1]
+        token = request.headers.get("Authorization")
+        if not token:
+            raise AuthenticationFailed("Authorization header is missing.")
         payload = verify_access_jwt(token)
 
         if payload is None:
