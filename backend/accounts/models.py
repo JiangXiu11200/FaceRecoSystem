@@ -13,6 +13,7 @@ class UserProfile(models.Model):
     is_active = models.BooleanField(default=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+    user_group = models.ForeignKey("UserGroup", related_name="users", on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.account:
@@ -21,3 +22,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.account
+
+
+class UserGroup(models.Model):
+    group_name = models.CharField(max_length=64)
+    apps = models.ManyToManyField("SystemApps", related_name="user_groups", blank=True)
+
+
+class SystemApps(models.Model):
+    app_name = models.CharField(max_length=64, unique=True)
+    label = models.CharField(max_length=64)
