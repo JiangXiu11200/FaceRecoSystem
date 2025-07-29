@@ -24,6 +24,8 @@ SECRET_KEY = "django-insecure-(r*8*ks!*0b13gbw#ssvno1o4sb!_$s+^1vl6kgru)(74&@iod
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+USE_AUTHENTICATION = False
+
 ALLOWED_HOSTS = []
 
 
@@ -58,6 +60,10 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PERMISSION_CLASSES": ["accounts.utils.authentication.Permission"],
 }
+
+if not USE_AUTHENTICATION:
+    del REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"]
+    del REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]
 
 with open(BASE_DIR / "ca/private.pem") as f:
     JWT_PRIVATE_KEY = f.read()
