@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "channels",
     "accounts",
     "user_registration",
+    "alarm_logs",
 ]
 
 ASGI_APPLICATION = "app_server.asgi.application"
