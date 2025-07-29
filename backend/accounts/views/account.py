@@ -1,5 +1,11 @@
-from accounts.models import UserProfile
-from accounts.serializers.account import AccountsSerializer, ChangePasswordSerializer, UserRegisterSerializer
+from accounts.models import SystemApps, UserGroup, UserProfile
+from accounts.serializers.account import (
+    AccountsSerializer,
+    ChangePasswordSerializer,
+    SystemAppsSerializer,
+    UserGroupSerializer,
+    UserRegisterSerializer,
+)
 from rest_framework import status, viewsets
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -17,9 +23,19 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
     serializer_class = AccountsSerializer
 
 
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = UserGroup.objects.all()
+    serializer_class = UserGroupSerializer
+
+
 class RegisterViewSet(CreateModelMixin, GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserRegisterSerializer
+
+
+class SystemAppsViewSet(ListModelMixin, GenericViewSet):
+    queryset = SystemApps.objects.all()
+    serializer_class = SystemAppsSerializer
 
 
 class ChangePasswordViewSet(viewsets.ViewSet):

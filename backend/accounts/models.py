@@ -26,6 +26,9 @@ class UserProfile(models.Model):
 
 class UserGroup(models.Model):
     group_name = models.CharField(max_length=64)
+    is_active = models.BooleanField(default=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
     apps = models.ManyToManyField("SystemApps", related_name="user_groups", blank=True)
 
 

@@ -1,4 +1,4 @@
-from accounts.models import UserProfile
+from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.utils.verify_passward import format_check, make_hashed_password, verify_password
 from rest_framework import serializers
 
@@ -7,6 +7,23 @@ class AccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         exclude = ["password"]
+
+
+class UserGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserGroup
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep["apps"] = [app.id for app in instance.apps.all()]
+        return rep
+
+
+class SystemAppsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemApps
+        fields = "__all__"
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
