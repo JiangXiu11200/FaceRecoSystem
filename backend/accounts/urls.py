@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views.account import ChangePasswordViewSet, RegisterViewSet
+from .views.account import AccountsViewSet, ChangePasswordViewSet, RegisterViewSet
 from .views.auth import LoginViewSet, LogoutViewSet, RefreshTokenViewSet
 
 auth_router = routers.SimpleRouter()
@@ -10,6 +10,7 @@ auth_router.register(r"api/auth/logout", LogoutViewSet, basename="logout")
 auth_router.register(r"api/token/refresh", RefreshTokenViewSet, basename="refresh-token")
 accounts_router = routers.SimpleRouter()
 accounts_router.register(r"api/accounts/register", RegisterViewSet, basename="register")
+accounts_router.register(r"api/accounts", AccountsViewSet, basename="accounts")
 
 
 urlpatterns = [

@@ -3,6 +3,12 @@ from accounts.utils.verify_passward import format_check, make_hashed_password, v
 from rest_framework import serializers
 
 
+class AccountsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        exclude = ["password"]
+
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
