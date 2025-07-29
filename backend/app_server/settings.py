@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "channels",
     "accounts",
+    "user_registration",
 ]
 
 ASGI_APPLICATION = "app_server.asgi.application"
