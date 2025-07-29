@@ -13,6 +13,8 @@ from rest_framework.viewsets import GenericViewSet
 class LoginViewSet(CreateModelMixin, GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = LoginSerializer
+    authentication_classes = []
+    permission_classes = []
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -56,6 +58,8 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 
 class LogoutViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
+    authentication_classes = []
+    permission_classes = []
 
     def create(self, request):
         """Handle user logout by clearing the refresh token cookie."""
