@@ -21,4 +21,5 @@ urlpatterns = [
     path("", include("accounts.urls")),
     path("", include("user_registration.urls")),
     path("", include("alarm_logs.urls")),
+    path("", include("activity_logs.urls")),
 ]
