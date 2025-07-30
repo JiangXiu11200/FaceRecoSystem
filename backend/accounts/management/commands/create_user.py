@@ -9,6 +9,13 @@ class Command(BaseCommand):
         # Create a default user group if it doesn't exist
         default_group, created = UserGroup.objects.get_or_create(defaults={"group_name": "Administrator"}, id=1)
 
+        # Get all system apps
+        system_apps = SystemApps.objects.all()
+        if created:
+            # Add all system apps to the default group
+            default_group.apps.add(*system_apps)
+            self.stdout.write(self.style.SUCCESS("Created default user group and added all system apps"))
+
         if created:
             self.stdout.write(self.style.SUCCESS("Created default user group: Default Group"))
         else:
