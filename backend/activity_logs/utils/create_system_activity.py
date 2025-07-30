@@ -2,7 +2,7 @@ from activity_logs.models import SystemActivtiyLogs
 from django.utils.timezone import now
 
 
-def create_system_activity(user: str, actions: str, status_code: int, message: str) -> bool:
+def create_system_activity(user: str, actions: str, status_code: int, activity: str, message: str = None) -> bool:
     """
     Create a system activity log entry.
     """
@@ -12,6 +12,7 @@ def create_system_activity(user: str, actions: str, status_code: int, message: s
             actions=actions,
             status=status_code < 400,
             status_code=status_code,
+            activity=activity,
             message=message,
             timestamp=now(),
         )

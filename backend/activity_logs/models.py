@@ -6,7 +6,8 @@ class SystemActivtiyLogs(models.Model):
     actions = models.CharField(max_length=8)
     status = models.BooleanField(default=True)
     status_code = models.IntegerField()
-    message = models.CharField(max_length=255, blank=True, null=True)
+    activity = models.CharField(max_length=255, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
@@ -15,7 +16,8 @@ class FaceRecognitionActivityLogs(models.Model):
     actions = models.CharField(max_length=8)
     status = models.BooleanField(default=True)
     status_code = models.IntegerField()
-    message = models.CharField(max_length=255, blank=True, null=True)
+    activity = models.CharField(max_length=255, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
