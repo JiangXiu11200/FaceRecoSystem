@@ -2,7 +2,7 @@ from rest_framework import viewsets
 
 from user_registration.models import RegisterGroup, RegisterUserProfile
 from user_registration.serializers import (
-    RegisterUserDetailsSerializer,
+    RegisterUserFeatureSerializer,
     RegisterUserProfileSerializer,
     UserRegistrationGroupSerializer,
 )
@@ -13,9 +13,9 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterUserProfileSerializer
 
 
-class RegisterUserDetailsViewSet(viewsets.ModelViewSet):
+class RegisterUserFeatureViewSet(viewsets.ModelViewSet):
     queryset = RegisterUserProfile.objects.all()
-    serializer_class = RegisterUserDetailsSerializer
+    serializer_class = RegisterUserFeatureSerializer
 
 
 class UserRegistrationGroupViewSet(viewsets.ModelViewSet):

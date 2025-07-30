@@ -9,7 +9,7 @@ class RegisterUserProfileSerializer(serializers.ModelSerializer):
         exclude = ["face_details"]
 
 
-class RegisterUserDetailsSerializer(serializers.ModelSerializer):
+class RegisterUserFeatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegisterUserProfile
         fields = ["id", "name", "face_details", "minio_key", "file_name"]
