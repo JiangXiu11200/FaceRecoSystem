@@ -3,6 +3,7 @@ import datetime
 from accounts.models import UserProfile
 from accounts.serializers.auth import LoginSerializer
 from accounts.utils.jwt_utils import generate_access_jwt, generate_refresh_jwt, verify_refresh_jwt
+from activity_logs.utils.create_system_activity import create_system_activity
 from django.conf import settings
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
@@ -15,6 +16,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
     serializer_class = LoginSerializer
     authentication_classes = []
     permission_classes = []
+    activity_logs = {"POST": "Login."}
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -34,6 +36,8 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 
         if validated.get("remember_me"):
             self.set_refresh_cookie(response, refresh_token, keep_days)
+
+        self.create_login_activity(user=account, status_code=status.HTTP_200_OK, activity="Login successful.")
 
         return response
 
@@ -55,11 +59,18 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
             expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
         )
 
+    def create_login_activity(
+        self, user: str, status_code: int, activity: str, message: str = None, actions: str = "POST"
+    ) -> bool:
+        """
+        Log a successful login activity.
+        """
+        return create_system_activity(user, actions, status_code, activity, message)
+
 
 class LogoutViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
-    authentication_classes = []
-    permission_classes = []
+    activity_logs = {"POST": "Logout."}
 
     def create(self, request):
         """Handle user logout by clearing the refresh token cookie."""
@@ -71,6 +82,7 @@ class LogoutViewSet(CreateModelMixin, GenericViewSet):
 
 class RefreshTokenViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
+    activity_logs = {"POST": "Refresh Token."}
 
     def create(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
