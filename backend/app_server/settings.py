@@ -24,7 +24,7 @@ SECRET_KEY = "django-insecure-(r*8*ks!*0b13gbw#ssvno1o4sb!_$s+^1vl6kgru)(74&@iod
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-USE_AUTHENTICATION = False
+USE_AUTHENTICATION = True
 
 ALLOWED_HOSTS = []
 
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "channels",
+    "django_celery_beat",
     "accounts",
     "user_registration",
     "alarm_logs",
@@ -170,3 +171,13 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Celery use Redis as broker and result backend
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Optional: Celery timezone settings
+CELERY_TIMEZONE = "Asia/Taipei"
+CELERY_ENABLE_UTC = False
