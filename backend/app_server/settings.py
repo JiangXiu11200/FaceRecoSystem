@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "user_registration",
     "alarm_logs",
     "activity_logs",
+    "system",
 ]
 
 ASGI_APPLICATION = "app_server.asgi.application"
