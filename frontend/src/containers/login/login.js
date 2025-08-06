@@ -3,6 +3,7 @@ import { Button } from "primereact/button"
 import { Toast } from "primereact/toast"
 import { InputText } from "primereact/inputtext"
 import { Password } from "primereact/password"
+import { loginApi } from "../../api/auth"
 
 import "./login.css"
 
@@ -31,31 +32,54 @@ function Login() {
   }
 
   const handleLogin = () => {
-    if (select_mode === "") {
+    const showError = (message, setError) => {
+      setError(true)
+      setLoginError(message)
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Please select mode.",
+        detail: message,
+        life: 3000,
       })
+    }
+
+    if (!select_mode) {
+      showError("Please select mode.", () => {})
       return
     }
     if (!userName) {
-      setInputError(true)
-      setLoginError("Please enter your username.")
+      showError("Please enter your username.", setInputError)
       return
     }
     if (!password) {
-      setPasswordError(true)
-      setLoginError("Please enter your password.")
+      showError("Please enter your password.", setPasswordError)
       return
     }
 
-    if (password !== "123123") {
-      // for testing
-      setLoginError("Incorrect username or password.")
-      return
+    let data = {
+      account: userName,
+      password: password,
+      remember_me: true,
     }
 
+    loginApi("post", data)
+      .then((response) => {
+        if (response.data) {
+          window.location.href = "/"
+        } else {
+          setLoginError("Login failed. Please check your credentials.")
+        }
+      })
+      .catch((error) => {
+        console.error("Login error:", error)
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: error.response.data.message,
+          life: 3000,
+        })
+        setLoginError("Login failed. Please try again.")
+      })
     clearError()
   }
 
