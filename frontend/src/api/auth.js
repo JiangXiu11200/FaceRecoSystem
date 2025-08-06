@@ -1,0 +1,61 @@
+import axios from "axios"
+import { saveLocalStorage, clearLocalStorage } from "../utils/local_storage"
+
+export const refreshTokenApi = async () => {
+  const accessToken = localStorage.getItem("access_token")
+  return axios({
+    method: "post",
+    url: "/api/token/refresh/",
+
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: accessToken,
+    },
+    withCredentials: true,
+  })
+    .then((response) => {
+      saveLocalStorage("access_token", response.data.access_token)
+      return true
+    })
+    .catch((error) => {
+      console.error("Token refresh failed:", 123)
+      return false
+    })
+}
+
+export const loginApi = (method, data) => {
+  return axios({
+    method: method,
+    url: "/api/auth/login/",
+    data: data,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      saveLocalStorage("access_token", response.data.access_token)
+      return response
+    })
+    .catch((error) => {
+      throw error
+    })
+}
+export const logoutApi = async () => {
+  try {
+    const accessToken = localStorage.getItem("access_token")
+    const response = await axios({
+      method: "post",
+      url: "/api/auth/logout/",
+      headers: {
+        Authorization: accessToken,
+      },
+      withCredentials: true,
+    })
+    clearLocalStorage()
+    return response
+  } catch (error) {
+    clearLocalStorage()
+    console.error("Logout failed:", error.response?.data || error.message)
+    throw error
+  }
+}
