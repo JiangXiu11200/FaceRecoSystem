@@ -6,6 +6,9 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { Dropdown } from "primereact/dropdown"
 import CountryFlag from "react-country-flag"
 
+import { logoutApi } from "../../api/auth"
+import { clearLocalStorage } from "../../utils/local_storage"
+
 import "./header.css"
 
 function Header() {
@@ -38,7 +41,7 @@ function Header() {
   const customOptionTemplate = (option) => (
     <div className="language-option">
       <CountryFlag
-        class="country-flag"
+        className="country-flag"
         svg
         countryCode={option.countryCode}
         aria-label={option.label}
@@ -56,6 +59,13 @@ function Header() {
     console.log("location", location)
     return breadcrumbMap[location.pathname] || []
   }, [location.pathname])
+
+  const logoout = () => {
+    logoutApi()
+    navigate("/login")
+    window.location.reload()
+    clearLocalStorage()
+  }
 
   const menu_item = [
     {
@@ -83,9 +93,7 @@ function Header() {
     {
       label: "Logout",
       icon: "pi pi-sign-out",
-      command: () => {
-        navigate("/login"), window.location.reload()
-      },
+      command: logoout,
     },
   ]
 
