@@ -14,7 +14,7 @@ export const TokenProvider = ({ children }) => {
 
   useEffect(() => {
     checkTokenStatus()
-    const intervalId = setInterval(checkTokenStatus, 5 * 1 * 1000)
+    const intervalId = setInterval(checkTokenStatus, 5 * 60 * 1000)
 
     return () => clearInterval(intervalId)
   }, [])
