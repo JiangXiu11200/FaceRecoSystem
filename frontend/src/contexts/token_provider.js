@@ -9,6 +9,7 @@ const TokenContext = createContext()
 
 export const TokenProvider = ({ children }) => {
   const [set_authenticated, setAuthenticated] = useState(false)
+  const [is_loading, setIsLoading] = useState(true) // Used to make private routes wait for token check
   const [logout_reason, setLogoutReason] = useState(false)
   const [logout_dialog_message, setLogoutDialogMessage] = useState("")
 
@@ -23,13 +24,15 @@ export const TokenProvider = ({ children }) => {
     const token = localStorage.getItem("access_token")
 
     if (!token) {
+      setIsLoading(false)
       return
     }
 
     if (isTokenExpired(token)) {
-      refreshAccessToken()
+      await refreshAccessToken()
     } else {
       setAuthenticated(true)
+      setIsLoading(false)
     }
   }
 
@@ -47,6 +50,7 @@ export const TokenProvider = ({ children }) => {
     } catch (err) {
       setLogoutDialogMessage("Unable to update session, please log in again.")
       setLogoutReason(true)
+      setIsLoading(false)
     }
   }
 
@@ -68,8 +72,17 @@ export const TokenProvider = ({ children }) => {
     } finally {
       clearLocalStorage()
       setAuthenticated(false)
+      setIsLoading(false)
       window.location.href = "/login"
     }
+  }
+
+  const forceLogout = () => {
+    clearLocalStorage()
+    setAuthenticated(false)
+    setIsLoading(false)
+    setLogoutReason(false)
+    window.location.href = "/login"
   }
 
   const hideSystemNotificationDialog = () => {
@@ -78,10 +91,9 @@ export const TokenProvider = ({ children }) => {
   }
 
   const contextValue = {
+    forceLogout,
     set_authenticated,
-    logout,
-    refreshAccessToken,
-    isTokenExpired,
+    is_loading,
   }
 
   const confirmAlarmDialogFooter = (
