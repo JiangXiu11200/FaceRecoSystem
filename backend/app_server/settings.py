@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",  # session 管理
     "rest_framework",
     "rest_framework.authtoken",
+    "corsheaders",
     "channels",
     "django_celery_beat",
     "accounts",
@@ -85,7 +86,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "activity_logs.middleware.ActivityLogMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",  # React dev server
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = "app_server.urls"
