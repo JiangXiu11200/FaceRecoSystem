@@ -14,6 +14,7 @@ import FaceRecognitionConfig from "./pages/face_recognition_config/face_recognit
 import UserRegistration from "./pages/user_registration/user_registration"
 
 import { TokenProvider } from "./contexts/token_provider"
+import { PrivateRoute } from "./routes/private_route"
 
 import "./app.css"
 
@@ -26,52 +27,54 @@ function App() {
     setSidebarVisible((sidebar_visible) => !sidebar_visible)
   }
 
-  // const NotFoundComponent = () => {
-  //     window.location.href = "/"
-  //     return null
-  // }
+  const NotFoundComponent = () => {
+    window.location.href = "/"
+    return null
+  }
 
   return (
     <BrowserRouter>
       <TokenProvider>
-        <div>
-          {!is_login_page && (
-            <Sidebar
-              setSidebarVisible={sidebar_visible}
-              sidebarPinned={setSidebarPinned}
-            />
-          )}
-          <div className={`main-container ${sidebar_pinned ? "pinned" : ""}`}>
+        <PrivateRoute>
+          <div>
             {!is_login_page && (
-              <div className="header-container">
-                <Button
-                  className="sidebar-btn"
-                  icon={sidebar_pinned ? "pi pi-chevron-left" : "pi pi-bars"}
-                  onClick={setSidebar}
-                />
-                <Header />
-              </div>
+              <Sidebar
+                setSidebarVisible={sidebar_visible}
+                sidebarPinned={setSidebarPinned}
+              />
             )}
-            <Routes>
-              <Route exact path="/" element={<FaceRecognition />} />
-              <Route exact path="/login" element={<Login />} />
-              <Route
-                exact
-                path="/user-registration"
-                element={<UserRegistration />}
-              />
-              <Route exact path="/alarm-logs" element={<AlarmLogs />} />
-              <Route exact path="/activity-logs" element={<ActivityLogs />} />
-              <Route exact path="/accounts" element={<Accounts />} />
-              <Route
-                exact
-                path="/face-recognition-config"
-                element={<FaceRecognitionConfig />}
-              />
-              {/* <Route path="*" element={<NotFoundComponent />} />{" "} */}
-            </Routes>
+            <div className={`main-container ${sidebar_pinned ? "pinned" : ""}`}>
+              {!is_login_page && (
+                <div className="header-container">
+                  <Button
+                    className="sidebar-btn"
+                    icon={sidebar_pinned ? "pi pi-chevron-left" : "pi pi-bars"}
+                    onClick={setSidebar}
+                  />
+                  <Header />
+                </div>
+              )}
+              <Routes>
+                <Route exact path="/" element={<FaceRecognition />} />
+                <Route exact path="/login" element={<Login />} />
+                <Route
+                  exact
+                  path="/user-registration"
+                  element={<UserRegistration />}
+                />
+                <Route exact path="/alarm-logs" element={<AlarmLogs />} />
+                <Route exact path="/activity-logs" element={<ActivityLogs />} />
+                <Route exact path="/accounts" element={<Accounts />} />
+                <Route
+                  exact
+                  path="/face-recognition-config"
+                  element={<FaceRecognitionConfig />}
+                />
+                <Route path="*" element={<NotFoundComponent />} />{" "}
+              </Routes>
+            </div>
           </div>
-        </div>
+        </PrivateRoute>
       </TokenProvider>
     </BrowserRouter>
   )
