@@ -4,7 +4,6 @@ from accounts.models import UserProfile
 from accounts.serializers.auth import LoginSerializer
 from accounts.utils.jwt_utils import generate_access_jwt, generate_refresh_jwt, verify_refresh_jwt
 from activity_logs.utils.create_system_activity import create_system_activity
-from django.conf import settings
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
@@ -20,17 +19,20 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(
+                {"message": "Invalid username or password, please try again."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         validated = serializer.validated_data
         user_id = validated["user_id"]
         account = validated["account"]
-        keep_days = validated.get("keep_expiration_days", 30)
+        keep_days = validated.get("keep_expiration_days", 1)  # Default refresh token expiration to 1 day
 
         access_token, refresh_token = self.generate_tokens(user_id, account, keep_days)
 
         if not access_token or not refresh_token:
-            return Response({"error": "Token generation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"message": "Token generation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         response = Response({"access_token": access_token}, status=status.HTTP_200_OK)
 
@@ -54,7 +56,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
             key="refresh_token",
             value=refresh_token,
             httponly=True,
-            secure=(settings.DEBUG is False),  # Use secure cookies in production
+            secure=True,  # (settings.DEBUG is False),  # Use secure cookies in production
             samesite="Lax",
             expires=expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT"),
         )
@@ -71,6 +73,8 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 class LogoutViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
     activity_logs = {"POST": "Logout."}
+    authentication_classes = []
+    permission_classes = []
 
     def create(self, request):
         """Handle user logout by clearing the refresh token cookie."""
@@ -83,6 +87,8 @@ class LogoutViewSet(CreateModelMixin, GenericViewSet):
 class RefreshTokenViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
     activity_logs = {"POST": "Refresh Token."}
+    authentication_classes = []
+    permission_classes = []
 
     def create(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
