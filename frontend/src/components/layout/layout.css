@@ -1,0 +1,45 @@
+.main-container {
+  height: 100%;
+  width: 100%;
+  justify-content: space-between;
+  transition:
+    margin-left 0.3s ease-in-out,
+    width 0.3s ease-in-out;
+  background-color: var(--main-color);
+}
+
+.main-container.pinned {
+  margin-left: 17rem;
+  width: calc(100% - 17rem);
+}
+
+/* Header Container Styles */
+.header-container {
+  height: 5% !important;
+  display: flex;
+  align-items: center;
+  background-color: #7e99a3 !important;
+}
+
+/* Sidebar Toggle Button Styles */
+.sidebar-btn {
+  background-color: #7e99a3 !important;
+  border: none !important;
+}
+
+.sidebar-btn .pi {
+  color: var(--main-color) !important;
+  font-size: 1.5rem !important;
+}
+
+.sidebar-btn,
+.sidebar-btn:active,
+.sidebar-btn:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.sidebar-btn:hover {
+  background-color: #6e8891 !important;
+  box-shadow: none !important;
+}
