@@ -1,13 +1,22 @@
 import React from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate, useLocation } from "react-router-dom"
 import { useToken } from "../contexts/token_provider"
 
 const PUBLIC_ROUTES = ["/login"]
 
 export const PrivateRoute = ({ children }) => {
-  const { forceLogout, set_authenticated, is_loading } = useToken()
-
+  const { forceLogout, set_authenticated, permissions, is_loading } = useToken()
+  const location = useLocation() // Use useLocation hook instead of global location
+  const isDevelopment = process.env.NODE_ENV === "development"
+  const bypassAuth = process.env.REACT_APP_DEV_BYPASS_AUTH === "true"
   const isPublicRoute = PUBLIC_ROUTES.includes(location.pathname)
+  const accessPathName =
+    location.pathname === "/" ? "" : location.pathname.split("/")[1]
+
+  if (isDevelopment && bypassAuth) {
+    console.log("🔥 You are currently using developer mode!")
+    return children
+  }
 
   if (isPublicRoute) {
     return children
@@ -25,12 +34,24 @@ export const PrivateRoute = ({ children }) => {
     )
   }
 
-  if (!set_authenticated) {
+  if (!set_authenticated || !permissions || permissions.length === 0) {
     forceLogout()
-    return <Navigate to="/login" />
+    return <Navigate to="/login" replace />
   }
 
-  return <React.Fragment>{children}</React.Fragment>
+  if (location.pathname === "/") {
+    if (permissions.includes("face-recognition")) {
+      return children
+    } else {
+      return <Navigate to={`/${permissions[0]}`} replace />
+    }
+  }
+
+  if (accessPathName && !permissions.includes(accessPathName)) {
+    return <Navigate to={`/${permissions[0]}`} replace />
+  }
+
+  return children
 }
 
 export default PrivateRoute
