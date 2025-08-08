@@ -1,5 +1,6 @@
 import axios from "axios"
 import { saveLocalStorage, clearLocalStorage } from "../utils/local_storage"
+import { jwtDecode } from "jwt-decode"
 
 export const refreshTokenApi = async () => {
   const accessToken = localStorage.getItem("access_token")
@@ -33,13 +34,17 @@ export const loginApi = (method, data) => {
     },
   })
     .then((response) => {
-      saveLocalStorage("access_token", response.data.access_token)
-      return response
+      const token = response.data.access_token
+      const decoded = jwtDecode(token)
+      const permissions = decoded.permissions || []
+      saveLocalStorage("access_token", token)
+      return permissions
     })
     .catch((error) => {
       throw error
     })
 }
+
 export const logoutApi = async () => {
   try {
     const accessToken = localStorage.getItem("access_token")

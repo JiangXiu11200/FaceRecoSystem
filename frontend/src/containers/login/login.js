@@ -63,19 +63,24 @@ function Login() {
     }
 
     loginApi("post", data)
-      .then((response) => {
-        if (response.data) {
-          window.location.href = "/"
+      .then((permissions) => {
+        if (permissions) {
+          if (!permissions.includes("face-recognition")) {
+            window.location.href = `/${permissions[0]}`
+          } else {
+            window.location.href = "/"
+          }
         } else {
           setLoginError("Login failed. Please check your credentials.")
         }
       })
       .catch((error) => {
-        console.error("Login error:", error)
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: error.response.data.message,
+          detail: error.response.data.message
+            ? error.response.data.message
+            : error.response.data,
           life: 3000,
         })
         setLoginError("Login failed. Please try again.")
