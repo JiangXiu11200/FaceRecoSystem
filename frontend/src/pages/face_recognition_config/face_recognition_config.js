@@ -122,7 +122,7 @@ function FaceRecognitionConfig() {
   )
 
   return (
-    <div className="container-layout general-page-layout">
+    <div className="general-page-layout">
       <Toast ref={toast} />
       <div className="facereco-content">
         <div className="col-5 col-lg-5">

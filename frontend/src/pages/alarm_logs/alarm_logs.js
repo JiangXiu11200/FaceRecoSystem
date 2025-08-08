@@ -8,7 +8,7 @@ import "./alarm_logs.css"
 
 function AlarmLogs() {
   return (
-    <div className="container-layout tabview-layout">
+    <div className="tabview-layout">
       <TabView>
         <TabPanel header="Alarm Logs" leftIcon="pi pi-calendar">
           <AlarmLogsPage />
