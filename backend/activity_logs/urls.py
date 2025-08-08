@@ -10,16 +10,16 @@ from .views import (
 
 activity_logs_router = routers.SimpleRouter()
 activity_logs_router.register(
-    r"api/activitylogs/system/retention", SystemActivityLogsRetentionViewSet, basename="system-activity-logs-retention"
+    r"api/activity-logs/system/retention", SystemActivityLogsRetentionViewSet, basename="system-activity-logs-retention"
 )
-activity_logs_router.register(r"api/activitylogs/system", SystemActivityLogsViewSet, basename="system-activity-logs")
+activity_logs_router.register(r"api/activity-logs/system", SystemActivityLogsViewSet, basename="system-activity-logs")
 activity_logs_router.register(
-    r"api/activitylogs/face-recognition/retention",
+    r"api/activity-logs/face-recognition/retention",
     FaceRecognitionActivityLogsRetentionViewSet,
     basename="face-recognition-activity-logs-retention",
 )
 activity_logs_router.register(
-    r"api/activitylogs/face-recognition", FaceRecognitionActivityLogsViewSet, basename="face-recognition-activity-logs"
+    r"api/activity-logs/face-recognition", FaceRecognitionActivityLogsViewSet, basename="face-recognition-activity-logs"
 )
 
 
