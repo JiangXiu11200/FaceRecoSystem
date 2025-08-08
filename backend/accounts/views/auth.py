@@ -27,9 +27,13 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         validated = serializer.validated_data
         user_id = validated["user_id"]
         account = validated["account"]
+        permissions = validated["permissions"]
         keep_days = validated.get("keep_expiration_days", 1)  # Default refresh token expiration to 1 day
 
-        access_token, refresh_token = self.generate_tokens(user_id, account, keep_days)
+        if len(permissions) == 0:
+            return Response({"message": "No permissions found for this user."}, status=status.HTTP_403_FORBIDDEN)
+
+        access_token, refresh_token = self.generate_tokens(user_id, account, permissions, keep_days)
 
         if not access_token or not refresh_token:
             return Response({"message": "Token generation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -43,10 +47,10 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 
         return response
 
-    def generate_tokens(self, user_id: int, account: str, days: int) -> tuple:
+    def generate_tokens(self, user_id: int, account: str, permissions: list, days: int) -> tuple:
         """Generate access and refresh tokens."""
-        access_token = generate_access_jwt(user_id, account)
-        refresh_token = generate_refresh_jwt(user_id, account, days)
+        access_token = generate_access_jwt(user_id, account, permissions)
+        refresh_token = generate_refresh_jwt(user_id, account, permissions, days)
         return access_token, refresh_token
 
     def set_refresh_cookie(self, response: Response, refresh_token: str, days: int) -> None:
@@ -102,7 +106,8 @@ class RefreshTokenViewSet(CreateModelMixin, GenericViewSet):
 
         user_id = payload["user_id"]
         account = payload["account"]
+        permissions = payload.get("permissions")
 
-        access_token = generate_access_jwt(user_id, account)
+        access_token = generate_access_jwt(user_id, account, permissions)
 
         return Response({"access_token": access_token}, status=status.HTTP_200_OK)

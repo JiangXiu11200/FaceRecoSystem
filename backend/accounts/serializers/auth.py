@@ -25,7 +25,22 @@ class LoginSerializer(serializers.Serializer):
 
         return {
             "user_id": user_profile.id,
+            "permissions": self.find_user_permissions(user_profile.id),
             "account": user_profile.account,
             "keep_expiration_days": user_profile.keep_expiration_days,
             "remember_me": attrs.get("remember_me"),
         }
+
+    def find_user_permissions(self, user_id: int) -> list:
+        """Retrieve user permissions based on user ID."""
+        try:
+            user_profile = UserProfile.objects.get(id=user_id)
+            if user_profile.user_group is None or not user_profile.user_group:
+                return []
+            return [group.app_name for group in user_profile.user_group.apps.all()]
+        except UserProfile.DoesNotExist as e:
+            print(f"UserProfile with ID {user_id} does not exist: {str(e)}")
+            return []
+        except Exception as e:
+            print(f"Error retrieving user permissions: {str(e)}")
+            raise serializers.ValidationError(f"Error retrieving user permissions: {str(e)}")
