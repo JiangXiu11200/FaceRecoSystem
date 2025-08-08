@@ -10,8 +10,17 @@ const TokenContext = createContext()
 export const TokenProvider = ({ children }) => {
   const [set_authenticated, setAuthenticated] = useState(false)
   const [is_loading, setIsLoading] = useState(true) // Used to make private routes wait for token check
+  const [permissions, setPermissions] = useState([])
   const [logout_reason, setLogoutReason] = useState(false)
   const [logout_dialog_message, setLogoutDialogMessage] = useState("")
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token")
+    if (token) {
+      const { permissions } = jwtDecode(token)
+      setPermissions(permissions)
+    }
+  }, [])
 
   useEffect(() => {
     checkTokenStatus()
@@ -73,6 +82,7 @@ export const TokenProvider = ({ children }) => {
       clearLocalStorage()
       setAuthenticated(false)
       setIsLoading(false)
+      setPermissions([])
       window.location.href = "/login"
     }
   }
@@ -82,6 +92,7 @@ export const TokenProvider = ({ children }) => {
     setAuthenticated(false)
     setIsLoading(false)
     setLogoutReason(false)
+    setPermissions([])
     window.location.href = "/login"
   }
 
@@ -93,6 +104,7 @@ export const TokenProvider = ({ children }) => {
   const contextValue = {
     forceLogout,
     set_authenticated,
+    permissions,
     is_loading,
   }
 
