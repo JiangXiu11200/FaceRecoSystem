@@ -3,6 +3,9 @@ var webpack = require("webpack")
 
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
+const Dotenv = require("dotenv-webpack")
+
+const SERVER_URL = "http://localhost:8000"
 
 module.exports = {
   mode: "development",
@@ -41,6 +44,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./template/index.html",
     }),
+    new Dotenv(),
   ],
   devServer: {
     port: 3000,
@@ -49,6 +53,13 @@ module.exports = {
     // historyApiFallback: {
     //     index: "index.html",
     // },
+    proxy: [
+      {
+        context: ["/api"],
+        target: SERVER_URL,
+        // changeOrigin: true,
+      },
+    ],
     historyApiFallback: true,
   },
 }
