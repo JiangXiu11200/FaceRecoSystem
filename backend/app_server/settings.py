@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,12 +27,17 @@ DEBUG = True
 
 USE_AUTHENTICATION = True
 
-ALLOWED_HOSTS = []
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",  # React dev server
+    "http://localhost:3000",
+]
 
+ALLOWED_HOSTS = ["*"]  # FIXME: For development only, restrict in production
 
 # Application definition
 
 INSTALLED_APPS = [
+    # "daphne",  # ASGI server. If use manage.py runserver to run, uncomment this line.
     "django.contrib.auth",  # 使用者與權限系統
     "django.contrib.contenttypes",  # content type framework
     "django.contrib.sessions",  # session 管理
@@ -51,12 +57,17 @@ ASGI_APPLICATION = "app_server.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [("127.0.0.1", 6379)],
+        # },
     }
 }
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # AUTH_USER_MODEL = 'accounts.UserProfile'
 
@@ -88,11 +99,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "activity_logs.middleware.ActivityLogMiddleware",
-]
-
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",  # React dev server
-    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = "app_server.urls"
@@ -174,6 +180,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# HLS 檔案存放路徑
+HLS_OUTPUT_PATH = os.path.join(MEDIA_ROOT, "hls")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
