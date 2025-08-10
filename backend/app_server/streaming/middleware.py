@@ -1,3 +1,5 @@
+from urllib.parse import parse_qs
+
 from accounts.models import UserProfile
 from accounts.utils.jwt_utils import verify_access_jwt
 from channels.db import database_sync_to_async
@@ -30,9 +32,15 @@ class JWTAuthMiddleware:
     async def __call__(self, scope, receive, send):
         token = None
         try:
-            headers = dict(scope.get("headers", []))
-            auth_header = headers.get(b"authorization", b"")
-            token = auth_header.decode() if auth_header else None
+            query_string = scope.get("query_string", b"").decode()
+            query_params = parse_qs(query_string)
+            if "token" in query_params:
+                token = query_params["token"][0]
+
+            if not token:
+                headers = dict(scope.get("headers", []))
+                auth_header = headers.get(b"authorization", b"")
+                token = auth_header.decode() if auth_header else None
 
             if settings.USE_AUTHENTICATION:
                 user = await get_user_from_token(token)
