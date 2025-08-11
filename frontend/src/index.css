@@ -136,6 +136,19 @@ html,
   color: var(--main-color) !important;
 }
 
+.p-dropdown:focus,
+.p-dropdown:hover,
+.p-dropdown:active {
+  border-color: var(--btn-select-color-border);
+  box-shadow: 0 0 3px var(--btn-select-color-border);
+}
+
+.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--btn-select-color-border);
+  box-shadow: 0 0 3px var(--btn-select-color-border);
+}
+
+
 .toolbar-layout {
   border: none !important;
   background: transparent !important;
@@ -147,7 +160,7 @@ html,
 
 .p-inputtext:focus,
 .p-inputtext:hover,
-i.p-inputtext:active {
+.p-inputtext:active {
   border-color: var(--btn-select-color-border);
   box-shadow: 0 0 3px var(--btn-select-color-border);
 }

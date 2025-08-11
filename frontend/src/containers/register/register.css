@@ -18,12 +18,7 @@
   object-fit: contain;
 }
 
-.buttonbar-layout {
-  display: flex;
-  justify-content: start;
-  gap: 1rem;
-}
-
 .form-group {
   height: 100%;
 }
+

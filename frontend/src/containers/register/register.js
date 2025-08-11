@@ -23,7 +23,11 @@ function Register() {
   const [new_user_details, setNewUserDetails] = useState(
     cloneDeep(empty_user_details)
   )
-  const [user_groups, setUserGroups] = useState([])
+  const [user_groups, setUserGroups] = useState([
+    { name: "administrator", code: 0 },
+    { name: "User", code: 1 },
+    { name: "Guest", code: 2 },
+  ]) // TODO: Example groups, replace with actual API call to fetch groups
 
   // Initialize websocket connection and stream.
   useEffect(() => {
@@ -219,8 +223,8 @@ function Register() {
         />
       </div>
 
-      <div className="buttonbar-layout">
-        <div>
+      <div className="row g-2">
+        <div className="col-3">
           <div className="form-group">
             <InputText
               className="h-100"
@@ -234,10 +238,10 @@ function Register() {
             />
           </div>
         </div>
-        <div>
+        <div className="col-2">
           <div className="form-group">
             <Dropdown
-              className="h-100"
+              className="w-100"
               value={new_user_details.group}
               optionLabel="name"
               optionValue="code"
@@ -248,37 +252,35 @@ function Register() {
             />
           </div>
         </div>
-        <div>
-          <div className="form-group">
-            <Button
-              label="Screenshot"
-              icon="pi pi-camera"
-              className="p-button-info func-btn"
-              onClick={() => handleScreenshot()}
-              disabled={!stream.isReady || isLoading}
-            />
-          </div>
-        </div>
-        <div>
-          <div className="form-group">
-            <Button
-              label={isLoading ? "Processing..." : "Register"}
-              icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-check"}
-              className="p-button-success func-btn"
-              onClick={() => handleRegister()}
-              disabled={!hasScreenshot || isLoading}
-            />
-          </div>
-        </div>
-        <div>
-          <div className="form-group">
-            <Button
-              label="Clear"
-              icon="pi pi-times"
-              className="p-button-info func-btn"
-              onClick={() => onClear()}
-              disabled={isLoading}
-            />
+        <div className="col-7">
+          <div className="d-flex flex-wrap justify-content-start gap-2">
+            <div className="form-group">
+              <Button
+                label="Screenshot"
+                icon="pi pi-camera"
+                className="p-button-info func-btn"
+                onClick={() => handleScreenshot()}
+                disabled={!stream.isReady || isLoading}
+              />
+            </div>
+            <div className="form-group">
+              <Button
+                label={isLoading ? "Processing..." : "Register"}
+                icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-check"}
+                className="p-button-success func-btn"
+                onClick={() => handleRegister()}
+                disabled={!hasScreenshot || isLoading}
+              />
+            </div>
+            <div className="form-group">
+              <Button
+                label="Clear"
+                icon="pi pi-times"
+                className="p-button-info func-btn"
+                onClick={() => onClear()}
+                disabled={isLoading}
+              />
+            </div>
           </div>
         </div>
       </div>
