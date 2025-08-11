@@ -20,6 +20,16 @@ html,
   border-radius: 5px !important;
 }
 
+.func-btn.p-button.p-button-info:enabled:focus,
+.func-btn.p-button:focus,
+.cancel-btn.p-button:focus{
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--btn-focus-color) !important;
+}
+
+.action-btn.p-button-info:enabled:focus {
+  box-shadow: 0 0 0 0 !important;
+}
+
 .func-btn:hover,
 .cancel-btn:hover,
 .delete-btn:hover {
