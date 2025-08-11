@@ -27,10 +27,14 @@ class HLSStreamHandler:
 
         # FIXME: 透過 settings 或設定頁面來帶入參數
         source_args = [
-            "-f", "avfoundation",
-            "-framerate", "30",
-            "-video_size", "1280x720",
-            "-i", "0:none",
+            "-f",
+            "avfoundation",
+            "-framerate",
+            "15",
+            "-video_size",
+            "640x480",
+            "-i",
+            "0:none",
         ]
 
         cmd = [
@@ -40,20 +44,24 @@ class HLSStreamHandler:
             "-c:v",
             "libx264",
             "-preset",
-            "veryfast",
-            "-crf",
-            "23",
+            "ultrafast",
+            "-tune",
+            "zerolatency",
+            "-g",
+            "15",
+            "-sc_threshold",
+            "0",
             "-f",
             "hls",
             "-hls_time",
-            "4",
+            "0.2",
             "-hls_list_size",
-            "10",
+            "3",
             "-hls_flags",
-            "delete_segments+append_list",
-            "-hls_segment_filename",
-            os.path.join(self.output_path, "segment_%03d.ts"),  # 片段路徑
-            output_playlist,
+            "delete_segments+append_list+omit_endlist",
+            "-hls_segment_type",
+            "fmp4",
+            os.path.join(self.output_path, "playlist.m3u8"),
         ]
 
         self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

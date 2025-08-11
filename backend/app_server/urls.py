@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import include, path
 
 urlpatterns = [
@@ -23,4 +25,6 @@ urlpatterns = [
     path("", include("alarm_logs.urls")),
     path("", include("activity_logs.urls")),
     path("", include("system.urls")),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# FIXME: This is a temporary solution for serving media files in development.
+# FIXME: In production, a reverse proxy should be used to serve static archives.

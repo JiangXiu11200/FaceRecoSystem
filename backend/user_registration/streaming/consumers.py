@@ -34,6 +34,7 @@ class StreamConsumer(AsyncWebsocketConsumer):
         command = data.get("command")
 
         if command == "start_stream":
+            # TODO: Can add OpenCV method
             if self.stream_handler.start_stream():
                 playlist_url = self.stream_handler.get_playlist_url()
                 await self.send(text_data=json.dumps({"type": "stream_started", "playlist_url": playlist_url}))
