@@ -145,6 +145,17 @@ function Table({
             />
           )
         }
+        if (col.type === "date") {
+          return (
+            <Column
+              className="data-column"
+              key={index}
+              field={col.field}
+              header={col.header}
+              body={(rowData) => new Date(rowData[col.field]).toLocaleString()}
+            />
+          )
+        }
         return (
           <Column
             className="data-column"
