@@ -10,6 +10,8 @@ function SystemSidebar({ setSidebarVisible, sidebarPinned: setSidebarPinned }) {
   const navigate = useNavigate()
   const [visible, setVisible] = useState(false)
   const { permissions } = useToken()
+  const isDevelopment = process.env.NODE_ENV === "development"
+  const bypassAuth = process.env.REACT_APP_DEV_BYPASS_AUTH === "true"
 
   useEffect(() => {
     setVisible((visible) => !visible)
@@ -77,6 +79,10 @@ function SystemSidebar({ setSidebarVisible, sidebarPinned: setSidebarPinned }) {
   ]
 
   const filterMenuItems = (items) => {
+    if (isDevelopment && bypassAuth) {
+      return items
+    }
+
     return items
       .filter((item) => {
         if (!item.permission) return true
