@@ -1,235 +1,290 @@
+import React, { useEffect, useMemo, useState, useRef } from "react"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
 import { SelectButton } from "primereact/selectbutton"
 import { Toolbar } from "primereact/toolbar"
-import React, { useEffect, useMemo, useState } from "react"
+import { Toast } from "primereact/toast"
+import { cloneDeep } from "lodash"
 
+import { userRegistrationApi } from "../../api/user_registration"
 import { Table } from "../../components/data_table/data_table"
-
 import "./group.css"
 
-function Group() {
-  const [products, setProducts] = useState([])
-  const [set_action_event, setActionEvent] = useState({})
-  const [set_group_dialog, setGroupDialog] = useState(false)
-  const [set_delete_dialog, setDeleteDialog] = useState(false)
-  const [set_group_state, setGroupState] = useState(0)
-  const [edit_group, setEditGroup] = useState(false)
-  const [create_group, setCreateGroup] = useState(false)
+const GROUP_STATE_OPTIONS = [
+  { code: 0, name: "No" },
+  { code: 1, name: "Yes" },
+]
 
-  const group_state = useMemo(() => {
-    return [
-      { code: 0, name: "No" },
-      { code: 1, name: "Yes" },
-    ]
-  }, [])
+const EMPTY_GROUP = {
+  group_name: "",
+  is_active: 0,
+}
+
+const ACTIONS = {
+  VIEW: "view",
+  EDIT: "edit",
+  CREATE: "create",
+  DELETE: "delete",
+}
+
+function Group() {
+  const toast = useRef(null)
+
+  // State
+  const [products, setProducts] = useState([])
+  const [dialogVisible, setDialogVisible] = useState(false)
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
+  const [mode, setMode] = useState(null) // "view" | "edit" | "create" | null
+  const [groupDetails, setGroupDetails] = useState(cloneDeep(EMPTY_GROUP))
 
   const columns = [
-    { field: "code", header: "Code" },
-    { field: "name", header: "Name" },
-    { field: "category", header: "Category" },
-    { field: "quantity", header: "Quantity" },
+    { field: "group_name", header: "Group Name" },
+    { field: "user_count", header: "User counts" },
+    { field: "is_active", header: "Enable", type: "boolean" },
+    { field: "update_time", header: "Update Time", type: "date" },
   ]
 
-  const _mock_data = Array.from({ length: 110 }, (_, i) => ({
-    code: `P${String(i + 1).padStart(3, "0")}`,
-    name: `Product ${i + 1}`,
-    category: `Category ${i + 1}`,
-    quantity: (i + 1) * 10,
-  }))
+  // Toast helper
+  const showToast = (severity, summary, detail, life = 3000) => {
+    toast.current.show({ severity, summary, detail, life })
+  }
+
+  // API: Fetch group list
+  const fetchGroups = () => {
+    userRegistrationApi("get", "/group/")
+      .then((res) => setProducts(res.data))
+      .catch(() => showToast("error", "Error", "Failed to fetch group list"))
+  }
+
+  // API: Create or update group
+  const saveGroup = () => {
+    if (!validateGroup()) return
+
+    const isEdit = mode === ACTIONS.EDIT
+    const method = isEdit ? "put" : "post"
+    const url = isEdit ? `/group/${groupDetails.id}/` : "/group/"
+
+    userRegistrationApi(method, url, groupDetails)
+      .then(() => {
+        showToast(
+          "success",
+          "Success",
+          isEdit ? "Group updated" : "Group created"
+        )
+        fetchGroups()
+        closeGroupDialog()
+      })
+      .catch((err) => {
+        showToast("error", "Error", err?.response?.data || "Operation failed")
+      })
+  }
+
+  // API: Delete group
+  const deleteGroup = () => {
+    userRegistrationApi("delete", `/group/${groupDetails.id}/`)
+      .then(() => {
+        showToast("success", "Success", "Group deleted successfully")
+        fetchGroups()
+        setDeleteDialogVisible(false)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err?.response?.data || "Delete failed")
+      })
+  }
+
+  // Validation
+  const validateGroup = () => {
+    const validations = [
+      {
+        cond: groupDetails.group_name.trim() === "",
+        msg: "Please enter group name.",
+      },
+      {
+        cond: /^\d/.test(groupDetails.group_name),
+        msg: "Group name cannot start with a number.",
+      },
+      {
+        cond: /[^a-zA-Z0-9\s]/.test(groupDetails.group_name),
+        msg: "Group name cannot contain special characters.",
+      },
+      {
+        cond: groupDetails.is_active === undefined,
+        msg: "Please select group status.",
+      },
+    ]
+
+    for (const { cond, msg } of validations) {
+      if (cond) {
+        showToast("error", "Error", msg)
+        return false
+      }
+    }
+    return true
+  }
+
+  const handleAction = ({ action, data }) => {
+    setGroupDetails(cloneDeep(data))
+    setMode(action)
+
+    if (action === ACTIONS.DELETE) {
+      setDeleteDialogVisible(true)
+    } else {
+      setDialogVisible(true)
+    }
+  }
+
+  const closeGroupDialog = () => {
+    setDialogVisible(false)
+    setMode(null)
+    setGroupDetails(cloneDeep(EMPTY_GROUP))
+  }
 
   useEffect(() => {
-    setProducts(_mock_data)
+    fetchGroups()
   }, [])
 
-  useEffect(() => {
-    console.log("action event", set_action_event)
-    switch (set_action_event.action) {
-      case "edit":
-        setEditGroup(true)
-        setGroupDialog(true)
-        break
-      case "delete":
-        setDeleteDialog(true)
-        break
-      case "view":
-        setGroupDialog(true)
-        break
-      default:
-        break
-    }
-  }, [set_action_event])
-
-  const showCreateGroupDialog = () => {
-    setGroupDialog(true)
-    setCreateGroup(true)
-  }
-
-  const showEditGroupDialog = () => {
-    setGroupDialog(true)
-    setEditGroup(true)
-  }
-
-  const hideGroupDetailDialog = () => {
-    setGroupDialog(false)
-    setEditGroup(false)
-    setCreateGroup(false)
-  }
-
-  const hideDeleteGroupDialog = () => {
-    setDeleteDialog(false)
-  }
-
-  const onGroupStateChange = (e) => {
-    setGroupState(e.value)
-  }
-
-  const leftContents = (
-    <React.Fragment>
-      <div className="toolbar-left">
-        <div>
-          <InputText
-            className="p-inputtext"
-            placeholder="Search for groups.."
-          />
-        </div>
-        <div>
-          <Button icon="pi pi-search" className="func-btn" label="Search" />
-        </div>
+  const leftToolbar = (
+    <div className="toolbar-left">
+      <div>
+        <InputText className="p-inputtext" placeholder="Search for groups.." />
       </div>
-    </React.Fragment>
+      <div>
+        <Button icon="pi pi-search" className="func-btn" label="Search" />
+      </div>
+    </div>
   )
 
-  const rightContents = (
-    <React.Fragment>
-      <div className="toolbar-right">
+  const rightToolbar = (
+    <div className="toolbar-right">
+      <Button
+        icon="pi pi-plus"
+        className="p-button-info func-btn"
+        label="Add Group"
+        onClick={() => {
+          setMode(ACTIONS.CREATE)
+          setDialogVisible(true)
+        }}
+      />
+    </div>
+  )
+
+  const groupDialogFooter = (
+    <div className="d-flex flex-row justify-content-end">
+      <div className="me-2">
         <Button
-          icon="pi pi-plus"
-          className="p-button-info func-btn"
-          label="Add Group"
-          onClick={showCreateGroupDialog}
+          label="Cancel"
+          icon="pi pi-times"
+          className="p-button-text cancel-btn"
+          onClick={closeGroupDialog}
         />
       </div>
-    </React.Fragment>
-  )
-
-  const groupDetailDialogFooter = (
-    <React.Fragment>
-      <div className="d-flex flex-row justify-content-end">
-        <div className="me-2">
-          <Button
-            label="Cancel"
-            icon="pi pi-times"
-            className="p-button-text cancel-btn"
-            onClick={hideGroupDetailDialog}
-          />
-        </div>
-        <div>
-          {!edit_group && !create_group ? null : create_group ? (
-            <Button
-              label="Create"
-              icon="pi pi-check"
-              className="p-button-text func-btn"
-              onClick={hideGroupDetailDialog}
-            />
-          ) : (
-            <Button
-              label="Save"
-              icon="pi pi-check"
-              className="p-button-text func-btn"
-              onClick={hideGroupDetailDialog}
-            />
-          )}
-        </div>
-      </div>
-    </React.Fragment>
-  )
-
-  const deleteGroupDialogFooter = (
-    <React.Fragment>
-      <div className="d-flex flex-row justify-content-end">
-        <div className="me-2">
-          <Button
-            label="Cancel"
-            icon="pi pi-times"
-            className="p-button-text cancel-btn"
-            onClick={hideGroupDetailDialog}
-          />
-        </div>
+      {(mode === ACTIONS.CREATE || mode === ACTIONS.EDIT) && (
         <div>
           <Button
-            label="Delete"
-            icon="pi pi-times"
-            className="p-button-text delete-btn"
-            onClick={hideGroupDetailDialog}
+            label={mode === ACTIONS.CREATE ? "Create" : "Save"}
+            icon="pi pi-check"
+            className="p-button-text func-btn"
+            onClick={saveGroup}
           />
         </div>
+      )}
+    </div>
+  )
+
+  const deleteDialogFooter = (
+    <div className="d-flex flex-row justify-content-end">
+      <div className="me-2">
+        <Button
+          label="Cancel"
+          icon="pi pi-times"
+          className="p-button-text cancel-btn"
+          onClick={() => setDeleteDialogVisible(false)}
+        />
       </div>
-    </React.Fragment>
+      <div>
+        <Button
+          label="Delete"
+          icon="pi pi-times"
+          className="p-button-text delete-btn"
+          onClick={deleteGroup}
+        />
+      </div>
+    </div>
   )
 
   return (
     <div className="d-flex flex-column">
+      <Toast ref={toast} />
       <Toolbar
         className="toolbar-layout"
-        left={leftContents}
-        right={rightContents}
+        left={leftToolbar}
+        right={rightToolbar}
       />
+
       <Table
         data={products}
         columns={columns}
-        actnioEvent={setActionEvent}
-        editFlag={true}
-        deleteFlag={true}
-        viewsFlag={true}
+        actnioEvent={handleAction}
+        editFlag
+        deleteFlag
+        viewsFlag
       />
+
       <Dialog
-        visible={set_group_dialog}
-        className=""
+        visible={dialogVisible}
         header={
-          create_group
+          mode === ACTIONS.CREATE
             ? "Create Group"
-            : edit_group
+            : mode === ACTIONS.EDIT
               ? "Edit Group"
               : "Group Details"
         }
-        footer={groupDetailDialogFooter}
-        onHide={hideGroupDetailDialog}
+        footer={groupDialogFooter}
+        onHide={closeGroupDialog}
       >
         <div className="d-flex flex-row align-items-center">
           <div className="me-4">
-            <label>Group Name</label>
-            <span className="text-danger">*</span>
-            <InputText className="p-inputtext" placeholder="Group name" />
+            <label>
+              Group Name<span className="text-danger">*</span>
+            </label>
+            <InputText
+              className="p-inputtext"
+              placeholder="Group name"
+              value={groupDetails.group_name}
+              onChange={(e) =>
+                setGroupDetails({ ...groupDetails, group_name: e.target.value })
+              }
+              disabled={mode === ACTIONS.VIEW}
+            />
           </div>
           <div>
-            <label>Enable</label>
-            <span className="text-danger">*</span>
+            <label>
+              Enable<span className="text-danger">*</span>
+            </label>
             <SelectButton
               className="w-100 select-button"
-              value={set_group_state ? set_group_state : 0}
-              options={group_state}
+              value={groupDetails.is_active ? 1 : 0}
+              options={GROUP_STATE_OPTIONS}
               optionValue="code"
               optionLabel="name"
-              onChange={(e) => onGroupStateChange(e)}
-              disabled={!edit_group && !create_group}
+              onChange={(e) =>
+                setGroupDetails({ ...groupDetails, is_active: e.value })
+              }
+              disabled={mode === ACTIONS.VIEW}
+              unselectable={false}
             />
           </div>
         </div>
       </Dialog>
+
       <Dialog
-        visible={set_delete_dialog}
-        className=""
+        visible={deleteDialogVisible}
         header="Delete Group"
-        footer={deleteGroupDialogFooter}
-        onHide={hideDeleteGroupDialog}
+        footer={deleteDialogFooter}
+        onHide={() => setDeleteDialogVisible(false)}
       >
-        <div className="d-flex flex-row align-items-center">
-          <div>
-            <label>Are you sure you want to delete this group?</label>
-          </div>
-        </div>
+        <label>Are you sure you want to delete this group?</label>
       </Dialog>
     </div>
   )
