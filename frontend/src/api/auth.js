@@ -1,6 +1,7 @@
 import axios from "axios"
 import { saveLocalStorage, clearLocalStorage } from "../utils/local_storage"
 import { jwtDecode } from "jwt-decode"
+import { parseError } from "../utils/parse_error"
 
 export const refreshTokenApi = async () => {
   const accessToken = localStorage.getItem("access_token")
@@ -19,7 +20,6 @@ export const refreshTokenApi = async () => {
       return true
     })
     .catch((error) => {
-      console.error("Token refresh failed:", 123)
       return false
     })
 }

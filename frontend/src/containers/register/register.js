@@ -26,6 +26,28 @@ function Register() {
   )
   const [userGroups, setUserGroups] = useState([])
 
+  const showToast = (severity, summary, detail, life = 3000) => {
+    toast.current.show({ severity, summary, detail, life })
+  }
+
+  const fetchGroups = () => {
+    userRegistrationApi("get", "/group/")
+      .then((response) => {
+        const groups = response.data.results.map((group) => ({
+          name: group.group_name,
+          code: group.id,
+        }))
+        setUserGroups(groups)
+      })
+      .catch((err) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: formatErrorMessage(err),
+        })
+      })
+  }
+
   // Initialize websocket connection and stream.
   useEffect(() => {
     fetchGroups()
@@ -42,10 +64,6 @@ function Register() {
       }
     }
   }, [])
-
-  const showToast = (severity, summary, detail, life = 3000) => {
-    toast.current.show({ severity, summary, detail, life })
-  }
 
   // Handle stream connection and disconnection
   useEffect(() => {
@@ -72,24 +90,6 @@ function Register() {
       return () => clearInterval(interval)
     }
   }, [stream.isConnected, stream.isStreaming, hasScreenshot])
-
-  const fetchGroups = () => {
-    userRegistrationApi("get", "/group/")
-      .then((response) => {
-        const groups = response.data.results.map((group) => ({
-          name: group.group_name,
-          code: group.id,
-        }))
-        setUserGroups(groups)
-      })
-      .catch((err) => {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: formatErrorMessage(err),
-        })
-      })
-  }
 
   const handleScreenshot = async () => {
     if (!videoRef.current) {
@@ -139,7 +139,6 @@ function Register() {
 
     userRegistrationApi("post", "/", formData, true)
       .then((response) => {
-        console.log("User registered successfully:", response)
         showToast("success", "Success", "User registered successfully")
       })
       .catch((error) => {
@@ -150,7 +149,7 @@ function Register() {
       })
   }
 
-  const onClear = () => {
+  const handleClear = () => {
     setNewUserDetails(cloneDeep(EMPTY_USER_DETAILS))
 
     if (hasScreenshot) {
@@ -257,7 +256,7 @@ function Register() {
                 label="Clear"
                 icon="pi pi-times"
                 className="p-button-info func-btn"
-                onClick={() => onClear()}
+                onClick={() => handleClear()}
                 disabled={isLoading}
               />
             </div>

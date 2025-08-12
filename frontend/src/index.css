@@ -22,8 +22,16 @@ html,
 
 .func-btn.p-button.p-button-info:enabled:focus,
 .func-btn.p-button:focus,
-.cancel-btn.p-button:focus{
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--btn-focus-color) !important;
+.cancel-btn.p-button:focus {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--btn-focus-color) !important;
+}
+
+.delete-btn.p-button:focus {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #cc6b6b !important;
 }
 
 .action-btn.p-button-info:enabled:focus {
@@ -157,7 +165,6 @@ html,
   border-color: var(--btn-select-color-border);
   box-shadow: 0 0 3px var(--btn-select-color-border);
 }
-
 
 .toolbar-layout {
   border: none !important;
