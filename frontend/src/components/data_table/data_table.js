@@ -10,6 +10,7 @@ function Table({
   data,
   actnioEvent,
   columns,
+  tableParams: setTableParams,
   actionsHeader = "",
   viewsFlag = false,
   editFlag = false,
@@ -19,6 +20,11 @@ function Table({
 }) {
   const [window_width, setWindowWidth] = useState(window.innerWidth)
   const [selectedRows, setSelectedRows] = useState([])
+  const [lazy_params, setLazyParams] = useState({
+    first: 0,
+    rows: 10,
+    page: 1,
+  })
 
   useEffect(() => {
     setSelectedRows([])
@@ -30,6 +36,17 @@ function Table({
     }
     window.addEventListener("resize", windowResize)
   })
+
+  const onPage = (event) => {
+    setLazyParams(event)
+  }
+
+  useEffect(() => {
+    let _lazy_params = {}
+    _lazy_params["offset"] = parseInt(lazy_params.page) * lazy_params.rows
+    _lazy_params["limit"] = lazy_params.rows
+    setTableParams(_lazy_params)
+  }, [lazy_params])
 
   const imageBodyTemplate = (image) => {
     return (
@@ -108,9 +125,11 @@ function Table({
       selection={selectedRows}
       dataKey="id"
       paginator={true}
-      rows={10}
+      first={lazy_params ? lazy_params.first : 0}
+      rows={lazy_params ? lazy_params.rows : 10}
       rowsPerPageOptions={[10, 50, 100]}
       scrollHeight={window_width > 992 ? tableHeight : "60vh"}
+      onPage={onPage}
     >
       {columns.map((col, index) => {
         if (col.type === "boolean") {
