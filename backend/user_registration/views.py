@@ -1,4 +1,9 @@
-from rest_framework import viewsets
+import os
+
+from django.conf import settings
+from rest_framework import status, viewsets
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.response import Response
 
 from user_registration.filters import RegisterGroupFilter
 from user_registration.models import RegisterGroup, RegisterUserProfile
@@ -12,6 +17,48 @@ from user_registration.serializers import (
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     queryset = RegisterUserProfile.objects.all()
     serializer_class = RegisterUserProfileSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def create(self, request):
+        name = request.data.get("name")
+        register_group = request.data.get("register_group")
+        image = request.FILES.get("image")
+
+        if not name or not register_group or not image:
+            return Response(
+                {"error": "Name, register group, and image are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # TODO: 將二進制圖片傳給 Microservice 做特徵擷取
+        image_path = settings.SCREENSHOT_OUTPUT_PATH + os.sep + image.name
+        os.makedirs(settings.SCREENSHOT_OUTPUT_PATH, exist_ok=True)
+        with open(image_path, "wb") as f:
+            for chunk in image.chunks():
+                f.write(chunk)
+        # response = requests.post(
+        #     settings.MICROSERVICE_URL + "/api/feature-extraction",
+        #     files={"image": open(image_path, "rb")},
+        #     data={"user_name": user_name, "group": group},
+        # )
+        # face_details = call_microservice(image_path)  # 回傳 dict
+        face_details = {"test": "face details"}  # 範例用
+
+        serializer = self.get_serializer(
+            data={
+                "name": name,
+                "face_details": face_details,
+                "minio_key": "http://example.com/minio_key",
+                "file_name": f"{name}_{register_group}.jpg",
+                "is_active": True,
+                "register_group": register_group,
+            }
+        )
+
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RegisterUserFeatureViewSet(viewsets.ModelViewSet):

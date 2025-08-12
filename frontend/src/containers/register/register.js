@@ -1,13 +1,18 @@
+import React, { useEffect, useRef, useState, useCallback } from "react"
 import cloneDeep from "lodash/cloneDeep"
 import { Button } from "primereact/button"
 import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
 import { Toast } from "primereact/toast"
-import React, { useEffect, useRef, useState } from "react"
 import useStream from "../../hooks/use_stream"
 import { cleanupObjectUrl, formatErrorMessage } from "../../utils/stream_tools"
-
+import { userRegistrationApi } from "../../api/user_registration"
 import "./register.css"
+
+const EMPTY_USER_DETAILS = {
+  user_name: "",
+  group: "",
+}
 
 function Register() {
   const toast = useRef(null)
@@ -16,21 +21,14 @@ function Register() {
   const [hasScreenshot, setHasScreenshot] = useState(false)
   const [screenshotData, setScreenshotData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const empty_user_details = {
-    user_name: "",
-    group: "",
-  }
-  const [new_user_details, setNewUserDetails] = useState(
-    cloneDeep(empty_user_details)
+  const [newUserDetails, setNewUserDetails] = useState(
+    cloneDeep(EMPTY_USER_DETAILS)
   )
-  const [user_groups, setUserGroups] = useState([
-    { name: "administrator", code: 0 },
-    { name: "User", code: 1 },
-    { name: "Guest", code: 2 },
-  ]) // TODO: Example groups, replace with actual API call to fetch groups
+  const [userGroups, setUserGroups] = useState([])
 
   // Initialize websocket connection and stream.
   useEffect(() => {
+    fetchGroups()
     const initStream = async () => {
       const connected = await stream.connect()
       if (connected) {
@@ -45,26 +43,22 @@ function Register() {
     }
   }, [])
 
+  const showToast = (severity, summary, detail, life = 3000) => {
+    toast.current.show({ severity, summary, detail, life })
+  }
+
   // Handle stream connection and disconnection
   useEffect(() => {
     if (stream.isStreaming && videoRef.current && stream.playlistUrl) {
       stream.initPlayer(videoRef.current)
-      toast.current.show({
-        severity: "success",
-        summary: "Stream Started",
-        detail: "Streaming is active",
-      })
+      showToast("success", "Stream Started", "Video stream is now live")
     }
   }, [stream.isStreaming, stream.playlistUrl])
 
   // Stream error handling
   useEffect(() => {
     if (stream.error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: formatErrorMessage(stream.error),
-      })
+      showToast("error", "Stream Error", formatErrorMessage(stream.error))
     }
   }, [stream.error])
 
@@ -78,6 +72,24 @@ function Register() {
       return () => clearInterval(interval)
     }
   }, [stream.isConnected, stream.isStreaming, hasScreenshot])
+
+  const fetchGroups = () => {
+    userRegistrationApi("get", "/group/")
+      .then((response) => {
+        const groups = response.data.results.map((group) => ({
+          name: group.group_name,
+          code: group.id,
+        }))
+        setUserGroups(groups)
+      })
+      .catch((err) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: formatErrorMessage(err),
+        })
+      })
+  }
 
   const handleScreenshot = async () => {
     if (!videoRef.current) {
@@ -97,73 +109,49 @@ function Register() {
       setHasScreenshot(true)
       videoRef.current.poster = frameData.url
 
-      toast.current.show({
-        severity: "success",
-        summary: "Screenshot",
-        detail: "Screenshot captured successfully",
-      })
+      showToast("success", "Screenshot", "Screenshot taken successfully")
     } else {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to capture screenshot",
-      })
+      showToast("error", "Error", "Failed to capture screenshot")
     }
   }
 
-  // TODO: User registration logic, call API to register user with screenshot
   const handleRegister = async () => {
-    if (!new_user_details.user_name.trim()) {
-      toast.current.show({
-        severity: "error",
-        summary: "Validation Error",
-        detail: "Please enter user name",
-      })
+    if (!newUserDetails.user_name.trim()) {
+      showToast("error", "Validation Error", "Please enter user name")
       return
     }
 
     if (!hasScreenshot || !screenshotData) {
-      toast.current.show({
-        severity: "error",
-        summary: "Validation Error",
-        detail: "Please take a screenshot first",
-      })
+      showToast("error", "Please take a screenshot first")
       return
     }
 
     setIsLoading(true)
 
-    try {
-      console.log("Registering user:", {
-        user_name: new_user_details.user_name,
-        group: new_user_details.group,
-        session_id: stream.sessionId,
-        image_size: screenshotData.blob.size,
-      })
+    const formData = new FormData()
+    formData.append(
+      "image",
+      screenshotData.blob,
+      `${newUserDetails.user_name}.jpg`
+    )
+    formData.append("name", newUserDetails.user_name)
+    formData.append("register_group", newUserDetails.group)
 
-      setTimeout(() => {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "User registered successfully",
-        })
-        onClear()
-      }, 1000)
-    } catch (error) {
-      console.error("Registration error:", error)
-      toast.current.show({
-        severity: "error",
-        summary: "Registration Failed",
-        detail: error.message || "Failed to register user",
+    userRegistrationApi("post", "/", formData, true)
+      .then((response) => {
+        console.log("User registered successfully:", response)
+        showToast("success", "Success", "User registered successfully")
       })
-    } finally {
-      setIsLoading(false)
-    }
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
-  // Clear Screenshots
   const onClear = () => {
-    setNewUserDetails(cloneDeep(empty_user_details))
+    setNewUserDetails(cloneDeep(EMPTY_USER_DETAILS))
 
     if (hasScreenshot) {
       if (screenshotData?.url) {
@@ -178,11 +166,7 @@ function Register() {
 
       stream.startStream()
 
-      toast.current.show({
-        severity: "info",
-        summary: "Cleared",
-        detail: "Screenshot cleared and stream restarted",
-      })
+      showToast("info", "Cleared", "Screenshot cleared and stream restarted")
     } else {
       toast.current.show({
         severity: "info",
@@ -194,13 +178,9 @@ function Register() {
 
   const onInputChange = (e, name) => {
     const value = (e.target && e.target.value) || ""
-    let _new_user_details = { ...new_user_details }
+    let _new_user_details = { ...newUserDetails }
     _new_user_details[name] = value
     setNewUserDetails(_new_user_details)
-  }
-
-  const selectGroup = (e) => {
-    setNewUserDetails({ ...new_user_details, group: e.value })
   }
 
   return (
@@ -230,7 +210,7 @@ function Register() {
               className="h-100"
               id="user_name"
               name="user_name"
-              value={new_user_details.user_name}
+              value={newUserDetails.user_name}
               keyfilter={/[^\s]/}
               placeholder="User Name"
               onChange={(e) => onInputChange(e, "user_name")}
@@ -242,11 +222,11 @@ function Register() {
           <div className="form-group">
             <Dropdown
               className="w-100"
-              value={new_user_details.group}
+              value={newUserDetails.group}
               optionLabel="name"
               optionValue="code"
-              options={user_groups}
-              onChange={(e) => selectGroup(e)}
+              options={userGroups}
+              onChange={(e) => onInputChange(e, "group")}
               placeholder="Select Group"
               disabled={isLoading}
             />
