@@ -1,8 +1,11 @@
 import axios from "axios"
-
+import { parseDRFError } from "../utils/parse_error"
 
 export const userRegistrationApi = (method, url, data = {}) => {
   const accessToken = localStorage.getItem("access_token")
+  if (method == "get") {
+    url = url + `?offset=${data.offset}&limit=${data.limit}`
+  }
   return axios({
     method: method,
     url: `/api/user-registration${url}`,
@@ -16,6 +19,7 @@ export const userRegistrationApi = (method, url, data = {}) => {
       return response
     })
     .catch((error) => {
+      error.response.data = parseDRFError(error.response.data)
       throw error
     })
 }
