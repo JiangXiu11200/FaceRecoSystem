@@ -3,23 +3,27 @@ import { parseDRFError } from "../utils/parse_error"
 
 export const userRegistrationApi = (method, url, data = {}) => {
   const accessToken = localStorage.getItem("access_token")
-  if (method == "get") {
-    url = url + `?offset=${data.offset}&limit=${data.limit}`
-  }
-  return axios({
-    method: method,
+  const config = {
+    method,
     url: `/api/user-registration${url}`,
-    data: data,
     headers: {
       "Content-Type": "application/json",
       Authorization: accessToken,
     },
-  })
-    .then((response) => {
-      return response
-    })
+  }
+
+  if (method.toLowerCase() === "get" || method.toLowerCase() === "delete") {
+    config.params = data
+  } else {
+    config.data = data
+  }
+
+  return axios(config)
+    .then((response) => response)
     .catch((error) => {
-      error.response.data = parseDRFError(error.response.data)
+      if (error.response && error.response.data) {
+        error.response.data = parseDRFError(error.response.data)
+      }
       throw error
     })
 }

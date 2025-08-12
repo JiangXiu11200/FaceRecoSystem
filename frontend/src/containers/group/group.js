@@ -37,6 +37,7 @@ function Group() {
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
   const [mode, setMode] = useState(null) // "view" | "edit" | "create" | null
   const [groupDetails, setGroupDetails] = useState(cloneDeep(EMPTY_GROUP))
+  const [groupName, setGroupsName] = useState("")
   const [tablePage, setTablePage] = useState({
     page: 1,
     offset: 0,
@@ -59,7 +60,6 @@ function Group() {
   const fetchGroups = () => {
     userRegistrationApi("get", "/group/", tablePage)
       .then((response) => {
-        showToast("success", "Success", "Groups fetched successfully")
         setProducts(response.data.results)
       })
       .catch((err) => {
@@ -77,13 +77,25 @@ function Group() {
 
     userRegistrationApi(method, url, groupDetails)
       .then(() => {
-        showToast(
-          "success",
-          "Success",
-          isEdit ? "Group updated" : "Group created"
-        )
-        fetchGroups()
+        if (groupName) {
+          searchGroups()
+        } else {
+          fetchGroups()
+        }
         closeGroupDialog()
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  // API: Group name fuzzy search
+  const searchGroups = () => {
+    userRegistrationApi("get", `/group/?group_name=${groupName}`, tablePage)
+      .then((response) => {
+        let _group_count = response.data.count
+        setProducts(response.data.results)
+        showToast("success", "Success", `Found ${_group_count} matching groups`)
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -96,6 +108,11 @@ function Group() {
       .then(() => {
         showToast("success", "Success", "Group deleted successfully")
         fetchGroups()
+        if (groupName) {
+          searchGroups()
+        } else {
+          fetchGroups()
+        }
         setDeleteDialogVisible(false)
       })
       .catch((err) => {
@@ -157,10 +174,19 @@ function Group() {
   const leftToolbar = (
     <div className="toolbar-left">
       <div>
-        <InputText className="p-inputtext" placeholder="Search for groups.." />
+        <InputText
+          className="p-inputtext"
+          placeholder="Search for groups.."
+          onChange={(e) => setGroupsName(e.target.value)}
+        />
       </div>
       <div>
-        <Button icon="pi pi-search" className="func-btn" label="Search" />
+        <Button
+          icon="pi pi-search"
+          className="func-btn"
+          label="Search"
+          onClick={searchGroups}
+        />
       </div>
     </div>
   )
