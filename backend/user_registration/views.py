@@ -19,5 +19,6 @@ class RegisterUserFeatureViewSet(viewsets.ModelViewSet):
 
 
 class UserRegistrationGroupViewSet(viewsets.ModelViewSet):
-    queryset = RegisterGroup.objects.all()
+    queryset = RegisterGroup.objects.all().order_by("group_name")
     serializer_class = UserRegistrationGroupSerializer
+    filterset_fields = ["group_name"]

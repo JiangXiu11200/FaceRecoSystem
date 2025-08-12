@@ -37,6 +37,11 @@ function Group() {
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
   const [mode, setMode] = useState(null) // "view" | "edit" | "create" | null
   const [groupDetails, setGroupDetails] = useState(cloneDeep(EMPTY_GROUP))
+  const [tablePage, setTablePage] = useState({
+    page: 1,
+    offset: 0,
+    limit: 10,
+  })
 
   const columns = [
     { field: "group_name", header: "Group Name" },
@@ -52,9 +57,14 @@ function Group() {
 
   // API: Fetch group list
   const fetchGroups = () => {
-    userRegistrationApi("get", "/group/")
-      .then((res) => setProducts(res.data))
-      .catch(() => showToast("error", "Error", "Failed to fetch group list"))
+    userRegistrationApi("get", "/group/", tablePage)
+      .then((response) => {
+        showToast("success", "Success", "Groups fetched successfully")
+        setProducts(response.data.results)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
   }
 
   // API: Create or update group
@@ -76,7 +86,7 @@ function Group() {
         closeGroupDialog()
       })
       .catch((err) => {
-        showToast("error", "Error", err?.response?.data || "Operation failed")
+        showToast("error", "Error", err.response.data)
       })
   }
 
@@ -89,7 +99,7 @@ function Group() {
         setDeleteDialogVisible(false)
       })
       .catch((err) => {
-        showToast("error", "Error", err?.response?.data || "Delete failed")
+        showToast("error", "Error", err.response.data)
       })
   }
 
@@ -142,7 +152,7 @@ function Group() {
 
   useEffect(() => {
     fetchGroups()
-  }, [])
+  }, [tablePage])
 
   const leftToolbar = (
     <div className="toolbar-left">
@@ -225,6 +235,7 @@ function Group() {
       <Table
         data={products}
         columns={columns}
+        tableParams={setTablePage}
         actnioEvent={handleAction}
         editFlag
         deleteFlag
