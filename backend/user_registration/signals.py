@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 
 from user_registration.models import RegisterUserProfile
@@ -20,24 +20,32 @@ def track_group_change(sender, instance, **kwargs):
 
 @receiver(post_save, sender=RegisterUserProfile)
 def update_group_count_on_save(sender, instance, created, **kwargs):
-    """儲存時更新群組計數"""
+    """Update user count in the group when a user is created or updated."""
     old_group = getattr(instance, "_old_group", None)
     new_group = instance.register_group
+    print(f"Old Group: {old_group}, New Group: {new_group}")
 
-    # 如果是新建立的使用者
+    # Create new user
     if created:
         if new_group:
             new_group.user_count += 1
             new_group.save(update_fields=["user_count"])
 
-    # 如果是更新且群組有變更
+    # Update existing user
     elif old_group != new_group:
-        # 從舊群組減少計數
         if old_group:
             old_group.user_count = max(0, old_group.user_count - 1)
             old_group.save(update_fields=["user_count"])
 
-        # 新群組增加計數
         if new_group:
             new_group.user_count += 1
             new_group.save(update_fields=["user_count"])
+
+
+@receiver(pre_delete, sender=RegisterUserProfile)
+def delete_user_profile(sender, instance, **kwargs):
+    """Delete user profile and update group count."""
+    group = instance.register_group
+    if group:
+        group.user_count = max(0, group.user_count - 1)
+        group.save(update_fields=["user_count"])

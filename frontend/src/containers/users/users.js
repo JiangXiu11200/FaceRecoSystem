@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from "react"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
@@ -5,132 +6,219 @@ import { MultiSelect } from "primereact/multiselect"
 import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import { userRegistrationApi } from "../../api/user_registration"
+import { cloneDeep } from "lodash"
+import { Dropdown } from "primereact/dropdown"
 
 import { Table } from "../../components/data_table/data_table"
 
 import "./users.css"
 
+const GROUP_STATE_OPTIONS = [
+  { code: 0, name: "No" },
+  { code: 1, name: "Yes" },
+]
+
+const EMPTY_USER = {
+  name: "",
+  register_group: "",
+  is_active: 0,
+  annotations: "",
+}
+
+const DEFAULT_GROUP = {
+  code: "",
+  name: "None",
+}
+
+const SEARCH_GROUPS = {
+  register_group: [],
+  name: "",
+}
+
+const ACTIONS = {
+  VIEW: "view",
+  EDIT: "edit",
+  CREATE: "create",
+  DELETE: "delete",
+}
+
 function Users() {
   const toast = useRef(null)
   const [table_data, setTableData] = useState([])
-  const [set_action_event, setActionEvent] = useState({})
-  const [set_user_state, setUserState] = useState(0)
-  const [set_edit_user, setEditUser] = useState(false)
-  const [set_delete_dialog, setDeleteDialog] = useState(false)
+  const [userDetails, setUserDetails] = useState(cloneDeep(EMPTY_USER))
+  const [groupDetails, setGroupDetails] = useState({})
+  const [searchGroupsList, setSearchGroupsList] = useState([])
+  const [searchGroups, setSearchGroups] = useState(cloneDeep(SEARCH_GROUPS))
 
-  const user_state = useMemo(() => {
-    return [
-      { code: 0, name: "No" },
-      { code: 1, name: "Yes" },
-    ]
-  }, [])
+  const [editUserVisible, setEditUserVisible] = useState(false)
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
+  const [tablePage, setTablePage] = useState({
+    page: 1,
+    offset: 0,
+    limit: 10,
+  })
 
   const columns = [
-    {
-      header: "User",
-      field: "user",
-    },
-    {
-      header: "Group",
-      field: "group",
-    },
-    {
-      header: "Register Time",
-      field: "register_time",
-    },
-    {
-      header: "Enable",
-      field: "enable",
-    },
-    {
-      header: "Annotation",
-      field: "annotation",
-    },
+    { field: "name", header: "User" },
+    { field: "register_group_name", header: "Group" },
+    { field: "register_time", header: "Register Time", type: "date" },
+    { field: "update_time", header: "Update Time", type: "date" },
+    { field: "is_active", header: "Enable", type: "boolean" },
+    { field: "annotations", header: "Annotations" },
   ]
 
-  const _mock_data = Array.from({ length: 50 }, (_, i) => ({
-    user: `User ${i + 1}`,
-    group: `Group ${i + 1}`,
-    register_time: `2023-10-01`,
-    enable: i % 2 === 0 ? "Yes" : "No",
-    annotation: `Annotation ${i + 1}`,
-  }))
-
-  useEffect(() => {
-    setTableData(_mock_data)
-  }, [])
-
-  useEffect(() => {
-    console.log("action event", set_action_event)
-    switch (set_action_event.action) {
-      case "edit":
-        setEditUser(true)
-        break
-      case "delete":
-        setDeleteDialog(true)
-        break
-      default:
-        break
-    }
-  }, [set_action_event])
-
-  const onUserStateChange = (e) => {
-    setUserState(e.value)
+  const showToast = (severity, summary, detail, life = 3000) => {
+    toast.current.show({ severity, summary, detail, life })
   }
 
-  const doSaveUser = () => {
-    toast.current.show({
-      severity: "success",
-      summary: "Success",
-      detail: "User saved successfully.",
-    })
-    setEditUser(false)
-    setDeleteDialog(false)
+  const getUserList = () => {
+    const queryGroups = searchGroups.register_group.join(",")
+
+    userRegistrationApi(
+      "get",
+      `/?name=${searchGroups.name}&register_group=${queryGroups}`,
+      tablePage
+    )
+      .then((response) => {
+        console.log("User list response: ", response)
+        setTableData(response.data.results)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const getGroupList = () => {
+    userRegistrationApi("get", "/group/")
+      .then((response) => {
+        const groups = response.data.results.map((group) => ({
+          code: group.id,
+          name: group.group_name,
+        }))
+        const forUserDetails = [DEFAULT_GROUP, ...groups]
+        setSearchGroupsList(groups)
+        setGroupDetails(forUserDetails)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const updateUserDetails = () => {
+    if (!validateUser()) return
+
+    userRegistrationApi("put", `/${userDetails.id}/`, userDetails)
+      .then(() => {
+        showToast("success", "Success", "User updated successfully.")
+        getUserList()
+        setEditUserVisible(false)
+        setDeleteDialogVisible(false)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const deleteUser = () => {
+    userRegistrationApi("delete", `/${userDetails.id}/`)
+      .then(() => {
+        showToast("success", "Success", "User deleted successfully.")
+        getUserList()
+        setEditUserVisible(false)
+        setDeleteDialogVisible(false)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const validateUser = () => {
+    const validations = [
+      {
+        cond: userDetails.name.trim() === "",
+        msg: "User name cannot be empty.",
+      },
+      {
+        cond: /^\d/.test(userDetails.name),
+        msg: "User name cannot start with a number.",
+      },
+      {
+        cond: userDetails.is_active === undefined,
+        msg: "Please select if the user is active.",
+      },
+    ]
+
+    for (const { cond, msg } of validations) {
+      if (cond) {
+        showToast("error", "Error", msg)
+        return false
+      }
+    }
+    return true
+  }
+
+  const handleAction = ({ action, data }) => {
+    setUserDetails(data)
+    if (action === ACTIONS.DELETE) {
+      setDeleteDialogVisible(true)
+    } else {
+      setEditUserVisible(true)
+    }
   }
 
   const showDeleteUserDialog = () => {
-    setDeleteDialog(true)
-  }
-
-  const doDeleteUser = () => {
-    toast.current.show({
-      severity: "success",
-      summary: "Success",
-      detail: "User deleted successfully.",
-    })
-    setDeleteDialog(false)
-    setEditUser(false)
+    setDeleteDialogVisible(true)
   }
 
   const hideEditUserDialog = () => {
-    setEditUser(false)
+    setEditUserVisible(false)
   }
 
   const hideUserDetailDialog = () => {
-    setDeleteDialog(false)
+    setDeleteDialogVisible(false)
   }
+
+  useEffect(() => {
+    getUserList()
+    getGroupList()
+  }, [])
 
   const leftContents = (
     <React.Fragment>
       <div className="toolbar-left">
         <div>
           <InputText
-            className="p-inputtext"
+            className=""
             placeholder="Search for groups.."
+            onChange={(e) =>
+              setSearchGroups({ ...searchGroups, name: e.target.value })
+            }
           />
         </div>
         <div>
           <MultiSelect
-            className="w-100"
+            className="100"
             placeholder="Select Group"
-            options={[]}
-            onChange={() => {}}
+            value={
+              searchGroups.register_group ? searchGroups.register_group : []
+            }
+            options={searchGroupsList || []}
+            onChange={(e) =>
+              setSearchGroups({ ...searchGroups, register_group: e.value })
+            }
             optionLabel="name"
+            optionValue="code"
+            maxSelectedLabels={0}
           />
         </div>
         <div>
-          <Button icon="pi pi-search" className="func-btn" label="Search" />
+          <Button
+            icon="pi pi-search"
+            className="func-btn"
+            label="Search"
+            onClick={getUserList}
+          />
         </div>
       </div>
     </React.Fragment>
@@ -150,18 +238,18 @@ function Users() {
         <div className="d-flex">
           <div className="me-2">
             <Button
-              label="Save"
-              icon="pi pi-check"
-              className="p-button-text func-btn"
-              onClick={doSaveUser}
-            />
-          </div>
-          <div>
-            <Button
               label="Cancel"
               icon="pi pi-times"
               className="p-button-text cancel-btn"
               onClick={hideEditUserDialog}
+            />
+          </div>
+          <div>
+            <Button
+              label="Save"
+              icon="pi pi-check"
+              className="p-button-text func-btn"
+              onClick={updateUserDetails}
             />
           </div>
         </div>
@@ -182,10 +270,10 @@ function Users() {
         </div>
         <div>
           <Button
-            label="Sure"
+            label="Delete"
             icon="pi pi-times"
             className="p-button-text delete-btn"
-            onClick={doDeleteUser}
+            onClick={deleteUser}
           />
         </div>
       </div>
@@ -199,13 +287,13 @@ function Users() {
       <Table
         data={table_data}
         columns={columns}
-        actnioEvent={setActionEvent}
-        editFlag={true}
-        deleteFlag={true}
-        viewsFlag={false}
+        tableParams={setTablePage}
+        actnioEvent={handleAction}
+        editFlag
+        deleteFlag
       />
       <Dialog
-        visible={set_edit_user}
+        visible={editUserVisible}
         className=""
         header="Edit User"
         footer={editUserDialogFooter}
@@ -215,27 +303,43 @@ function Users() {
           <div className="right-content">
             <div className="">
               <label>User Name</label>
-              <InputText className="p-inputtext" placeholder="" />
+              <InputText
+                className="p-inputtext"
+                placeholder=""
+                value={userDetails.name}
+                onChange={(e) =>
+                  setUserDetails({ ...userDetails, name: e.target.value })
+                }
+              />
             </div>
             <div className="">
               <label>Select Group</label>
-              <MultiSelect
+              <Dropdown
                 className="w-100"
                 placeholder="Select Group"
-                options={[]}
-                onChange={() => {}}
+                value={userDetails ? userDetails.register_group : ""}
+                options={groupDetails}
+                optionValue="code"
                 optionLabel="name"
+                onChange={(e) =>
+                  setUserDetails({
+                    ...userDetails,
+                    register_group: e.value,
+                  })
+                }
               />
             </div>
             <div>
               <label>Enable</label>
               <SelectButton
                 className="w-100 select-button"
-                value={set_user_state ? set_user_state : 0}
-                options={user_state}
+                value={userDetails.is_active ? 1 : 0}
+                options={GROUP_STATE_OPTIONS}
                 optionValue="code"
                 optionLabel="name"
-                onChange={(e) => onUserStateChange(e)}
+                onChange={(e) =>
+                  setUserDetails({ ...userDetails, is_active: e.value })
+                }
               />
             </div>
             <div>
@@ -243,6 +347,7 @@ function Users() {
               <InputText
                 className="p-inputtext"
                 placeholder=""
+                value={new Date(userDetails.register_time).toLocaleString()}
                 disabled={true}
               />
             </div>
@@ -253,7 +358,7 @@ function Users() {
         </div>
       </Dialog>
       <Dialog
-        visible={set_delete_dialog}
+        visible={deleteDialogVisible}
         className=""
         header="Delete Group"
         footer={deleteUserDialogFooter}

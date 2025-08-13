@@ -1,23 +1,28 @@
 import os
 
 from django.conf import settings
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from user_registration.filters import RegisterGroupFilter
 from user_registration.models import RegisterGroup, RegisterUserProfile
 from user_registration.serializers import (
     RegisterUserFeatureSerializer,
+    RegisterUserProfileFilter,
     RegisterUserProfileSerializer,
     UserRegistrationGroupSerializer,
 )
 
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
-    queryset = RegisterUserProfile.objects.all()
+    queryset = RegisterUserProfile.objects.all().order_by("id")
     serializer_class = RegisterUserProfileSerializer
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RegisterUserProfileFilter
+    filterset_fields = ["name", "register_group"]
 
     def create(self, request):
         name = request.data.get("name")
@@ -59,6 +64,12 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # TODO: Delete MinIO file when user is deleted
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     instance.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RegisterUserFeatureViewSet(viewsets.ModelViewSet):
