@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -6,6 +7,7 @@ from rest_framework.mixins import (
 )
 from rest_framework.response import Response
 
+from .filters import AlarmLogsFilter
 from .models import AlarmLogs, AlarmLogsHistory
 from .serializers import AcknowledgeAlarmLogsSerializer, AlarmLogsHistorySerializer, AlarmLogsSerializer
 
@@ -13,6 +15,8 @@ from .serializers import AcknowledgeAlarmLogsSerializer, AlarmLogsHistorySeriali
 class AlarmLogsViewSet(ListModelMixin, CreateModelMixin, viewsets.GenericViewSet):
     queryset = AlarmLogs.objects.all()
     serializer_class = AlarmLogsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = AlarmLogsFilter
 
 
 class AcknowledgeAlarmLogsViewSet(UpdateModelMixin, viewsets.GenericViewSet):

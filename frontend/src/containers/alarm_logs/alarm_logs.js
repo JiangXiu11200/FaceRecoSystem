@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from "react"
 import cloneDeep from "lodash/cloneDeep"
 import { Button } from "primereact/button"
 import { Calendar } from "primereact/calendar"
@@ -6,113 +7,137 @@ import { InputText } from "primereact/inputtext"
 import { MultiSelect } from "primereact/multiselect"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
-
-import React, { useEffect, useRef, useState } from "react"
+import { alarmLogsApi } from "../../api/alarm_logs"
 
 import { Table } from "../../components/data_table/data_table"
-
 import "./alarm_logs.css"
 
-function AlarmLogs() {
+const LEVEL_CHOICES = [
+  { code: 1, name: "Info" },
+  { code: 2, name: "Warning" },
+  { code: 3, name: "Critical" },
+  { code: 4, name: "Error" },
+  { code: 5, name: "Fatal" },
+]
+
+const INITIAL_SEARCH = {
+  alarm_category: null,
+  start_date: null,
+  end_date: null,
+}
+
+const AlarmLogs = () => {
   const toast = useRef(null)
-  const [table_data, setTableData] = useState([])
-  const [set_action_event, setActionEvent] = useState({})
-  const empty_search_content = {
-    alarm_category: null,
-    start_date: null,
-    end_date: null,
-    confirm: false,
-  }
-  const [search_content, setSearchContent] = useState(
-    cloneDeep(empty_search_content)
-  )
-  const [set_confirm_alarm_details, setConfirmAlarmDetails] = useState(false)
+
+  const [tableData, setTableData] = useState([])
+  const [alarmDetails, setAlarmDetails] = useState({})
+  const [searchContent, setSearchContent] = useState(cloneDeep(INITIAL_SEARCH))
+  const [showAlarmDetailsDialog, setShowAlarmDetailsDialog] = useState(false)
+  const [tablePage, setTablePage] = useState({
+    page: 1,
+    offset: 0,
+    limit: 10,
+  })
 
   const columns = [
-    {
-      header: "No",
-      field: "number",
-    },
-    {
-      header: "Log Time",
-      field: "log_time",
-    },
-    {
-      header: "Message",
-      field: "message",
-    },
-    {
-      header: "Confirm",
-      field: "confirm",
-      type: "boolean",
-    },
+    { header: "No", field: "id" },
+    { header: "Alarm Type", field: "alarm_type_name" },
+    { header: "Alarm Message", field: "alarm_message" },
+    { header: "Confirm", field: "confirm", type: "boolean" },
+    { header: "Trigger Time", field: "create_time", type: "date" },
   ]
 
-  const _mock_data = Array.from({ length: 20 }, (_, i) => ({
-    number: i + 1,
-    log_time: `2023-10-01 12:00:00`,
-    message: `Alarm message ${i + 1}`,
-    confirm: i % 2 === 0,
-  }))
+  const showToast = (severity, summary, detail, life = 3000) => {
+    toast.current.show({ severity, summary, detail, life })
+  }
 
-  useEffect(() => {
-    setTableData(_mock_data)
-  }, [])
+  const getAlarmLogs = () => {
+    alarmLogsApi("get", "/", tablePage)
+      .then((response) => {
+        const results = response.data.results.map((item) => ({
+          ...item,
+          alarm_type_name:
+            LEVEL_CHOICES.find((level) => level.code === item.alarm_type)
+              ?.name || "Unknown",
+        }))
+        setTableData(results)
+      })
+      .catch((error) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
 
-  useEffect(() => {
-    switch (set_action_event.action) {
-      case "image":
-        setConfirmAlarmDetails(true)
-        break
-      default:
-        break
+  const handleSearch = () => {
+    let url = `/?alarm_category=${searchContent.alarm_category || ""}&start_date=${searchContent.start_date ? searchContent.start_date.toISOString() : ""}&end_date=${searchContent.end_date ? searchContent.end_date.toISOString() : ""}`
+
+    alarmLogsApi("get", url, tablePage)
+      .then((response) => {
+        const results = response.data.results.map((item) => ({
+          ...item,
+          alarm_type_name:
+            LEVEL_CHOICES.find((level) => level.code === item.alarm_type)
+              ?.name || "Unknown",
+        }))
+        setTableData(results)
+      })
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+    setAlarmDetails({})
+  }
+
+  const handleConfirmAlarm = () => {
+    const updatedAlarm = cloneDeep(alarmDetails)
+    updatedAlarm.acknowledged = true
+    alarmLogsApi("put", `/acknowledge/${alarmDetails.id}/`, updatedAlarm)
+      .then(() => {
+        showToast("success", "Success", "Alarm confirmed successfully.")
+        setShowAlarmDetailsDialog(false)
+        getAlarmLogs()
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const handleAction = ({ action, data }) => {
+    setAlarmDetails(data)
+    if (action === "image") {
+      setShowAlarmDetailsDialog(true)
     }
-  }, [set_action_event])
-
-  const onSearchContentChange = (e, name) => {
-    const val = (e.target && e.target.value) || ""
-    let _search_content = { ...search_content }
-    _search_content[name] = val
-    setSearchContent(_search_content)
   }
 
-  const doConfirm = () => {
-    toast.current.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Alarm confirmed successfully",
-      life: 3000,
-    })
-    setConfirmAlarmDetails(false)
-  }
-
-  const hideConfirmAlarmDialog = () => {
-    setConfirmAlarmDetails(false)
-  }
+  useEffect(() => {
+    getAlarmLogs()
+  }, [])
 
   const leftContents = (
     <React.Fragment>
-      <div className="row g-2">
-        <div className="col-4">
-          <label>Alarm Category</label>
-          <div className="field-group">
-            <MultiSelect
-              className="w-100"
-              placeholder="Alarm Category"
-              options={[]}
-              onChange={() => {}}
-              optionLabel="name"
-            />
-          </div>
+      <div className="alarmlogs-toolbar">
+        <div className="alarmlogs-form-field">
+          <label>Alarm Type</label>
+          <MultiSelect
+            className="w-100"
+            placeholder="Select Alarm Type"
+            options={LEVEL_CHOICES}
+            optionValue="code"
+            optionLabel="name"
+            value={searchContent.alarm_category}
+            onChange={(e) =>
+              setSearchContent((prev) => ({ ...prev, alarm_category: e.value }))
+            }
+            maxSelectedLabels={0}
+          />
         </div>
-        <div className="col-4">
+        <div className="alarmlogs-form-field">
           <label>Start Date</label>
           <Calendar
-            id="start_date"
             className="w-100"
-            value={search_content.start_date}
-            maxDate={search_content.end_date ? search_content.end_date : null}
-            onChange={(e) => onSearchContentChange(e, "start_date")}
+            value={searchContent.start_date}
+            maxDate={searchContent.end_date || null}
+            onChange={(e) =>
+              setSearchContent((prev) => ({ ...prev, start_date: e.value }))
+            }
             showTime
             showSeconds
             hourFormat="24"
@@ -120,16 +145,15 @@ function AlarmLogs() {
             placeholder="Start Date"
           />
         </div>
-        <div className="col-4">
+        <div className="alarmlogs-form-field">
           <label>End Date</label>
           <Calendar
-            id="end_date"
             className="w-100"
-            value={search_content.end_date}
-            minDate={
-              search_content.start_date ? search_content.start_date : null
+            value={searchContent.end_date}
+            minDate={searchContent.start_date || null}
+            onChange={(e) =>
+              setSearchContent((prev) => ({ ...prev, end_date: e.value }))
             }
-            onChange={(e) => onSearchContentChange(e, "end_date")}
             showTime
             showSeconds
             hourFormat="24"
@@ -137,76 +161,77 @@ function AlarmLogs() {
             placeholder="End Date"
           />
         </div>
-      </div>
-    </React.Fragment>
-  )
-
-  const confirmAlarmDialogFooter = (
-    <React.Fragment>
-      <div className="d-flex justify-content-end">
-        <div className="d-flex">
-          <div className="me-2">
-            <Button
-              label="Confirm"
-              icon="pi pi-check"
-              className="p-button-text func-btn"
-              onClick={doConfirm}
-            />
-          </div>
-          <div>
-            <Button
-              label="Cancel"
-              icon="pi pi-times"
-              className="p-button-text cancel-btn"
-              onClick={hideConfirmAlarmDialog}
-            />
-          </div>
+        <div className="d-flex align-items-end">
+          <Button
+            icon="pi pi-search"
+            className="func-btn"
+            label="Search"
+            onClick={handleSearch}
+          />
         </div>
       </div>
     </React.Fragment>
   )
 
+  const alarmDialogFooter = (
+    <div className="d-flex justify-content-end">
+      <Button
+        label="Confirm"
+        icon="pi pi-check"
+        className="p-button-text func-btn me-2"
+        onClick={handleConfirmAlarm}
+      />
+      <Button
+        label="Cancel"
+        icon="pi pi-times"
+        className="p-button-text cancel-btn"
+        onClick={() => setShowAlarmDetailsDialog(false)}
+      />
+    </div>
+  )
+
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Toolbar
-        className="alarm-logs-toolbar-layout toolbar-layout"
-        left={leftContents}
-      />
+      <Toolbar className="toolbar-layout" left={leftContents} />
       <Table
-        data={table_data}
+        data={tableData}
         columns={columns}
-        actnioEvent={setActionEvent}
-        imageFlag={true}
+        tableParams={setTablePage}
+        actnioEvent={handleAction}
+        imageFlag
       />
       <Dialog
-        visible={set_confirm_alarm_details}
-        className=""
+        visible={showAlarmDetailsDialog}
         header="Alarm Details"
-        footer={confirmAlarmDialogFooter}
-        onHide={hideConfirmAlarmDialog}
+        footer={alarmDialogFooter}
+        onHide={() => setShowAlarmDetailsDialog(false)}
       >
         <div className="alarm-details-dialog">
           <div className="alarm-details-right-content">
-            <div className="">
+            <div>
               <label>Log Time</label>
               <InputText
                 className="p-inputtext"
-                placeholder=""
-                disabled={true}
+                value={
+                  alarmDetails
+                    ? new Date(alarmDetails.create_time).toLocaleString()
+                    : ""
+                }
+                disabled
               />
             </div>
-            <div className="">
+            <div>
               <label>Message</label>
               <InputText
                 className="p-inputtext"
-                placeholder=""
-                disabled={true}
+                value={alarmDetails ? alarmDetails.message : ""}
+                disabled
               />
             </div>
           </div>
           <div className="alarm-details-left-content">
-            <img src="/image/roi_not_found.jpg" alt="" />
+            <img src="/image/roi_not_found.jpg" alt="Alarm" />
           </div>
         </div>
       </Dialog>
