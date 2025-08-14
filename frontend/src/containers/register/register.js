@@ -40,11 +40,7 @@ function Register() {
         setUserGroups(groups)
       })
       .catch((err) => {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: formatErrorMessage(err),
-        })
+        showToast("error", "Error", err.response.data)
       })
   }
 
