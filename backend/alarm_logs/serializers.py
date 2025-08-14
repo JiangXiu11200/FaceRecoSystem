@@ -1,17 +1,11 @@
 from rest_framework import serializers
 
-from .models import AlarmLogs, AlarmLogsHistory
+from .models import AlarmLogs
 
 
 class AlarmLogsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlarmLogs
-        fields = "__all__"
-
-
-class AlarmLogsHistorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AlarmLogsHistory
         fields = "__all__"
 
 

@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from .filters import AlarmLogsFilter
 from .models import AlarmLogs
-from .serializers import AcknowledgeAlarmLogsSerializer, AlarmLogsHistorySerializer, AlarmLogsSerializer
+from .serializers import AcknowledgeAlarmLogsSerializer, AlarmLogsSerializer
 
 
 class AlarmLogsViewSet(ListModelMixin, CreateModelMixin, viewsets.GenericViewSet):
@@ -37,7 +37,3 @@ class AcknowledgeAlarmLogsViewSet(UpdateModelMixin, viewsets.GenericViewSet):
 
         return Response({"message": "No changes made."}, status=status.HTTP_200_OK)
 
-
-class AlarmLogsHistoryViewSet(ListModelMixin, CreateModelMixin, viewsets.GenericViewSet):
-    queryset = AlarmLogs.objects.all()
-    serializer_class = AlarmLogsHistorySerializer

@@ -1,10 +1,9 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import AcknowledgeAlarmLogsViewSet, AlarmLogsHistoryViewSet, AlarmLogsViewSet
+from .views import AcknowledgeAlarmLogsViewSet, AlarmLogsViewSet
 
 alarm_logs = routers.SimpleRouter()
-alarm_logs.register(r"api/alarm-logs/history", AlarmLogsHistoryViewSet, basename="alarmlogs-history")
 alarm_logs.register(r"api/alarm-logs/acknowledge", AcknowledgeAlarmLogsViewSet, basename="alarmlogs-acknowledge")
 alarm_logs.register(r"api/alarm-logs", AlarmLogsViewSet, basename="alarmlogs")
 
