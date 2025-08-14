@@ -1,4 +1,3 @@
-import django_filters
 from rest_framework import serializers
 
 from user_registration.models import RegisterGroup, RegisterUserProfile
@@ -34,15 +33,6 @@ class RegisterUserProfileSerializer(serializers.ModelSerializer):
             self.fields["minio_key"].required = False
             self.fields["face_details"].required = False
             self.fields["file_name"].required = False
-
-
-class RegisterUserProfileFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
-    register_group = django_filters.BaseInFilter(field_name="register_group", lookup_expr="in")
-
-    class Meta:
-        model = RegisterUserProfile
-        fields = ["name", "register_group"]
 
 
 class RegisterUserFeatureSerializer(serializers.ModelSerializer):

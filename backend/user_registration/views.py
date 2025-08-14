@@ -10,10 +10,11 @@ from user_registration.filters import RegisterGroupFilter
 from user_registration.models import RegisterGroup, RegisterUserProfile
 from user_registration.serializers import (
     RegisterUserFeatureSerializer,
-    RegisterUserProfileFilter,
     RegisterUserProfileSerializer,
     UserRegistrationGroupSerializer,
 )
+
+from .filters import RegisterUserProfileFilter
 
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
