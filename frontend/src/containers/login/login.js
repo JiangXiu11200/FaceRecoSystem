@@ -1,8 +1,10 @@
-import React, { useState, useRef } from "react"
+import React, { useRef, useState } from "react"
+
 import { Button } from "primereact/button"
-import { Toast } from "primereact/toast"
 import { InputText } from "primereact/inputtext"
 import { Password } from "primereact/password"
+import { Toast } from "primereact/toast"
+
 import { loginApi } from "../../api/auth"
 
 import "./login.css"

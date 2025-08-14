@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from "react"
+
 import cloneDeep from "lodash/cloneDeep"
 import { Button } from "primereact/button"
 import { Calendar } from "primereact/calendar"
 import { Dialog } from "primereact/dialog"
+import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
 import { MultiSelect } from "primereact/multiselect"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
-import { alarmLogsApi } from "../../api/alarm_logs"
 
+import { alarmLogsApi } from "../../api/alarm_logs"
 import { Table } from "../../components/data_table/data_table"
+
 import "./alarm_logs.css"
-import { Dropdown } from "primereact/dropdown"
 
 const LEVEL_CHOICES = [
   { code: 1, name: "Info" },

@@ -1,14 +1,16 @@
-import React, { useEffect, useMemo, useState, useRef } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+
+import { cloneDeep } from "lodash"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
 import { SelectButton } from "primereact/selectbutton"
-import { Toolbar } from "primereact/toolbar"
 import { Toast } from "primereact/toast"
-import { cloneDeep } from "lodash"
+import { Toolbar } from "primereact/toolbar"
 
 import { userRegistrationApi } from "../../api/user_registration"
 import { Table } from "../../components/data_table/data_table"
+
 import "./group.css"
 
 const GROUP_STATE_OPTIONS = [

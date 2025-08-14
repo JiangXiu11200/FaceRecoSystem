@@ -1,4 +1,5 @@
 import axios from "axios"
+
 import { parseDRFError } from "../utils/parse_error"
 
 export const activityLogsApi = (method, url, data = {}) => {

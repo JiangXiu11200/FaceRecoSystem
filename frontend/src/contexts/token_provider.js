@@ -1,8 +1,10 @@
-import React, { createContext, useEffect, useContext, useState } from "react"
+import React, { createContext, useContext, useEffect, useState } from "react"
+
 import { jwtDecode } from "jwt-decode"
-import { refreshTokenApi, logoutApi } from "../api/auth"
-import { Dialog } from "primereact/dialog"
 import { Button } from "primereact/button"
+import { Dialog } from "primereact/dialog"
+
+import { logoutApi, refreshTokenApi } from "../api/auth"
 import { clearLocalStorage } from "../utils/local_storage"
 
 const TokenContext = createContext()

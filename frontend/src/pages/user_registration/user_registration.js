@@ -1,5 +1,6 @@
-import { TabPanel, TabView } from "primereact/tabview"
 import React from "react"
+
+import { TabPanel, TabView } from "primereact/tabview"
 
 import Group from "../../containers/group/group"
 import Register from "../../containers/register/register"

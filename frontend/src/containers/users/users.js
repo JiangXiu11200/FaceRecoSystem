@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from "react"
+
+import { cloneDeep } from "lodash"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
+import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
 import { MultiSelect } from "primereact/multiselect"
 import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
-import { userRegistrationApi } from "../../api/user_registration"
-import { cloneDeep } from "lodash"
-import { Dropdown } from "primereact/dropdown"
 
+import { userRegistrationApi } from "../../api/user_registration"
 import { Table } from "../../components/data_table/data_table"
 
 import "./users.css"

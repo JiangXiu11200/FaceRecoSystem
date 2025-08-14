@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from "react"
+
 import { Button } from "primereact/button"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
-import React, { useEffect, useState } from "react"
 import { Image } from "primereact/image"
 
 import "./data_table.css"

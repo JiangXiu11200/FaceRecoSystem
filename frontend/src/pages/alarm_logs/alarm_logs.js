@@ -1,5 +1,6 @@
-import { TabPanel, TabView } from "primereact/tabview"
 import React from "react"
+
+import { TabPanel, TabView } from "primereact/tabview"
 
 import AlarmLogsPage from "../../containers/alarm_logs/alarm_logs"
 

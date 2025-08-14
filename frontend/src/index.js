@@ -1,9 +1,10 @@
 import React from "react"
+
 import ReactDOM from "react-dom/client"
-import "./index.css"
 
 import App from "./app"
 
+import "./index.css"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "primeicons/primeicons.css"
 import "primereact/resources/primereact.min.css"

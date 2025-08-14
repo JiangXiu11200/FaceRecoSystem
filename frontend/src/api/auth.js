@@ -1,6 +1,7 @@
 import axios from "axios"
-import { saveLocalStorage, clearLocalStorage } from "../utils/local_storage"
 import { jwtDecode } from "jwt-decode"
+
+import { clearLocalStorage, saveLocalStorage } from "../utils/local_storage"
 import { parseError } from "../utils/parse_error"
 
 export const refreshTokenApi = async () => {

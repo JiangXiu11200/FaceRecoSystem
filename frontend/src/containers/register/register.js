@@ -1,12 +1,15 @@
-import React, { useEffect, useRef, useState, useCallback } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+
 import cloneDeep from "lodash/cloneDeep"
 import { Button } from "primereact/button"
 import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
 import { Toast } from "primereact/toast"
+
+import { userRegistrationApi } from "../../api/user_registration"
 import useStream from "../../hooks/use_stream"
 import { cleanupObjectUrl, formatErrorMessage } from "../../utils/stream_tools"
-import { userRegistrationApi } from "../../api/user_registration"
+
 import "./register.css"
 
 const EMPTY_USER_DETAILS = {
