@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from .models import FaceRecognitionActivityLogs
+from .models import FaceRecognitionActivityLogs, SystemActivtiyLogs
 
 
 class FaceRecognitionActivityLogsFilter(filters.FilterSet):
@@ -10,3 +10,11 @@ class FaceRecognitionActivityLogsFilter(filters.FilterSet):
     class Meta:
         model = FaceRecognitionActivityLogs
         fields = ["name", "group"]
+
+
+class SystemActivityLogsFilter(filters.FilterSet):
+    account = filters.CharFilter(field_name="account", lookup_expr="icontains")
+
+    class Meta:
+        model = SystemActivtiyLogs
+        fields = ["account"]

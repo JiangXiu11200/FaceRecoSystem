@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from activity_logs.utils.celery_scheduler_control import update_cleanup_old_activity_logs_task
 
-from .filters import FaceRecognitionActivityLogsFilter
+from .filters import FaceRecognitionActivityLogsFilter, SystemActivityLogsFilter
 from .models import (
     FaceRecognitionActivityLogs,
     FaceRecognitionActivityLogsRetention,
@@ -21,8 +21,11 @@ from .serializers import (
 
 
 class SystemActivityLogsViewSet(viewsets.ModelViewSet):
-    queryset = SystemActivtiyLogs.objects.all()
+    queryset = SystemActivtiyLogs.objects.all().order_by("-timestamp")
     serializer_class = SystemActivityLogsSerializer
+    filterset_class = SystemActivityLogsFilter
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["account"]
 
 
 class FaceRecognitionActivityLogsViewSet(viewsets.ModelViewSet):
