@@ -172,15 +172,15 @@ function Group() {
   }, [tablePage])
 
   const leftToolbar = (
-    <div className="toolbar-left">
-      <div>
+    <div className="row g-2 group-toolbar-layout">
+      <div className="col-6">
         <InputText
           className="p-inputtext"
           placeholder="Search for groups.."
           onChange={(e) => setGroupsName(e.target.value)}
         />
       </div>
-      <div>
+      <div className="col-6">
         <Button
           icon="pi pi-search"
           className="func-btn"
@@ -192,7 +192,7 @@ function Group() {
   )
 
   const rightToolbar = (
-    <div className="toolbar-right">
+    <div>
       <Button
         icon="pi pi-plus"
         className="p-button-info func-btn"
@@ -253,7 +253,7 @@ function Group() {
     <div className="d-flex flex-column">
       <Toast ref={toast} />
       <Toolbar
-        className="toolbar-layout"
+        className="toolbar-layout "
         left={leftToolbar}
         right={rightToolbar}
       />
