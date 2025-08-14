@@ -1,9 +1,11 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.mixins import ListModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 
 from activity_logs.utils.celery_scheduler_control import update_cleanup_old_activity_logs_task
 
+from .filters import FaceRecognitionActivityLogsFilter
 from .models import (
     FaceRecognitionActivityLogs,
     FaceRecognitionActivityLogsRetention,
@@ -26,6 +28,9 @@ class SystemActivityLogsViewSet(viewsets.ModelViewSet):
 class FaceRecognitionActivityLogsViewSet(viewsets.ModelViewSet):
     queryset = FaceRecognitionActivityLogs.objects.all()
     serializer_class = FaceRecognitionActivityLogsSerializer
+    filterset_class = FaceRecognitionActivityLogsFilter
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["name", "group"]
 
 
 class SystemActivityLogsRetentionViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
