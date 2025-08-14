@@ -262,6 +262,7 @@ const AlarmLogs = () => {
           </div>
           <div className="alarm-details-left-content">
             <img src="/image/roi_not_found.jpg" alt="Alarm" />
+            {/* TODO: S3 image link */}
           </div>
         </div>
       </Dialog>

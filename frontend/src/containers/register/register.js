@@ -198,64 +198,53 @@ function Register() {
         />
       </div>
 
-      <div className="row g-2">
+      <div className="row g-2 align-items-center">
         <div className="col-3">
-          <div className="form-group">
-            <InputText
-              className="h-100"
-              id="user_name"
-              name="user_name"
-              value={newUserDetails.user_name}
-              keyfilter={/[^\s]/}
-              placeholder="User Name"
-              onChange={(e) => onInputChange(e, "user_name")}
-              disabled={isLoading}
-            />
-          </div>
+          <InputText
+            id="user_name"
+            name="user_name"
+            value={newUserDetails.user_name}
+            keyfilter={/[^\s]/}
+            placeholder="User Name"
+            onChange={(e) => onInputChange(e, "user_name")}
+            disabled={isLoading}
+          />
         </div>
         <div className="col-2">
-          <div className="form-group">
-            <Dropdown
-              className="w-100"
-              value={newUserDetails.group}
-              optionLabel="name"
-              optionValue="code"
-              options={userGroups}
-              onChange={(e) => onInputChange(e, "group")}
-              placeholder="Select Group"
-              disabled={isLoading}
-            />
-          </div>
+          <Dropdown
+            className="w-100"
+            value={newUserDetails.group}
+            optionLabel="name"
+            optionValue="code"
+            options={userGroups}
+            onChange={(e) => onInputChange(e, "group")}
+            placeholder="Select Group"
+            disabled={isLoading}
+          />
         </div>
         <div className="col-7">
           <div className="d-flex flex-wrap justify-content-start gap-2">
-            <div className="form-group">
-              <Button
-                label="Screenshot"
-                icon="pi pi-camera"
-                className="p-button-info func-btn"
-                onClick={() => handleScreenshot()}
-                disabled={!stream.isReady || isLoading}
-              />
-            </div>
-            <div className="form-group">
-              <Button
-                label={isLoading ? "Processing..." : "Register"}
-                icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-check"}
-                className="p-button-success func-btn"
-                onClick={() => handleRegister()}
-                disabled={!hasScreenshot || isLoading}
-              />
-            </div>
-            <div className="form-group">
-              <Button
-                label="Clear"
-                icon="pi pi-times"
-                className="p-button-info func-btn"
-                onClick={() => handleClear()}
-                disabled={isLoading}
-              />
-            </div>
+            <Button
+              label="Screenshot"
+              icon="pi pi-camera"
+              className="p-button-info func-btn"
+              onClick={() => handleScreenshot()}
+              disabled={!stream.isReady || isLoading}
+            />
+            <Button
+              label={isLoading ? "Processing..." : "Register"}
+              icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-check"}
+              className="p-button-success func-btn"
+              onClick={() => handleRegister()}
+              disabled={!hasScreenshot || isLoading}
+            />
+            <Button
+              label="Clear"
+              icon="pi pi-times"
+              className="p-button-info func-btn"
+              onClick={() => handleClear()}
+              disabled={isLoading}
+            />
           </div>
         </div>
       </div>

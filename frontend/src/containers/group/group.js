@@ -32,7 +32,7 @@ function Group() {
   const toast = useRef(null)
 
   // State
-  const [products, setProducts] = useState([])
+  const [groups, setGroups] = useState([])
   const [dialogVisible, setDialogVisible] = useState(false)
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
   const [mode, setMode] = useState(null) // "view" | "edit" | "create" | null
@@ -60,7 +60,7 @@ function Group() {
   const fetchGroups = () => {
     userRegistrationApi("get", "/group/", tablePage)
       .then((response) => {
-        setProducts(response.data.results)
+        setGroups(response.data.results)
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -94,7 +94,7 @@ function Group() {
     userRegistrationApi("get", `/group/?group_name=${groupName}`, tablePage)
       .then((response) => {
         let _group_count = response.data.count
-        setProducts(response.data.results)
+        setGroups(response.data.results)
         showToast("success", "Success", `Found ${_group_count} matching groups`)
       })
       .catch((err) => {
@@ -259,7 +259,7 @@ function Group() {
       />
 
       <Table
-        data={products}
+        data={groups}
         columns={columns}
         tableParams={setTablePage}
         actnioEvent={handleAction}

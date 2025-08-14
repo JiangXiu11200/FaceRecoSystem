@@ -147,6 +147,14 @@ html,
   color: #ffffff;
 }
 
+.p-dropdown .p-dropdown-label,
+.p-multiselect .p-multiselect-label,
+.p-inputtext .p-inputtext-label,
+.p-calendar .p-component {
+  margin: 0 !important;
+  font-size: 1rem !important;
+}
+
 .tabview-layout .p-tabview .p-tabview-panels {
   padding: 0.5rem;
 }
