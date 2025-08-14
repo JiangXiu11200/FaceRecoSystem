@@ -8,12 +8,12 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 
 from .filters import AlarmLogsFilter
-from .models import AlarmLogs, AlarmLogsHistory
+from .models import AlarmLogs
 from .serializers import AcknowledgeAlarmLogsSerializer, AlarmLogsHistorySerializer, AlarmLogsSerializer
 
 
 class AlarmLogsViewSet(ListModelMixin, CreateModelMixin, viewsets.GenericViewSet):
-    queryset = AlarmLogs.objects.all()
+    queryset = AlarmLogs.objects.all().order_by("-create_time")
     serializer_class = AlarmLogsSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = AlarmLogsFilter
@@ -31,14 +31,8 @@ class AcknowledgeAlarmLogsViewSet(UpdateModelMixin, viewsets.GenericViewSet):
 
         acknowledged = serializer.validated_data.get("acknowledged", False)
         if acknowledged and not instance.acknowledged:
-            AlarmLogsHistory.objects.create(
-                minio_key=instance.minio_key,
-                file_name=instance.file_name,
-                alarm_type=instance.alarm_type,
-                alarm_message=instance.alarm_message,
-                create_time=instance.create_time,
-            )
-            instance.delete()
+            instance.acknowledged = True
+            instance.save()
             return Response({"message": "Acknowledged."}, status=status.HTTP_200_OK)
 
         return Response({"message": "No changes made."}, status=status.HTTP_200_OK)

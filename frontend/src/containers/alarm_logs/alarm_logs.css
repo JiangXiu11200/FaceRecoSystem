@@ -1,19 +1,6 @@
-.alarmlogs-toolbar {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.alarmlogs-form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.alarmlogs-form-field.p-multiselect,
-.alarmlogs-form-field .p-calendar {
-  margin-top: 0;
+.alarmlogs-toolbar-layout {
+  width: 100rem;
+  align-items: center;
 }
 
 .alarm-details-dialog {

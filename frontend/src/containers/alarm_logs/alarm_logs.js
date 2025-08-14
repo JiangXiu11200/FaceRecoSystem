@@ -11,6 +11,7 @@ import { alarmLogsApi } from "../../api/alarm_logs"
 
 import { Table } from "../../components/data_table/data_table"
 import "./alarm_logs.css"
+import { Dropdown } from "primereact/dropdown"
 
 const LEVEL_CHOICES = [
   { code: 1, name: "Info" },
@@ -21,10 +22,17 @@ const LEVEL_CHOICES = [
 ]
 
 const INITIAL_SEARCH = {
+  query_type: "All Alerts",
   alarm_category: null,
   start_date: null,
   end_date: null,
 }
+
+const QUERY_TYPE = [
+  "All Alerts",
+  "Unacknowledged Alerts",
+  "Acknowledged Alerts",
+]
 
 const AlarmLogs = () => {
   const toast = useRef(null)
@@ -43,7 +51,7 @@ const AlarmLogs = () => {
     { header: "No", field: "id" },
     { header: "Alarm Type", field: "alarm_type_name" },
     { header: "Alarm Message", field: "alarm_message" },
-    { header: "Confirm", field: "confirm", type: "boolean" },
+    { header: "Acknowledged", field: "acknowledged", type: "boolean" },
     { header: "Trigger Time", field: "create_time", type: "date" },
   ]
 
@@ -63,12 +71,18 @@ const AlarmLogs = () => {
         setTableData(results)
       })
       .catch((error) => {
-        showToast("error", "Error", err.response.data)
+        showToast("error", "Error", error.response.data)
       })
   }
 
   const handleSearch = () => {
     let url = `/?alarm_category=${searchContent.alarm_category || ""}&start_date=${searchContent.start_date ? searchContent.start_date.toISOString() : ""}&end_date=${searchContent.end_date ? searchContent.end_date.toISOString() : ""}`
+
+    if (searchContent.query_type === "Unacknowledged Alerts") {
+      url += "&acknowledged=false"
+    } else if (searchContent.query_type === "Acknowledged Alerts") {
+      url += "&acknowledged=true"
+    }
 
     alarmLogsApi("get", url, tablePage)
       .then((response) => {
@@ -79,6 +93,7 @@ const AlarmLogs = () => {
               ?.name || "Unknown",
         }))
         setTableData(results)
+        showToast("success", "Success", `Found ${response.data.count} logs.`)
       })
       .catch((error) => {
         showToast("error", "Error", error.response.data)
@@ -113,8 +128,23 @@ const AlarmLogs = () => {
 
   const leftContents = (
     <React.Fragment>
-      <div className="alarmlogs-toolbar">
-        <div className="alarmlogs-form-field">
+      <div className="alarmlogs-toolbar-layout row g-2">
+        <div className="col-2">
+          <label>Query Type</label>
+          <Dropdown
+            className="w-100"
+            placeholder="Select Query Type"
+            options={QUERY_TYPE}
+            value={searchContent.query_type}
+            onChange={(e) =>
+              setSearchContent((prev) => ({
+                ...prev,
+                query_type: e.value,
+              }))
+            }
+          />
+        </div>
+        <div className="col-2">
           <label>Alarm Type</label>
           <MultiSelect
             className="w-100"
@@ -129,7 +159,7 @@ const AlarmLogs = () => {
             maxSelectedLabels={0}
           />
         </div>
-        <div className="alarmlogs-form-field">
+        <div className="col-2">
           <label>Start Date</label>
           <Calendar
             className="w-100"
@@ -145,7 +175,7 @@ const AlarmLogs = () => {
             placeholder="Start Date"
           />
         </div>
-        <div className="alarmlogs-form-field">
+        <div className="col-2">
           <label>End Date</label>
           <Calendar
             className="w-100"
@@ -161,7 +191,7 @@ const AlarmLogs = () => {
             placeholder="End Date"
           />
         </div>
-        <div className="d-flex align-items-end">
+        <div className="col-2 align-self-end">
           <Button
             icon="pi pi-search"
             className="func-btn"
