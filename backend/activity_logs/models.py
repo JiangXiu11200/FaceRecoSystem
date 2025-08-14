@@ -12,7 +12,10 @@ class SystemActivtiyLogs(models.Model):
 
 
 class FaceRecognitionActivityLogs(models.Model):
-    account = models.CharField(max_length=64)
+    name = models.CharField(max_length=64)
+    group = models.CharField(max_length=64)  # The group name obtained from microservice, so no ID is used
+    minio_key = models.CharField(max_length=128, blank=True, null=True)
+    file_name = models.CharField(max_length=128, blank=True, null=True)
     actions = models.CharField(max_length=8)
     status = models.BooleanField(default=True)
     status_code = models.IntegerField()
