@@ -47,13 +47,12 @@ function Register() {
   // Initialize websocket connection and stream.
   useEffect(() => {
     fetchGroups()
+    // FIXME: 如果很快速切換頁面，可能會使 websocket 沒有正常關閉
     const initStream = async () => {
-      const connected = await stream.connect()
-      if (connected) {
-        stream.startStream()
-      }
+      await stream.connect()
     }
     initStream()
+
     return () => {
       if (screenshotData?.url) {
         cleanupObjectUrl(screenshotData.url)
@@ -171,6 +170,15 @@ function Register() {
     }
   }
 
+  const controlStream = useCallback(() => {
+    if (stream.isStreaming) {
+      stream.stopStream()
+      showToast("info", "Stream Stopped", "Video stream has been stopped")
+    } else {
+      stream.startStream()
+    }
+  }, [stream])
+
   const onInputChange = (e, name) => {
     const value = (e.target && e.target.value) || ""
     let _new_user_details = { ...newUserDetails }
@@ -244,6 +252,12 @@ function Register() {
               className="p-button-info func-btn"
               onClick={() => handleClear()}
               disabled={isLoading}
+            />
+            <Button
+              label={stream.isStreaming ? "Stop Stream" : "Start Stream"}
+              icon={stream.isStreaming ? "pi pi-stop" : "pi pi-play"}
+              className="p-button-info func-btn"
+              onClick={() => controlStream()}
             />
           </div>
         </div>
