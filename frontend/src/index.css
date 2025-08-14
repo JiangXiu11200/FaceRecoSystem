@@ -67,6 +67,12 @@ html,
   align-items: center !important;
   text-align: center !important;
 }
+/*
+.p-dropdown .p-dropdown-label,
+.p-multiselect .p-multiselect-label,
+.p-inputtext .p-inputtext-label {
+  margin: 0rem !important;
+} */
 
 .p-multiselect {
   box-shadow: none !important;
@@ -169,6 +175,7 @@ html,
 .toolbar-layout {
   border: none !important;
   background: transparent !important;
+  min-width: 0 !important;
 }
 
 .inputgroup-btn {

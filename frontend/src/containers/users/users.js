@@ -186,8 +186,8 @@ function Users() {
 
   const leftContents = (
     <React.Fragment>
-      <div className="toolbar-left">
-        <div>
+      <div className="user-toolbar-layout row g-2">
+        <div className="col-4">
           <InputText
             className=""
             placeholder="Search for groups.."
@@ -196,9 +196,9 @@ function Users() {
             }
           />
         </div>
-        <div>
+        <div className="col-4">
           <MultiSelect
-            className="100"
+            className="w-100"
             placeholder="Select Group"
             value={
               searchGroups.register_group ? searchGroups.register_group : []
@@ -209,10 +209,10 @@ function Users() {
             }
             optionLabel="name"
             optionValue="code"
-            maxSelectedLabels={0}
+            maxSelectedLabels={1}
           />
         </div>
-        <div>
+        <div className="col-4">
           <Button
             icon="pi pi-search"
             className="func-btn"
@@ -283,7 +283,7 @@ function Users() {
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Toolbar className="toolbar-layout" left={leftContents} />
+      <Toolbar className="toolbar-layout " left={leftContents} />
       <Table
         data={table_data}
         columns={columns}
