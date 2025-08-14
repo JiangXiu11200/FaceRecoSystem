@@ -22,7 +22,8 @@
     "build": "webpack --config webpack.config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" ",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" "
   },
   "eslintConfig": {
     "extends": [
@@ -46,6 +47,7 @@
     "@babel/core": "^7.26.8",
     "@babel/preset-env": "^7.26.8",
     "@babel/preset-react": "^7.26.3",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "babel-loader": "^9.2.1",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^7.1.2",
