@@ -2,7 +2,7 @@ export const parseDRFError = (error) => {
   if (!error || typeof error !== "object") {
     return "An unknown error occurred. (error01)"
   }
-
+  console.log("Parsing error:", error)
   if (error.error && typeof error.error === "string") {
     return error.error
   }

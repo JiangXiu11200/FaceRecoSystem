@@ -82,7 +82,6 @@ function Users() {
       tablePage
     )
       .then((response) => {
-        console.log("User list response: ", response)
         setTableData(response.data.results)
       })
       .catch((err) => {

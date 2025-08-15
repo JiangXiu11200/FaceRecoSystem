@@ -184,6 +184,7 @@ html,
   border: none !important;
   background: transparent !important;
   min-width: 0 !important;
+  align-items: stretch !important;
 }
 
 .inputgroup-btn {

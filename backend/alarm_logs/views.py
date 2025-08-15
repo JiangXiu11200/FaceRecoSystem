@@ -36,4 +36,3 @@ class AcknowledgeAlarmLogsViewSet(UpdateModelMixin, viewsets.GenericViewSet):
             return Response({"message": "Acknowledged."}, status=status.HTTP_200_OK)
 
         return Response({"message": "No changes made."}, status=status.HTTP_200_OK)
-

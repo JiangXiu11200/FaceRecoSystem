@@ -57,7 +57,6 @@ function Header() {
   }
 
   const items = useMemo(() => {
-    console.log("location", location)
     return breadcrumbMap[location.pathname] || []
   }, [location.pathname])
 
