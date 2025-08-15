@@ -28,7 +28,14 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         user_id = validated["user_id"]
         account = validated["account"]
         permissions = validated["permissions"]
+        is_active = validated["is_active"]
+        group_active = validated["group_active"]
         keep_days = validated.get("keep_expiration_days", 1)  # Default refresh token expiration to 1 day
+
+        if not is_active:
+            return Response({"message": "User account is inactive."}, status=status.HTTP_403_FORBIDDEN)
+        if not group_active:
+            return Response({"message": "User group is inactive."}, status=status.HTTP_403_FORBIDDEN)
 
         if len(permissions) == 0:
             return Response({"message": "No permissions found for this user."}, status=status.HTTP_403_FORBIDDEN)
