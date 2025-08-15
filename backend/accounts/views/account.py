@@ -1,4 +1,4 @@
-from accounts.filters import AccountsFilter
+from accounts.filters import AccountsFilter, AccountsGroupFilter
 from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.serializers.account import (
     AccountsSerializer,
@@ -32,6 +32,12 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         "DELETE": "Delete system account.",
     }
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.id == 1:
+            return Response({"error": "Cannot delete default admin account."}, status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, *args, **kwargs)
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = UserGroup.objects.all()
@@ -41,6 +47,15 @@ class GroupViewSet(viewsets.ModelViewSet):
         "PUT": "Update user group.",
         "DELETE": "Delete user group.",
     }
+    filterset_fields = ["group_name"]
+    filterset_class = AccountsGroupFilter
+    filter_backends = [DjangoFilterBackend]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.id == 1:
+            return Response({"error": "Cannot delete default user group."}, status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, *args, **kwargs)
 
 
 class RegisterViewSet(CreateModelMixin, GenericViewSet):

@@ -2,7 +2,7 @@ import axios from "axios"
 
 import { parseDRFError } from "../utils/parse_error"
 
-export const accointsAPI = (method, url, data) => {
+export const accountsAPI = (method, url, data) => {
   const accessToken = localStorage.getItem("access_token")
 
   const headers = {
@@ -12,7 +12,7 @@ export const accointsAPI = (method, url, data) => {
 
   const config = {
     method,
-    url:  `/api/accounts${url}`,
+    url: `/api/accounts${url}`,
     headers,
   }
   if (method.toLowerCase() === "get" || method.toLowerCase() === "delete") {

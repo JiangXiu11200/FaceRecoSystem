@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 
+import clone from "clone-deep"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
@@ -10,7 +11,7 @@ import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
 
-import { accointsAPI } from "../../api/accounts"
+import { accountsAPI } from "../../api/accounts"
 import { Table } from "../../components/data_table/data_table"
 
 import "./accounts.css"
@@ -26,17 +27,35 @@ const ACTIONS = {
   DELETE: "delete",
 }
 
+const EMPTY_PASSWORD = {
+  old_password: "",
+  new_password: "",
+}
+
+const EMPTY_USER_DETAILS = {
+  account: "",
+  password: "",
+  password_confirm: "",
+  first_name: "",
+  last_name: "",
+  email: "",
+  is_active: true,
+  user_groups: [],
+  description: "",
+}
+
 function Accounts() {
   const toast = useRef(null)
   const [accountDetailsDialog, setAccountDetailsDialog] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState(false)
-  const [editingPassword, setEditingPassword] = useState(true)
+  const [passwordDialog, setPasswordDialog] = useState(false)
+  const [changePassword, setChangePassword] = useState(clone(EMPTY_PASSWORD))
 
   const [mode, setMode] = useState("create")
-
-  const [systemApps, setSystemApps] = useState([])
   const [userGroups, setUserGroups] = useState([])
-  const [accountDetails, setAccountDetails] = useState({})
+  const [accountDetails, setAccountDetails] = useState(
+    clone(EMPTY_USER_DETAILS)
+  )
   const [searchUser, setSearchUser] = useState("")
 
   const [table_data, setTableData] = useState([])
@@ -61,36 +80,18 @@ function Accounts() {
   useEffect(() => {
     getAccounts()
     getUserGroups()
-    // getSystemApps()
   }, [])
 
-  useEffect(() => {
-    console.log("userDetails: ", accountDetails)
-  }, [accountDetails])
+  useEffect(() => {}, [accountDetails])
 
   const getUserGroups = () => {
-    accointsAPI("get", "/group/")
+    accountsAPI("get", "/group/")
       .then((response) => {
         const groups = response.data.results.map((item) => ({
           name: item.group_name,
           code: item.id,
         }))
-        console.log("User Groups: ", response.data.results)
         setUserGroups(groups)
-      })
-      .catch((err) => {
-        showToast("error", "Error", err.response.data)
-      })
-  }
-
-  const getSystemApps = () => {
-    accointsAPI("get", "/systemapps/")
-      .then((response) => {
-        const apps = response.data.results.map((item) => ({
-          name: item.label,
-          code: item.id,
-        }))
-        setSystemApps(apps)
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -100,7 +101,7 @@ function Accounts() {
   const getAccounts = () => {
     const url = searchUser ? `/?account=${searchUser}` : "/"
 
-    accointsAPI("get", `/${url}`, tablePage)
+    accountsAPI("get", `/${url}`, tablePage)
       .then((response) => {
         setTableData(response.data.results)
         if (searchUser != "") {
@@ -110,7 +111,6 @@ function Accounts() {
             `Found ${response.data.count} accounts`
           )
         }
-        console.log("Accounts data: ", response.data.results)
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -122,7 +122,6 @@ function Accounts() {
     setMode(action)
 
     if (action === ACTIONS.EDIT) {
-      setEditingPassword(false)
       setAccountDetailsDialog(true)
     } else if (action === ACTIONS.DELETE) {
       setDeleteDialog(true)
@@ -130,13 +129,33 @@ function Accounts() {
   }
 
   const handleSaveAccount = () => {
-    console.log("Saving account with details:", accountDetails, mode)
+    if (!accountDetails.account.trim()) {
+      showToast("error", "Error", "Account name cannot be empty.")
+      return
+    }
+
+    if (mode === ACTIONS.CREATE || accountDetails.password) {
+      if (!accountDetails.password) {
+        showToast("error", "Error", "Password is required.")
+        return
+      }
+
+      if (!accountDetails.password_confirm) {
+        showToast("error", "Error", "Password confirmation is required.")
+        return
+      }
+
+      if (accountDetails.password !== accountDetails.password_confirm) {
+        showToast("error", "Error", "Passwords do not match.")
+        return
+      }
+    }
 
     const action = mode === ACTIONS.CREATE ? "post" : "put"
     const url =
       mode === ACTIONS.CREATE ? "/register/" : `/${accountDetails.id}/`
 
-    accointsAPI(action, url, accountDetails)
+    accountsAPI(action, url, accountDetails)
       .then(() => {
         showToast("success", "Success", "Account saved successfully.")
         setAccountDetailsDialog(false)
@@ -157,7 +176,7 @@ function Accounts() {
       return
     }
 
-    accointsAPI("delete", `/${accountDetails.id}/`)
+    accountsAPI("delete", `/${accountDetails.id}/`)
       .then(() => {
         showToast("success", "Success", "Account deleted successfully.")
         setDeleteDialog(false)
@@ -165,6 +184,35 @@ function Accounts() {
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const handleChangePassword = () => {
+    if (accountDetails.id === undefined) {
+      showToast("error", "Error", "No account selected for password change.")
+      return
+    }
+    if (
+      changePassword.old_password === "" ||
+      changePassword.new_password === ""
+    ) {
+      showToast("error", "Error", "Please fill in all password fields.")
+      return
+    }
+
+    accountsAPI(
+      "post",
+      `/change-password/${accountDetails.id}/`,
+      changePassword
+    )
+      .then(() => {
+        showToast("success", "Success", "Password updated successfully.")
+        setPasswordDialog(false)
+        setChangePassword(clone(EMPTY_PASSWORD))
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+        return
       })
   }
 
@@ -176,8 +224,12 @@ function Accounts() {
   const closeUserDialog = () => {
     setAccountDetailsDialog(false)
     setDeleteDialog(false)
-    setAccountDetails({})
-    setEditingPassword(true)
+    setAccountDetails(clone(EMPTY_USER_DETAILS))
+  }
+
+  const closePasswordDialog = () => {
+    setPasswordDialog(false)
+    setChangePassword(clone(EMPTY_PASSWORD))
   }
 
   const leftContents = () => (
@@ -236,6 +288,29 @@ function Accounts() {
               onClick={handleSaveAccount}
             />
           </div>
+        </div>
+      </div>
+    </React.Fragment>
+  )
+
+  const passwordDialogFooter = (
+    <React.Fragment>
+      <div className="d-flex justify-content-end">
+        <div className="me-2">
+          <Button
+            label="Cancel"
+            icon="pi pi-times"
+            className="p-button-text cancel-btn"
+            onClick={closePasswordDialog}
+          />
+        </div>
+        <div>
+          <Button
+            label="Save"
+            icon="pi pi-check"
+            className="p-button-text func-btn"
+            onClick={handleChangePassword}
+          />
         </div>
       </div>
     </React.Fragment>
@@ -304,14 +379,15 @@ function Accounts() {
                 }
               />
             </div>
-            <div className="">
-              <label>Password</label>
-              <span className="text-danger">*</span>
-              {editingPassword ? (
+            <div className="d-flex flex-row">
+              <div className="w-100 me-2">
+                <label>Password</label>
+                <span className="text-danger">*</span>
                 <Password
-                  placeholder=""
+                  placeholder={mode === ACTIONS.CREATE ? "" : "***************"}
                   feedback={false}
-                  toggleMask
+                  toggleMask={mode === ACTIONS.CREATE ? true : false}
+                  disabled={mode === ACTIONS.EDIT}
                   onChange={(e) =>
                     setAccountDetails({
                       ...accountDetails,
@@ -319,14 +395,16 @@ function Accounts() {
                     })
                   }
                 />
-              ) : (
-                <InputText
-                  className="p-inputtext"
-                  placeholder="********"
-                  value={accountDetails ? accountDetails.password : ""}
-                  onClick={() => setEditingPassword(true)}
+              </div>
+              <div className="align-self-end">
+                <Button
+                  className="func-btn"
+                  label="Edit"
+                  icon="pi pi-unlock"
+                  onClick={() => setPasswordDialog(true)}
+                  disabled={mode === ACTIONS.CREATE}
                 />
-              )}
+              </div>
             </div>
             <div className="">
               <label>Confirm</label>
@@ -338,7 +416,7 @@ function Accounts() {
                 onChange={(e) =>
                   setAccountDetails({
                     ...accountDetails,
-                    password: e.target.value,
+                    password_confirm: e.target.value,
                   })
                 }
               />
@@ -346,7 +424,6 @@ function Accounts() {
             <div className="row g-2">
               <div className="col-6 col-lg-6">
                 <label>First Name </label>
-                <span className="text-danger">*</span>
                 <InputText
                   className="p-inputtext"
                   placeholder=""
@@ -361,7 +438,6 @@ function Accounts() {
               </div>
               <div className="col-6 col-lg-6">
                 <label>Last Name</label>
-                <span className="text-danger">*</span>
                 <InputText
                   className="p-inputtext"
                   placeholder=""
@@ -438,6 +514,48 @@ function Accounts() {
           </div>
         </div>
       </Dialog>
+
+      <Dialog
+        visible={passwordDialog}
+        header={"Change Password"}
+        footer={passwordDialogFooter}
+        onHide={() => setPasswordDialog(false)}
+      >
+        <div className="">
+          <div className="mb-2">
+            <label>Old Password</label>
+            <span className="text-danger">*</span>
+            <Password
+              placeholder=""
+              feedback={false}
+              toggleMask
+              value={changePassword.old_password}
+              onChange={(e) =>
+                setChangePassword({
+                  ...changePassword,
+                  old_password: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div>
+            <label>New Password</label>
+            <span className="text-danger">*</span>
+            <Password
+              feedback={false}
+              toggleMask
+              value={changePassword.new_password}
+              onChange={(e) =>
+                setChangePassword({
+                  ...changePassword,
+                  new_password: e.target.value,
+                })
+              }
+            />
+          </div>
+        </div>
+      </Dialog>
+
       <Dialog
         visible={deleteDialog}
         className=""

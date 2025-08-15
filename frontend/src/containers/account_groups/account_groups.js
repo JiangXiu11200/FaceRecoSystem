@@ -4,11 +4,12 @@ import { cloneDeep } from "lodash"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { InputText } from "primereact/inputtext"
+import { MultiSelect } from "primereact/multiselect"
 import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
 
-import { accointsAPI } from "../../api/accounts"
+import { accountsAPI } from "../../api/accounts"
 import { Table } from "../../components/data_table/data_table"
 
 import "./account_groups.css"
@@ -32,12 +33,14 @@ const ACTIONS = {
 
 function AccountGroups() {
   const toast = useRef(null)
-  const [groups, setGroups] = useState([])
+  const [groupDetails, setGroupDetails] = useState(cloneDeep(EMPTY_GROUP))
+  const [groupName, setGroupsName] = useState("")
+  const [systemApps, setSystemApps] = useState([])
   const [dialogVisible, setDialogVisible] = useState(false)
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
   const [mode, setMode] = useState(null)
-  const [groupDetails, setGroupDetails] = useState(cloneDeep(EMPTY_GROUP))
-  const [groupName, setGroupsName] = useState("")
+
+  const [tableGroups, setTableGroups] = useState([])
   const [tablePage, setTablePage] = useState({
     page: 1,
     offset: 0,
@@ -46,6 +49,7 @@ function AccountGroups() {
 
   const columns = [
     { field: "group_name", header: "Group Name" },
+    { field: "apps_name_list", header: "Permissions", type: "array" },
     { field: "is_active", header: "Enable", type: "boolean" },
     { field: "update_time", header: "Update Time", type: "date" },
     { field: "create_time", header: "Create Time", type: "date" },
@@ -55,11 +59,25 @@ function AccountGroups() {
     toast.current.show({ severity, summary, detail, life })
   }
 
-  const fetchGroups = () => {
-    accointsAPI("get", "/group/", tablePage)
+  const getGroups = () => {
+    accountsAPI("get", "/group/", tablePage)
       .then((response) => {
-        console.log("Groups fetched successfully:", response.data)
-        setGroups(response.data.results)
+        const systemApps = systemAppsFilter(response.data.results)
+        setTableGroups(systemApps)
+      })
+      .catch((err) => {
+        showToast("error", "Error", err.response.data)
+      })
+  }
+
+  const getSystemApps = () => {
+    accountsAPI("get", "/systemapps/")
+      .then((response) => {
+        const apps = response.data.results.map((item) => ({
+          name: item.label,
+          code: item.id,
+        }))
+        setSystemApps(apps)
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -73,12 +91,17 @@ function AccountGroups() {
     const method = isEdit ? "put" : "post"
     const url = isEdit ? `/group/${groupDetails.id}/` : "/group/"
 
-    accointsAPI(method, url, groupDetails)
+    if (groupDetails.id == 1 && mode == ACTIONS.DELETE) {
+      showToast("error", "Error", "Cannot delete the default group.")
+      return
+    }
+
+    accountsAPI(method, url, groupDetails)
       .then(() => {
         if (groupName) {
           searchGroups()
         } else {
-          fetchGroups()
+          getGroups()
         }
         showToast("success", "Success", "Group saved successfully")
         closeGroupDialog()
@@ -89,10 +112,11 @@ function AccountGroups() {
   }
 
   const searchGroups = () => {
-    accointsAPI("get", `/group/?group_name=${groupName}`, tablePage)
+    accountsAPI("get", `/group/?group_name=${groupName}`, tablePage)
       .then((response) => {
         let _group_count = response.data.count
-        setGroups(response.data.results)
+        const systemApps = systemAppsFilter(response.data.results)
+        setTableGroups(systemApps)
         showToast("success", "Success", `Found ${_group_count} matching groups`)
       })
       .catch((err) => {
@@ -101,14 +125,19 @@ function AccountGroups() {
   }
 
   const deleteGroup = () => {
-    accointsAPI("delete", `/group/${groupDetails.id}/`)
+    if (groupDetails.id == 1) {
+      showToast("error", "Error", "Cannot delete the default group.")
+      return
+    }
+
+    accountsAPI("delete", `/group/${groupDetails.id}/`)
       .then(() => {
         showToast("success", "Success", "Group deleted successfully")
-        fetchGroups()
+        getGroups()
         if (groupName) {
           searchGroups()
         } else {
-          fetchGroups()
+          getGroups()
         }
         setDeleteDialogVisible(false)
       })
@@ -146,6 +175,25 @@ function AccountGroups() {
     return true
   }
 
+  const systemAppsFilter = (groupData) => {
+    return groupData.map((item) => {
+      let appsNameDisplay = "Not set"
+
+      if (item.apps_name && item.apps_name.length > 0) {
+        if (item.apps_name.length === 1) {
+          appsNameDisplay = item.apps_name[0]
+        } else {
+          appsNameDisplay = `${item.apps_name[0]} ...and ${item.apps_name.length - 1} apps`
+        }
+      }
+
+      return {
+        ...item,
+        apps_name_list: appsNameDisplay,
+      }
+    })
+  }
+
   const handleAction = ({ action, data }) => {
     setGroupDetails(cloneDeep(data))
     setMode(action)
@@ -164,8 +212,9 @@ function AccountGroups() {
   }
 
   useEffect(() => {
-    fetchGroups()
-  }, [tablePage])
+    getGroups()
+    getSystemApps()
+  }, [])
 
   const leftToolbar = (
     <div className="row g-2 account-group-toolbar-layout">
@@ -255,7 +304,7 @@ function AccountGroups() {
       />
 
       <Table
-        data={groups}
+        data={tableGroups}
         columns={columns}
         tableParams={setTablePage}
         actnioEvent={handleAction}
@@ -265,32 +314,47 @@ function AccountGroups() {
 
       <Dialog
         visible={dialogVisible}
-        header={
-          mode === ACTIONS.CREATE
-            ? "Create Group"
-            : mode === ACTIONS.EDIT
-              ? "Edit Group"
-              : "Group Details"
-        }
+        header={mode === ACTIONS.CREATE ? "Create Group" : "Edit Group"}
         footer={groupDialogFooter}
         onHide={closeGroupDialog}
       >
-        <div className="d-flex flex-row align-items-center">
-          <div className="me-4">
-            <label>
-              Group Name<span className="text-danger">*</span>
-            </label>
-            <InputText
-              className="p-inputtext"
-              placeholder="Group name"
-              value={groupDetails.group_name}
-              onChange={(e) =>
-                setGroupDetails({ ...groupDetails, group_name: e.target.value })
-              }
-              disabled={mode === ACTIONS.VIEW}
-            />
+        <div className="row g-3">
+          <div className="col-8">
+            <div className="mb-2">
+              <label>
+                Group Name<span className="text-danger">*</span>
+              </label>
+              <InputText
+                className="p-inputtext"
+                placeholder="Group name"
+                value={groupDetails.group_name}
+                onChange={(e) =>
+                  setGroupDetails({
+                    ...groupDetails,
+                    group_name: e.target.value,
+                  })
+                }
+                disabled={mode === ACTIONS.VIEW}
+              />
+            </div>
+            <div>
+              <label>Select Apps</label>
+              <MultiSelect
+                className="w-100"
+                placeholder="Select Apps"
+                options={systemApps}
+                value={groupDetails ? groupDetails.apps : []}
+                optionValue="code"
+                optionLabel="name"
+                onChange={(e) =>
+                  setGroupDetails({ ...groupDetails, apps: e.value })
+                }
+                maxSelectedLabels={0}
+              />
+            </div>
           </div>
-          <div>
+
+          <div className="col-4">
             <label>
               Enable<span className="text-danger">*</span>
             </label>
