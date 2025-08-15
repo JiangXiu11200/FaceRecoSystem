@@ -4,11 +4,20 @@ from rest_framework import serializers
 
 
 class AccountsSerializer(serializers.ModelSerializer):
+    user_group_labels = serializers.SerializerMethodField()
     class Meta:
         model = UserProfile
         exclude = ["password"]
+        read_only_fields = ["user_group_labels"]
 
+    def get_user_group_labels(self, obj):
+        return ", ".join(obj.user_groups.values_list("group_name", flat=True))
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get("request")
+        if request and request.method != "GET":
+            self.fields.pop("user_group_labels", None)
 class UserGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGroup
