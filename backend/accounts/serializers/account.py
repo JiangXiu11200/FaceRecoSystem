@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 class AccountsSerializer(serializers.ModelSerializer):
     user_group_labels = serializers.SerializerMethodField()
+
     class Meta:
         model = UserProfile
         exclude = ["password"]
@@ -18,6 +19,8 @@ class AccountsSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and request.method != "GET":
             self.fields.pop("user_group_labels", None)
+
+
 class UserGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGroup
@@ -26,6 +29,7 @@ class UserGroupSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep["apps"] = [app.id for app in instance.apps.all()]
+        rep["apps_name"] = [app.app_name for app in instance.apps.all()]
         return rep
 
 
