@@ -27,11 +27,6 @@ DEBUG = True
 
 USE_AUTHENTICATION = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",  # React dev server
-    "http://localhost:3000",
-]
-
 ALLOWED_HOSTS = ["*"]  # FIXME: For development only, restrict in production
 
 # Application definition
@@ -76,6 +71,9 @@ REST_FRAMEWORK = {
         "accounts.utils.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["accounts.utils.authentication.Permission"],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
 }
 
 if not USE_AUTHENTICATION:
@@ -90,6 +88,7 @@ with open(BASE_DIR / "ca/public.pem") as f:
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -97,9 +96,18 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "activity_logs.middleware.ActivityLogMiddleware",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True  # FIXME: For development only, restrict in production
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://127.0.0.1:3000",  # React dev server
+#     "http://localhost:3000",
+# ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 ROOT_URLCONF = "app_server.urls"
 
@@ -186,6 +194,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # HLS 檔案存放路徑
 HLS_OUTPUT_PATH = os.path.join(MEDIA_ROOT, "hls")
+SCREENSHOT_OUTPUT_PATH = os.path.join(MEDIA_ROOT, "screenshots")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
