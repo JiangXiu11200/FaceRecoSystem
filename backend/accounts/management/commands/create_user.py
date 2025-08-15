@@ -35,11 +35,10 @@ class Command(BaseCommand):
                 "account": "superadmin",
                 "password": _password,
                 "first_name": "superadmin",
-                "user_group": default_group,
             }
         )
         if created:
-            default_user.user_group = default_group
+            default_user.user_groups.add(default_group)
             default_user.save()
             self.stdout.write(self.style.SUCCESS("Created default user: superadmin"))
         else:

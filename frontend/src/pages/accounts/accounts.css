@@ -1,21 +1,5 @@
-.toolbar-layout {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.toolbar-left {
-  max-width: 65rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  justify-content: end;
+.toolbar-right-content, .p-toolbar-group-right {
+  align-items: end;
 }
 
 .account-dialog {

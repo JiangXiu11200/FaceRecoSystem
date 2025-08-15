@@ -1,3 +1,4 @@
+from accounts.filters import AccountsFilter
 from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.serializers.account import (
     AccountsSerializer,
@@ -6,6 +7,7 @@ from accounts.serializers.account import (
     UserGroupSerializer,
     UserRegisterSerializer,
 )
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -21,6 +23,9 @@ from rest_framework.viewsets import GenericViewSet
 class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = AccountsSerializer
+    filterset_fields = ["account"]
+    filterset_class = AccountsFilter
+    filter_backends = [DjangoFilterBackend]
     activity_logs = {
         "GET": "Search system accounts.",
         "PUT": "Update system account.",
