@@ -43,6 +43,8 @@ const EMPTY_USER_DETAILS = {
   is_active: true,
   user_groups: [],
   description: "",
+  profile_picture_url: null,
+  profile_picture_file_name: null,
 }
 
 function Accounts() {
@@ -54,8 +56,6 @@ function Accounts() {
 
   const fileUploadRef = useRef(null)
   const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [accountPhotoStickers, setAccountPhotoStickers] = useState(null)
 
   const [mode, setMode] = useState("create")
   const [userGroups, setUserGroups] = useState([])
@@ -125,7 +125,6 @@ function Accounts() {
 
   const handleAction = ({ action, data }) => {
     setAccountDetails(data)
-    setAccountPhotoStickers(data.profile_picture || null)
     setMode(action)
 
     if (action === ACTIONS.EDIT) {
@@ -224,12 +223,6 @@ function Accounts() {
   }
 
   const handleUpload = (event) => {
-    if (!accountDetails?.id) {
-      showToast("error", "Error", "No account selected for upload.")
-      fileUploadRef.current.clear()
-      return
-    }
-
     if (!event.files || !event.files.length) {
       showToast("error", "Error", "Please select a file to upload.")
       fileUploadRef.current.clear()
@@ -264,10 +257,15 @@ function Accounts() {
     formData.append("file_type", file.type)
     formData.append("file_size", file.size)
 
-    accountsAPI("post", `/upload-photo-stickers/`, formData)
+    accountsAPI("post", `/upload-profile-picture/`, formData)
       .then((response) => {
         showToast("success", "Success", "Image uploaded successfully!")
-        setAccountPhotoStickers(response.data.image_url || null)
+        console.log("Upload response:", response.data)
+        setAccountDetails({
+          ...accountDetails,
+          profile_picture_url: response.data.image_url || null,
+          profile_picture_file_name: response.data.file_name || null,
+        })
       })
       .catch((err) => {
         console.error("Upload error:", err)
@@ -292,7 +290,6 @@ function Accounts() {
     setAccountDetailsDialog(false)
     setDeleteDialog(false)
     setAccountDetails(clone(EMPTY_USER_DETAILS))
-    setAccountPhotoStickers(null)
   }
 
   const closePasswordDialog = () => {
@@ -577,11 +574,9 @@ function Accounts() {
               <img
                 className="img-square"
                 src={
-                  accountPhotoStickers
-                    ? accountPhotoStickers
-                    : accountDetails.profile_picture_url
-                      ? accountDetails.profile_picture_url
-                      : "/image/roi_not_found.jpg"
+                  accountDetails.profile_picture_url
+                    ? accountDetails.profile_picture_url
+                    : "/image/roi_not_found.jpg"
                 }
                 alt=""
               />
