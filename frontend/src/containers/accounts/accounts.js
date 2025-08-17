@@ -125,7 +125,7 @@ function Accounts() {
 
   const handleAction = ({ action, data }) => {
     setAccountDetails(data)
-    setAccountPhotoStickers(data.photo_stickers || null)
+    setAccountPhotoStickers(data.profile_picture || null)
     setMode(action)
 
     if (action === ACTIONS.EDIT) {
@@ -572,8 +572,8 @@ function Accounts() {
                 src={
                   accountPhotoStickers
                     ? accountPhotoStickers
-                    : accountDetails.photo_stickers_url
-                      ? accountDetails.photo_stickers_url
+                    : accountDetails.profile_picture_url
+                      ? accountDetails.profile_picture_url
                       : "/image/roi_not_found.jpg"
                 }
                 alt=""

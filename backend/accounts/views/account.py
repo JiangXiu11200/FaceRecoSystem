@@ -87,7 +87,7 @@ class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
         file_extension = self.get_file_extension(uploaded_file.name)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         unique_id = str(uuid.uuid4())[:8]
-        object_name = f"{user.account}/photo_stickers_{timestamp}_{unique_id}{file_extension}"
+        object_name = f"{user.account}/profile_picture_{timestamp}_{unique_id}{file_extension}"
 
         try:
             status_upload, result = self.upload_to_minio(uploaded_file, object_name)
@@ -104,12 +104,12 @@ class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
-            if user.photo_stickers_file_name:
-                status_delete, delete_result = self.delete_minio_object(user.photo_stickers_file_name)
+            if user.profile_picture_file_name:
+                status_delete, delete_result = self.delete_minio_object(user.profile_picture_file_name)
                 if not status_delete:
                     print(f"Failed to delete old photo stickers: {delete_result.get('error')}")
 
-            user.photo_stickers_file_name = object_name
+            user.profile_picture_file_name = object_name
             user.save()
 
             serializer = self.get_serializer(user)
@@ -184,39 +184,6 @@ class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
         except Exception as e:
             print(f"Error deleting object from MinIO: {str(e)}")
             return False, {"status": False, "error": str(e)}
-
-
-# class AccountsPhotoStickersViewSet1(CreateModelMixin, GenericViewSet):
-#     queryset = UserProfile.objects.all()
-#     serializer_class = AccountsPhotoStickersSerializer
-#     activity_logs = {"POST": "Upload photo stickers for user."}
-
-#     def create(self, request, *args, **kwargs):
-#         user_id = request.data.get("user_id")
-#         # if not user_id:
-#         #     return Response({"error": "User ID is required."}, status=status.HTTP_400_BAD_REQUEST)
-#         print("--> ", request.data.get("file"))
-#         try:
-#             user = UserProfile.objects.get(id=user_id)
-#         except UserProfile.DoesNotExist:
-#             return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
-
-#         user_photo_stickers_file_name = f"photo_stickers_user_id_{user.account}.jpg"
-#         status, message = MinioClient.upload_object(
-#             bucket_name="accounts",
-#             absolute_path_or_binary=request.data.get("file"),
-#             object_name=user_photo_stickers_file_name,
-#             is_binary=True,
-#         )
-#         if not status:
-#             return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
-#         user.photo_stickers_file_name = user_photo_stickers_file_name
-
-#         serializer = self.get_serializer(user, data=request.data, partial=True)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
