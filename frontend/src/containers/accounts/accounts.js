@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react"
 
 import clone from "clone-deep"
 import { Button } from "primereact/button"
-import { Dialog } from "primereact/dialog";
+import { Dialog } from "primereact/dialog"
 import { FileUpload } from "primereact/fileupload"
 import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
@@ -173,7 +173,7 @@ function Accounts() {
       })
   }
 
-  const headleDeleteUser = () => {
+  const handleDeleteUser = () => {
     if (accountDetails.id === undefined) {
       showToast("error", "Error", "No account selected for deletion.")
       return
@@ -186,7 +186,7 @@ function Accounts() {
     accountsAPI("delete", `/${accountDetails.id}/`)
       .then(() => {
         showToast("success", "Success", "Account deleted successfully.")
-        setDeleteDialog(false)
+        closeUserDialog()
         getAccounts()
       })
       .catch((err) => {
@@ -223,14 +223,16 @@ function Accounts() {
       })
   }
 
-  const handleUpload = async (event) => {
+  const handleUpload = (event) => {
     if (!accountDetails?.id) {
       showToast("error", "Error", "No account selected for upload.")
+      fileUploadRef.current.clear()
       return
     }
 
     if (!event.files || !event.files.length) {
       showToast("error", "Error", "Please select a file to upload.")
+      fileUploadRef.current.clear()
       return
     }
 
@@ -238,6 +240,7 @@ function Accounts() {
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
       showToast("error", "Error", "File size must be less than 5MB")
+      fileUploadRef.current.clear()
       return
     }
 
@@ -248,6 +251,7 @@ function Accounts() {
         "Error",
         "Please upload a valid image file (JPEG, JPG, PNG)"
       )
+      fileUploadRef.current.clear()
       return
     }
 
@@ -263,7 +267,6 @@ function Accounts() {
     accountsAPI("post", `/upload-photo-stickers/`, formData)
       .then((response) => {
         showToast("success", "Success", "Image uploaded successfully!")
-        setUploading(false)
         setAccountPhotoStickers(response.data.image_url || null)
       })
       .catch((err) => {
@@ -273,6 +276,10 @@ function Accounts() {
           "Upload Failed",
           err.response?.data || "An error occurred during upload"
         )
+      })
+      .finally(() => {
+        setUploading(false)
+        fileUploadRef.current.clear()
       })
   }
 
@@ -393,7 +400,7 @@ function Accounts() {
             label="Sure"
             icon="pi pi-times"
             className="p-button-text delete-btn"
-            onClick={headleDeleteUser}
+            onClick={handleDeleteUser}
           />
         </div>
       </div>
