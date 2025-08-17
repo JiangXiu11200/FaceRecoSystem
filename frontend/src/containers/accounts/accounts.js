@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react"
 
 import clone from "clone-deep"
 import { Button } from "primereact/button"
-import { Dialog } from "primereact/dialog"
+import { Dialog } from "primereact/dialog";
+import { FileUpload } from "primereact/fileupload"
 import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
 import { MultiSelect } from "primereact/multiselect"
@@ -50,6 +51,11 @@ function Accounts() {
   const [deleteDialog, setDeleteDialog] = useState(false)
   const [passwordDialog, setPasswordDialog] = useState(false)
   const [changePassword, setChangePassword] = useState(clone(EMPTY_PASSWORD))
+
+  const fileUploadRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [accountPhotoStickers, setAccountPhotoStickers] = useState(null)
 
   const [mode, setMode] = useState("create")
   const [userGroups, setUserGroups] = useState([])
@@ -119,6 +125,7 @@ function Accounts() {
 
   const handleAction = ({ action, data }) => {
     setAccountDetails(data)
+    setAccountPhotoStickers(data.photo_stickers || null)
     setMode(action)
 
     if (action === ACTIONS.EDIT) {
@@ -216,6 +223,59 @@ function Accounts() {
       })
   }
 
+  const handleUpload = async (event) => {
+    if (!accountDetails?.id) {
+      showToast("error", "Error", "No account selected for upload.")
+      return
+    }
+
+    if (!event.files || !event.files.length) {
+      showToast("error", "Error", "Please select a file to upload.")
+      return
+    }
+
+    const file = event.files[0]
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      showToast("error", "Error", "File size must be less than 5MB")
+      return
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"]
+    if (!allowedTypes.includes(file.type)) {
+      showToast(
+        "error",
+        "Error",
+        "Please upload a valid image file (JPEG, JPG, PNG)"
+      )
+      return
+    }
+
+    setUploading(true)
+
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("user_id", accountDetails.id)
+    formData.append("file_name", file.name)
+    formData.append("file_type", file.type)
+    formData.append("file_size", file.size)
+
+    accountsAPI("post", `/upload-photo-stickers/`, formData)
+      .then((response) => {
+        showToast("success", "Success", "Image uploaded successfully!")
+        setUploading(false)
+        setAccountPhotoStickers(response.data.image_url || null)
+      })
+      .catch((err) => {
+        console.error("Upload error:", err)
+        showToast(
+          "error",
+          "Upload Failed",
+          err.response?.data || "An error occurred during upload"
+        )
+      })
+  }
+
   const createAccount = () => {
     setAccountDetailsDialog(true)
     setMode(ACTIONS.CREATE)
@@ -225,6 +285,7 @@ function Accounts() {
     setAccountDetailsDialog(false)
     setDeleteDialog(false)
     setAccountDetails(clone(EMPTY_USER_DETAILS))
+    setAccountPhotoStickers(null)
   }
 
   const closePasswordDialog = () => {
@@ -506,10 +567,35 @@ function Accounts() {
           </div>
           <div className="col-4 col-lg-4">
             <div className="account-dialog-right-img">
-              <img src="/image/roi_not_found.jpg" alt="" />
+              <img
+                className="img-square"
+                src={
+                  accountPhotoStickers
+                    ? accountPhotoStickers
+                    : accountDetails.photo_stickers_url
+                      ? accountDetails.photo_stickers_url
+                      : "/image/roi_not_found.jpg"
+                }
+                alt=""
+              />
             </div>
             <div className="account-dialog-right-content mt-2">
-              <Button className="func-btn" label="Upload" icon="pi pi-upload" />
+              <div className="upload-section">
+                <FileUpload
+                  ref={fileUploadRef}
+                  name="file"
+                  customUpload
+                  auto
+                  chooseLabel={uploading ? "Uploading..." : "Upload"}
+                  mode="basic"
+                  disabled={uploading}
+                  className="upload-btn"
+                  icon={uploading ? "pi pi-spin pi-spinner" : "pi pi-upload"}
+                  accept="image/*"
+                  maxFileSize={5000000}
+                  uploadHandler={handleUpload}
+                />
+              </div>
             </div>
           </div>
         </div>

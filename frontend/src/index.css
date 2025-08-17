@@ -20,8 +20,17 @@ html,
   border-radius: 5px !important;
 }
 
+.upload-btn .p-button {
+  background-color: var(--func-btn-color) !important;
+  color: #4c585b !important;
+  border: 2px solid #e8e2c9 !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+}
+
 .func-btn.p-button.p-button-info:enabled:focus,
 .func-btn.p-button:focus,
+.upload-btn.p-button:focus,
 .cancel-btn.p-button:focus {
   box-shadow:
     0 0 0 2px #fff,
@@ -40,6 +49,7 @@ html,
 
 .func-btn:hover,
 .cancel-btn:hover,
+.upload-btn:hover,
 .delete-btn:hover {
   filter: brightness(0.9);
   transition: filter 0.2s ease;
@@ -47,6 +57,7 @@ html,
 
 .func-btn:active,
 .cancel-btn:active,
+.upload-btn:active,
 .delete-btn:active {
   filter: brightness(0.8);
 }

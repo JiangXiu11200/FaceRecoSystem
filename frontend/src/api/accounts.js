@@ -3,11 +3,16 @@ import axios from "axios"
 import { parseDRFError } from "../utils/parse_error"
 
 export const accountsAPI = (method, url, data) => {
+  const headers = {}
+  const isFormData = data instanceof FormData
   const accessToken = localStorage.getItem("access_token")
 
-  const headers = {
-    Authorization: accessToken,
-    "Content-Type": "application/json",
+  if (!isFormData) {
+    ;(headers["Authorization"] = accessToken),
+      (headers["Content-Type"] = "application/json")
+  } else {
+    ;(headers["Authorization"] = accessToken),
+      (headers["Content-Type"] = "multipart/form-data")
   }
 
   const config = {

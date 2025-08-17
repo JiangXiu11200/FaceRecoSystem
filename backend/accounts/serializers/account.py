@@ -1,24 +1,45 @@
 from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.utils.verify_passward import format_check, make_hashed_password, verify_password
 from rest_framework import serializers
+from utils.minio_client import MinioClient
 
 
 class AccountsSerializer(serializers.ModelSerializer):
     user_group_labels = serializers.SerializerMethodField()
+    photo_stickers_url = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         exclude = ["password"]
-        read_only_fields = ["user_group_labels"]
+        read_only_fields = ["user_group_labels", "photo_stickers_url"]
 
     def get_user_group_labels(self, obj):
         return ", ".join(obj.user_groups.values_list("group_name", flat=True))
+
+    def get_photo_stickers_url(self, obj):
+        if obj.photo_stickers_file_name:
+            state, results = MinioClient.get_object_url(
+                bucket_name="accounts",
+                object_name=obj.photo_stickers_file_name,
+                expires_in_sec=3600,
+            )
+            return results.get("url") if state else None
+        return None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         request = self.context.get("request")
         if request and request.method != "GET":
             self.fields.pop("user_group_labels", None)
+            self.fields.pop("photo_stickers_file_name", None)
+
+
+class AccountsPhotoStickersSerializer(serializers.ModelSerializer):
+    photo_stickers_file_name = serializers.FileField(write_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ["photo_stickers_file_name"]
 
 
 class UserGroupSerializer(serializers.ModelSerializer):

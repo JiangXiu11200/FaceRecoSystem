@@ -1,7 +1,14 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views.account import AccountsViewSet, ChangePasswordViewSet, GroupViewSet, RegisterViewSet, SystemAppsViewSet
+from .views.account import (
+    AccountsPhotoStickersViewSet,
+    AccountsViewSet,
+    ChangePasswordViewSet,
+    GroupViewSet,
+    RegisterViewSet,
+    SystemAppsViewSet,
+)
 from .views.auth import LoginViewSet, LogoutViewSet, RefreshTokenViewSet
 
 auth_router = routers.SimpleRouter()
@@ -12,6 +19,9 @@ accounts_router = routers.SimpleRouter()
 accounts_router.register(r"api/accounts/register", RegisterViewSet, basename="accounts-register")
 accounts_router.register(r"api/accounts/group", GroupViewSet, basename="accounts-group")
 accounts_router.register(r"api/accounts/systemapps", SystemAppsViewSet, basename="accounts-systemapps")
+accounts_router.register(
+    r"api/accounts/upload-photo-stickers", AccountsPhotoStickersViewSet, basename="accounts-photo-stickers"
+)
 accounts_router.register(r"api/accounts", AccountsViewSet, basename="accounts")
 
 

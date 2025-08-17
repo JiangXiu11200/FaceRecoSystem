@@ -28,7 +28,8 @@
 }
 
 .account-dialog-right-img img {
+  aspect-ratio: 1 / 1;
   width: 100%;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
 }
