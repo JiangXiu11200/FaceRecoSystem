@@ -7,6 +7,7 @@ from io import BytesIO
 import urllib3
 from django.conf import settings
 from minio import Minio, error
+from minio.commonconfig import CopySource
 from urllib3.util.timeout import Timeout
 
 TIMEOUT_CONFIG = Timeout(
@@ -134,6 +135,30 @@ class MinioClient:
                 response_headers={"response-cache-control": f"max-age={expires_in_sec}, public"},
             )
             return True, {"status": True, "url": url}
+        except error.S3Error as e:
+            return False, {"status": False, "error": str(e)}
+
+    @classmethod
+    def move_to_new_bucket(
+        cls, source_bucket: str, destination_bucket: str, object_name: str, new_prefix: str = None
+    ) -> tuple[bool, dict]:
+        try:
+            client = cls.get_client()
+            if new_prefix:
+                path_parts = object_name.split("/", 1)
+                if len(path_parts) > 1:
+                    new_object_name = f"{new_prefix}/{path_parts[1]}"
+                else:
+                    new_object_name = f"{new_prefix}/{object_name}"
+            else:
+                new_object_name = object_name
+            source = CopySource(
+                bucket_name=source_bucket,
+                object_name=object_name,
+            )
+            client.copy_object(destination_bucket, new_object_name, source)
+            client.remove_object(source_bucket, object_name)
+            return True, {"status": True, "original_object_name": object_name, "new_object_name": new_object_name}
         except error.S3Error as e:
             return False, {"status": False, "error": str(e)}
 

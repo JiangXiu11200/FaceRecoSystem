@@ -34,11 +34,10 @@ class AccountsSerializer(serializers.ModelSerializer):
             self.fields.pop("profile_picture_file_name", None)
 
 
-class AccountsPhotoStickersSerializer(serializers.ModelSerializer):
+class AccountsProfilePictureSerializer(serializers.ModelSerializer):
     profile_picture_file_name = serializers.FileField(write_only=True)
 
     class Meta:
-        model = UserProfile
         fields = ["profile_picture_file_name"]
 
 

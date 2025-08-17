@@ -4,7 +4,7 @@ from utils.minio_client import MinioClient
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        buckets = ["accounts", "face-activity-logs", "face-alarm-logs"]
+        buckets = ["accounts", "temporary-data", "face-activity-logs", "face-alarm-logs"]
 
         for bucket_name in buckets:
             try:

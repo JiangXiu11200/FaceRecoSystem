@@ -1,11 +1,10 @@
-import os
 import uuid
 from datetime import datetime
 
 from accounts.filters import AccountsFilter, AccountsGroupFilter
 from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.serializers.account import (
-    AccountsPhotoStickersSerializer,
+    AccountsProfilePictureSerializer,
     AccountsSerializer,
     ChangePasswordSerializer,
     SystemAppsSerializer,
@@ -38,6 +37,28 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         "DELETE": "Delete system account.",
     }
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        profile_picture_file_name = request.data.get("profile_picture_file_name") or None
+        if profile_picture_file_name:
+            move_status, move_result = MinioClient.move_to_new_bucket(
+                source_bucket="temporary-data",
+                destination_bucket="accounts",
+                object_name=profile_picture_file_name,
+                new_prefix=instance.account,
+            )
+            if move_status:
+                profile_picture_file_name = move_result.get("new_object_name") if move_status else None
+                instance.profile_picture_file_name = profile_picture_file_name if move_status else None
+        instance.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.id == 1:
@@ -47,17 +68,13 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         return super().destroy(request, *args, **kwargs)
 
 
-class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
+class AccountsProfilePictureViewSet(CreateModelMixin, GenericViewSet):
     queryset = UserProfile.objects.all()
-    serializer_class = AccountsPhotoStickersSerializer
+    serializer_class = AccountsProfilePictureSerializer
     activity_logs = {"POST": "Upload photo stickers for user."}
 
-    def create(self, request, *args, **kwargs):
-        user_id = request.data.get("user_id")
+    def create(self, request):
         uploaded_file = request.FILES.get("file")
-
-        if not user_id:
-            return Response({"error": "User ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not uploaded_file:
             return Response({"error": "No file uploaded."}, status=status.HTTP_400_BAD_REQUEST)
@@ -66,46 +83,29 @@ class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
         if not validation_result["valid"]:
             return Response({"error": validation_result["error"]}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            user = UserProfile.objects.get(id=user_id)
-        except UserProfile.DoesNotExist:
-            return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
-
         file_extension = self.get_file_extension(uploaded_file.name)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         unique_id = str(uuid.uuid4())[:8]
-        object_name = f"{user.account}/profile_picture_{timestamp}_{unique_id}{file_extension}"
+        file_name = f"accounts/profile_picture_{timestamp}_{unique_id}{file_extension}"
 
         try:
-            status_upload, result = self.upload_to_minio(uploaded_file, object_name)
+            status_upload, result = self.upload_to_minio(uploaded_file, file_name)
             if not status_upload:
                 return Response(
                     {"error": f"Failed to upload to storage: {result.get('error')}"},
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
-            status_get_url, image_url = self.get_minio_url(object_name)
+            status_get_url, image_url = self.get_minio_url(file_name)
             if not status_get_url:
                 return Response(
                     {"error": f"Failed to get image URL: {image_url.get('error')}"},
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
-
-            if user.profile_picture_file_name:
-                status_delete, delete_result = self.delete_minio_object(user.profile_picture_file_name)
-                if not status_delete:
-                    print(f"Failed to delete old photo stickers: {delete_result.get('error')}")
-
-            user.profile_picture_file_name = object_name
-            user.save()
-
-            serializer = self.get_serializer(user)
-
             return Response(
                 {
-                    "user": serializer.data,
                     "image_url": image_url.get("url"),
-                    "object_name": object_name,
+                    "file_name": file_name,
                     "message": "Image uploaded successfully",
                 },
                 status=status.HTTP_201_CREATED,
@@ -114,64 +114,6 @@ class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
         except Exception as e:
             print(f"Error during file upload: {str(e)}")
             return Response({"error": f"Upload failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def validate_image(self, uploaded_file: bytes) -> dict:
-        """驗證上傳的圖片"""
-        max_size = 5 * 1024 * 1024
-        if uploaded_file.size > max_size:
-            return {"valid": False, "error": "File size must be less than 5MB"}
-
-        allowed_types = ["image/jpeg", "image/jpg", "image/png"]
-        if uploaded_file.content_type not in allowed_types:
-            return {"valid": False, "error": f"Invalid file type: {uploaded_file.content_type}"}
-
-        allowed_extensions = [".jpg", ".jpeg", ".png"]
-        file_extension = self.get_file_extension(uploaded_file.name).lower()
-        if file_extension not in allowed_extensions:
-            return {"valid": False, "error": f"Invalid file extension: {file_extension}"}
-
-        return {"valid": True}
-
-    def get_file_extension(self, filename: str) -> str:
-        return os.path.splitext(filename)[1]
-
-    def upload_to_minio(self, uploaded_file: bytes, object_name: str) -> tuple[bool, dict]:
-        file_content = uploaded_file.read()
-        try:
-            status_upload, result = MinioClient.upload_object(
-                bucket_name="accounts",
-                saved_object_name=object_name,
-                absolute_path_or_binary=file_content,
-                is_binary=True,
-            )
-            return status_upload, result
-        except Exception as e:
-            print(f"Error uploading to MinIO: {str(e)}")
-            return False, {"status": False, "error": str(e)}
-
-    def get_minio_url(self, object_name: str) -> str:
-        try:
-            status, result = MinioClient.get_object_url(
-                bucket_name="accounts",
-                object_name=object_name,
-                expires_in_sec=3600,
-            )
-            return status, result
-        except Exception as e:
-            print(f"Error uploading to MinIO: {str(e)}")
-            return False, {"status": False, "error": str(e)}
-
-    def delete_minio_object(self, object_name: str) -> bool:
-        try:
-            status, result = MinioClient.delete_object(
-                bucket_name="accounts",
-                object_name=object_name,
-            )
-            return status, result
-        except Exception as e:
-            print(f"Error deleting object from MinIO: {str(e)}")
-            return False, {"status": False, "error": str(e)}
-
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = UserGroup.objects.all()
@@ -196,6 +138,26 @@ class RegisterViewSet(CreateModelMixin, GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserRegisterSerializer
     activity_logs = {"POST": "Register new user."}
+
+    def create(self, request):
+        """Create a new user account."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        profile_picture_file_name = request.data.get("profile_picture_file_name") or None
+        if profile_picture_file_name:
+            move_status, move_result = MinioClient.move_to_new_bucket(
+                source_bucket="temporary-data",
+                destination_bucket="accounts",
+                object_name=profile_picture_file_name,
+                new_prefix=user.account,
+            )
+            if move_status:
+                profile_picture_file_name = move_result.get("new_object_name") if move_status else None
+                user.profile_picture_file_name = profile_picture_file_name if move_status else None
+        user.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SystemAppsViewSet(ListModelMixin, GenericViewSet):
