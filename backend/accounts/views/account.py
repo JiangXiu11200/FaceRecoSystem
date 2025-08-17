@@ -42,21 +42,9 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         instance = self.get_object()
         if instance.id == 1:
             return Response({"error": "Cannot delete default admin account."}, status=status.HTTP_400_BAD_REQUEST)
+        MinioClient.delete_directory(bucket_name="accounts", directory_name=instance.account)
+
         return super().destroy(request, *args, **kwargs)
-
-    # def list(self, request, *args, **kwargs):
-    #     """Override list to include user groups."""
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     data = serializer.data
-
-    #     for item in data:
-    #         item["user_groups"] = [
-    #             {"id": group.id, "group_name": group.group_name}
-    #             for group in UserGroup.objects.filter(users__id=item["id"])
-    #         ]
-    #     print(f"List accounts: {data}")
-    #     return Response(data, status=status.HTTP_200_OK)
 
 
 class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
@@ -67,7 +55,6 @@ class AccountsPhotoStickersViewSet(CreateModelMixin, GenericViewSet):
     def create(self, request, *args, **kwargs):
         user_id = request.data.get("user_id")
         uploaded_file = request.FILES.get("file")
-        print(request.data)
 
         if not user_id:
             return Response({"error": "User ID is required."}, status=status.HTTP_400_BAD_REQUEST)

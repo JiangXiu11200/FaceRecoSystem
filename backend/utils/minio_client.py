@@ -162,15 +162,14 @@ class MinioClient:
         except error.S3Error as e:
             return False, {"status": False, "error": str(e)}
 
-
-# if __name__ == "__main__":
-# Example usage
-# absolute_path = "/Users/xiu/Desktop/side-project/FaceRecoSystem/backend/cat.jpg"
-# print("1. ", MinioClient.upload_object("accounts", absolute_path, "cat.jpg"))
-# print("2. ", MinioClient.get_object_url("accounts", "cat.jpg", expires_in_sec=300))
-# binary_image = ""
-# with open("../cat.jpg", "rb") as f:
-#     content = f.read()
-#     binary_image = content
-# print("1. ", MinioClient.upload_object("accounts", binary_image, "cat1.jpg", is_binary=True))
-# print("2. ", MinioClient.get_object_url("accounts", "cat1.jpg", expires_in_sec=300))
+    @classmethod
+    def delete_directory(cls, bucket_name: str, directory_name: str) -> tuple[bool, dict]:
+        """Delete all objects in a directory."""
+        try:
+            client = cls.get_client()
+            objects_to_delete = list(client.list_objects(bucket_name, prefix=directory_name, recursive=True))
+            for obj in objects_to_delete:
+                client.remove_object(bucket_name, obj.object_name)
+            return True, {"status": True, "directory_name": directory_name}
+        except error.S3Error as e:
+            return False, {"status": False, "error": str(e)}
