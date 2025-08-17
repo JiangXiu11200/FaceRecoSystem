@@ -99,7 +99,7 @@ MIDDLEWARE = [
     "activity_logs.middleware.ActivityLogMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # FIXME: For development only, restrict in production
+CORS_ALLOW_ALL_ORIGINS = True  # TAG: For development only, restrict in production
 
 # CORS_ALLOWED_ORIGINS = [
 #     "http://127.0.0.1:3000",  # React dev server
@@ -151,6 +151,21 @@ DATABASES = {
 #         'PORT': '5432',
 #     }
 # }
+
+MINIO = {
+    "ENABLE_SSL": False,
+    "CA_PATH": BASE_DIR / "ca/ca.pem",
+    "ENDPOINT": "127.0.0.1:9000",
+    "ACCESS_KEY": "user",
+    "SECRET_KEY": "abcde12345",
+    "CONNECT_TIMEOUT": 3,
+    "READ_TIMEOUT": 3,
+    "TOTAL_TIMEOUT": 3,
+    "MAX_RETRIES": 1,
+    "BACKOFF_FACTOR": 0.3,
+    "POOL_MAXSIZE": 10,
+    "POOL_BLOCK": False,
+}
 
 
 # Password validation
