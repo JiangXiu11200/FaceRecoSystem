@@ -1,7 +1,6 @@
 from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.utils.verify_passward import format_check, make_hashed_password, verify_password
 from rest_framework import serializers
-from utils.minio_client import MinioClient
 
 
 class AccountsSerializer(serializers.ModelSerializer):
@@ -17,14 +16,15 @@ class AccountsSerializer(serializers.ModelSerializer):
         return ", ".join(obj.user_groups.values_list("group_name", flat=True))
 
     def get_profile_picture_url(self, obj):
-        if obj.profile_picture_file_name:
-            state, results = MinioClient.get_object_url(
-                bucket_name="accounts",
-                object_name=obj.profile_picture_file_name,
-                expires_in_sec=3600,
-            )
-            return results.get("url") if state else None
         return None
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        urls = self.context.get("minio_urls", {})
+        file_name = rep.get("profile_picture_file_name")
+        if file_name and file_name in urls:
+            rep["profile_picture_url"] = urls[file_name]
+        return rep
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -139,6 +139,26 @@ class MinioClient:
             return False, {"status": False, "error": str(e)}
 
     @classmethod
+    def get_multiple_objects_url(
+        cls, bucket_name: str, object_names: list[str], expires_in_sec: int = 300
+    ) -> tuple[bool, dict]:
+        """Get pre-signed URLs for multiple files."""
+        try:
+            client = cls.get_client()
+            urls = {}
+            for object_name in object_names:
+                url = client.presigned_get_object(
+                    bucket_name,
+                    object_name,
+                    expires=datetime.timedelta(seconds=expires_in_sec),
+                    response_headers={"response-cache-control": f"max-age={expires_in_sec}, public"},
+                )
+                urls[object_name] = url
+            return True, {"status": True, "urls": urls}
+        except error.S3Error as e:
+            return False, {"status": False, "error": str(e)}
+
+    @classmethod
     def move_to_new_bucket(
         cls, source_bucket: str, destination_bucket: str, object_name: str, new_prefix: str = None
     ) -> tuple[bool, dict]:

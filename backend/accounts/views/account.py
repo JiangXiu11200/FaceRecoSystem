@@ -37,6 +37,29 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         "DELETE": "Delete system account.",
     }
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        object_names = [obj.profile_picture_file_name for obj in (page or queryset) if obj.profile_picture_file_name]
+
+        urls = {}
+        if object_names:
+            try:
+                state, results = MinioClient.get_multiple_objects_url(
+                    bucket_name="accounts",
+                    object_names=object_names,
+                    expires_in_sec=3600,
+                )
+                urls = results.get("urls", {}) if state else {}
+            except Exception:
+                urls = {}
+
+        serializer = self.get_serializer(page or queryset, many=True, context={"request": request, "minio_urls": urls})
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
@@ -114,6 +137,7 @@ class AccountsProfilePictureViewSet(CreateModelMixin, GenericViewSet):
         except Exception as e:
             print(f"Error during file upload: {str(e)}")
             return Response({"error": f"Upload failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = UserGroup.objects.all()
