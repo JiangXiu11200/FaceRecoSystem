@@ -1,3 +1,4 @@
+import os
 import uuid
 from datetime import datetime
 
@@ -137,6 +138,52 @@ class AccountsProfilePictureViewSet(CreateModelMixin, GenericViewSet):
         except Exception as e:
             print(f"Error during file upload: {str(e)}")
             return Response({"error": f"Upload failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def validate_image(self, uploaded_file: bytes) -> dict:
+        """驗證上傳的圖片"""
+        max_size = 5 * 1024 * 1024
+        if uploaded_file.size > max_size:
+            return {"valid": False, "error": "File size must be less than 5MB"}
+
+        allowed_types = ["image/jpeg", "image/jpg", "image/png"]
+        if uploaded_file.content_type not in allowed_types:
+            return {"valid": False, "error": f"Invalid file type: {uploaded_file.content_type}"}
+
+        allowed_extensions = [".jpg", ".jpeg", ".png"]
+        file_extension = self.get_file_extension(uploaded_file.name).lower()
+        if file_extension not in allowed_extensions:
+            return {"valid": False, "error": f"Invalid file extension: {file_extension}"}
+
+        return {"valid": True}
+
+    def get_file_extension(self, filename: str) -> str:
+        return os.path.splitext(filename)[1]
+
+    def upload_to_minio(self, uploaded_file: bytes, object_name: str) -> tuple[bool, dict]:
+        file_content = uploaded_file.read()
+        try:
+            status_upload, result = MinioClient.upload_object(
+                bucket_name="temporary-data",
+                saved_object_name=object_name,
+                absolute_path_or_binary=file_content,
+                is_binary=True,
+            )
+            return status_upload, result
+        except Exception as e:
+            print(f"Error uploading to MinIO: {str(e)}")
+            return False, {"status": False, "error": str(e)}
+
+    def get_minio_url(self, object_name: str) -> str:
+        try:
+            status, result = MinioClient.get_object_url(
+                bucket_name="temporary-data",
+                object_name=object_name,
+                expires_in_sec=3600,
+            )
+            return status, result
+        except Exception as e:
+            print(f"Error uploading to MinIO: {str(e)}")
+            return False, {"status": False, "error": str(e)}
 
 
 class GroupViewSet(viewsets.ModelViewSet):
