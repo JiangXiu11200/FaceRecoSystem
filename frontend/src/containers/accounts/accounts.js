@@ -45,6 +45,7 @@ const EMPTY_USER_DETAILS = {
   description: "",
   profile_picture_url: null,
   profile_picture_file_name: null,
+  delete_profile_picture: false,
 }
 
 function Accounts() {
@@ -260,7 +261,6 @@ function Accounts() {
     accountsAPI("post", `/upload-profile-picture/`, formData)
       .then((response) => {
         showToast("success", "Success", "Image uploaded successfully!")
-        console.log("Upload response:", response.data)
         setAccountDetails({
           ...accountDetails,
           profile_picture_url: response.data.image_url || null,
@@ -279,6 +279,14 @@ function Accounts() {
         setUploading(false)
         fileUploadRef.current.clear()
       })
+  }
+
+  const handleDeleteProfilePicture = () => {
+    accountDetails.profile_picture_url = null
+    setAccountDetails({
+      ...accountDetails,
+      delete_profile_picture: true,
+    })
   }
 
   const createAccount = () => {
@@ -582,8 +590,9 @@ function Accounts() {
               />
             </div>
             <div className="account-dialog-right-content mt-2">
-              <div className="upload-section">
+              <div className="d-flex flex-row">
                 <FileUpload
+                  className="upload-btn me-2"
                   ref={fileUploadRef}
                   name="file"
                   customUpload
@@ -591,11 +600,15 @@ function Accounts() {
                   chooseLabel={uploading ? "Uploading..." : "Upload"}
                   mode="basic"
                   disabled={uploading}
-                  className="upload-btn"
                   icon={uploading ? "pi pi-spin pi-spinner" : "pi pi-upload"}
                   accept="image/*"
                   maxFileSize={5000000}
                   uploadHandler={handleUpload}
+                />
+                <Button
+                  className="delete-btn"
+                  icon="pi pi-trash"
+                  onClick={handleDeleteProfilePicture}
                 />
               </div>
             </div>

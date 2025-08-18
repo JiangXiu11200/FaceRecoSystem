@@ -69,6 +69,7 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         self.perform_update(serializer)
 
         profile_picture_file_name = request.data.get("profile_picture_file_name") or None
+        delete_picture = request.data.get("delete_profile_picture", False)
         if profile_picture_file_name:
             move_status, move_result = MinioClient.move_to_new_bucket(
                 source_bucket="temporary-data",
@@ -79,6 +80,15 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
             if move_status:
                 profile_picture_file_name = move_result.get("new_object_name") if move_status else None
                 instance.profile_picture_file_name = profile_picture_file_name if move_status else None
+        if delete_picture:
+            if instance.profile_picture_file_name:
+                delete_status, delete_result = MinioClient.delete_object(
+                    bucket_name="accounts",
+                    object_name=instance.profile_picture_file_name,
+                )
+                if delete_status:
+                    instance.profile_picture_file_name = None
+
         instance.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -90,6 +100,17 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         MinioClient.delete_directory(bucket_name="accounts", directory_name=instance.account)
 
         return super().destroy(request, *args, **kwargs)
+
+    def delete_minio_object(self, object_name: str) -> bool:
+        try:
+            status, result = MinioClient.delete_object(
+                bucket_name="accounts",
+                object_name=object_name,
+            )
+            return status, result
+        except Exception as e:
+            print(f"Error deleting object from MinIO: {str(e)}")
+            return False, {"status": False, "error": str(e)}
 
 
 class AccountsProfilePictureViewSet(CreateModelMixin, GenericViewSet):
