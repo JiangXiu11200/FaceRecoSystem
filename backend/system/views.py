@@ -1,12 +1,12 @@
 from rest_framework import status, viewsets
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 
 from .models import UserRecognitionConfig
 from .serializers import UserRecognitionConfigSerializer, UserRecognitionDebugSerializer
 
 
-class UserRecognitionConfigViewSet(CreateModelMixin, ListModelMixin, viewsets.GenericViewSet):
+class UserRecognitionConfigViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = UserRecognitionConfig.objects.all()
     serializer_class = UserRecognitionConfigSerializer
 

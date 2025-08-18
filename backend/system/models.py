@@ -3,7 +3,7 @@ from django.db import models
 
 class UserRecognitionConfig(models.Model):
     debug = models.BooleanField(default=False)
-    rtsp = models.CharField(max_length=256, unique=True)
+    rtsp = models.CharField(max_length=256)
     image_height = models.IntegerField()
     image_width = models.IntegerField()
     dlib_predicotr_path = models.CharField(max_length=256)
@@ -19,3 +19,7 @@ class UserRecognitionConfig(models.Model):
     eyes_detection_brightness_value_max = models.IntegerField()
     sensitivity = models.DecimalField(max_digits=2, decimal_places=1, default=0.4)
     consecutive_prediction_intervals_frame = models.IntegerField(default=90)
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)

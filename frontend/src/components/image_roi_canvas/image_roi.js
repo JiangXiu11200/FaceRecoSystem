@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 
-const ImageROI = ({ image, detectionRange }) => {
+const ImageROI = ({ image, image_width, image_height, detectionRange }) => {
   const canvasRef = useRef(null)
   const imgRef = useRef(null)
   const [points, setPoints] = useState([
@@ -36,8 +36,8 @@ const ImageROI = ({ image, detectionRange }) => {
 
     canvas.width = canvasWidth
     canvas.height = canvasHeight
-    const scaleX = canvasWidth / 960
-    const scaleY = canvasHeight / 540
+    const scaleX = canvasWidth / image_width
+    const scaleY = canvasHeight / image_height
 
     const topLeft = {
       x: points[0].x * scaleX,
