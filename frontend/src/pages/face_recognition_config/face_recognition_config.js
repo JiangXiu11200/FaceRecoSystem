@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react"
 
-import { cloneDeep } from "lodash";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import { InputText } from "primereact/inputtext";
-import { SelectButton } from "primereact/selectbutton";
+import { cloneDeep } from "lodash"
+import { Button } from "primereact/button"
+import { Card } from "primereact/card"
+import { InputText } from "primereact/inputtext"
+import { SelectButton } from "primereact/selectbutton"
 import { Toast } from "primereact/toast"
 
 import { faceRecognitionConfigApi } from "../../api/face_recognition_config"
@@ -98,6 +98,18 @@ function FaceRecognitionConfig() {
       })
   }
 
+  const handlePreview = () => {
+    faceRecognitionConfigApi("get", "/preview/")
+      .then((response) => {
+        console.log(response)
+        setCameraImage(response.data.image)
+        showToast("success", "Preview", "Preview image fetched successfully")
+      })
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+  }
+
   useEffect(() => {
     console.log(detectionConfig)
   }, [detectionConfig])
@@ -112,7 +124,7 @@ function FaceRecognitionConfig() {
         icon="pi pi-eye"
         className="func-btn"
         label="Preview"
-        onClick={() => {}}
+        onClick={handlePreview}
       />
     </div>
   )

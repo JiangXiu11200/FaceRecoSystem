@@ -10,6 +10,13 @@ class UserRecognitionConfigViewSet(ListModelMixin, RetrieveModelMixin, UpdateMod
     queryset = UserRecognitionConfig.objects.all()
     serializer_class = UserRecognitionConfigSerializer
 
+class UserRecognitionConfigPreviewViewSet(ListModelMixin, viewsets.GenericViewSet):
+    queryset = UserRecognitionConfig.objects.all()
+    serializer_class = []
+
+    def list(self, request, *args, **kwargs):
+        # TODO: Call Microservice API to get the image preview
+        return Response({"error": "Preview not implemented yet"}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 class UserRecognitionDebugViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = UserRecognitionConfig.objects.all()
