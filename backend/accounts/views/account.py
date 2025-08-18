@@ -270,3 +270,22 @@ class ChangePasswordViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
+
+class AccountsAvatarViewSet(GenericViewSet):
+    def list(self, request, *args, **kwargs):
+        profile_picture_file_name = request.query_params.get("profile_picture_file_name")
+        if not profile_picture_file_name:
+            return Response({"error": "Missing profile picture file name"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            status_get_url, results = MinioClient.get_object_url(
+                bucket_name="accounts",
+                object_name=profile_picture_file_name,
+                expires_in_sec=1800,
+            )
+            if status_get_url:
+                return Response({"url": results.get("url")}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Failed to get presigned URL"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception:
+            return Response({"error": "MinIO connection failed"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

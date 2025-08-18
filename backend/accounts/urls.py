@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views.account import (
+    AccountsAvatarViewSet,
     AccountsProfilePictureViewSet,
     AccountsViewSet,
     ChangePasswordViewSet,
@@ -22,6 +23,7 @@ accounts_router.register(r"api/accounts/systemapps", SystemAppsViewSet, basename
 accounts_router.register(
     r"api/accounts/upload-profile-picture", AccountsProfilePictureViewSet, basename="accounts-photo-stickers"
 )
+accounts_router.register(r"api/accounts/avatars", AccountsAvatarViewSet, basename="accounts-avatars")
 accounts_router.register(r"api/accounts", AccountsViewSet, basename="accounts")
 
 

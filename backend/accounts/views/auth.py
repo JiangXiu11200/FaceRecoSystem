@@ -31,6 +31,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         is_active = validated["is_active"]
         group_active = validated["group_active"]
         keep_days = validated.get("keep_expiration_days", 1)  # Default refresh token expiration to 1 day
+        profile_picture_file_name = validated.get("profile_picture_file_name")
 
         if not is_active:
             return Response({"message": "User account is inactive."}, status=status.HTTP_403_FORBIDDEN)
@@ -49,6 +50,10 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 
         if validated.get("remember_me"):
             self.set_refresh_cookie(response, refresh_token, keep_days)
+
+        if profile_picture_file_name:
+            response.data["profile_picture_file_name"] = profile_picture_file_name
+        response.data["account"] = account
 
         self.create_login_activity(user=account, status_code=status.HTTP_200_OK, activity="Login successful.")
 

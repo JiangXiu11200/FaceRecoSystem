@@ -1,12 +1,14 @@
-import React, { useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { Avatar } from "primereact/avatar"
 import { BreadCrumb } from "primereact/breadcrumb"
 import { Dropdown } from "primereact/dropdown"
 import { Menu } from "primereact/menu"
+import { Toast } from "primereact/toast"
 import CountryFlag from "react-country-flag"
 import { useLocation, useNavigate } from "react-router-dom"
 
+import { accountsAPI } from "../../api/accounts"
 import { logoutApi } from "../../api/auth"
 import { clearLocalStorage } from "../../utils/local_storage"
 
@@ -14,11 +16,17 @@ import "./header.css"
 
 function Header() {
   const navigate = useNavigate()
+  const toast = useRef(null)
   const home = { icon: "pi pi-home", url: "/" }
   const location = useLocation()
   const menuRight = useRef(null)
-  const [userPhotoUrl, setUserPhotoUrl] = useState(null)
   const [selectedLang, setSelectedLang] = useState("en")
+
+  const [avatarURL, setAvatarURL] = useState(null)
+  const [userName, setUserName] = useState("user")
+  const lastFetchTime = useRef(0)
+  const cachedURL = useRef("")
+  const cachedFileName = useRef("")
 
   const breadcrumbMap = {
     "/": [{ label: "Face Recognition" }],
@@ -38,6 +46,54 @@ function Header() {
     { label: "English", value: "en", countryCode: "US" },
     { label: "繁體中文", value: "zh-TW", countryCode: "TW" },
   ]
+
+  const showToast = (severity, summary, detail, life = 3000) => {
+    toast.current.show({ severity, summary, detail, life })
+  }
+  const updateAvatarURL = useCallback(async () => {
+    const profilePictureFileName = localStorage.getItem(
+      "profile_picture_file_name"
+    )
+    const userName = localStorage.getItem("user_name")
+    setUserName(userName)
+    const now = Date.now()
+    const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes
+
+    const needsUpdate =
+      !cachedURL.current ||
+      cachedFileName.current !== profilePictureFileName ||
+      now - lastFetchTime.current > CACHE_DURATION
+
+    if (!needsUpdate) {
+      // Use cached URL if it matches the current file name
+      if (avatarURL !== cachedURL.current) {
+        setAvatarURL(cachedURL.current)
+      }
+      return
+    }
+
+    try {
+      const response = await accountsAPI("get", "/avatars/", {
+        profile_picture_file_name: profilePictureFileName,
+      })
+
+      const newURL = response.data.url
+      setAvatarURL(newURL)
+
+      // Update cache
+      cachedURL.current = newURL
+      cachedFileName.current = profilePictureFileName
+      lastFetchTime.current = now
+    } catch (err) {
+      showToast("error", "Header", "Failed to fetch user avatar")
+    }
+  }, [avatarURL])
+
+  useEffect(() => {
+    updateAvatarURL()
+    const intervalId = setInterval(updateAvatarURL, 30 * 60 * 1000)
+    return () => clearInterval(intervalId)
+  }, [updateAvatarURL])
 
   const customOptionTemplate = (option) => (
     <div className="language-option">
@@ -76,13 +132,12 @@ function Header() {
             style={{ borderBottom: "1px solid #ddd" }}
           >
             <Avatar
-              image={userPhotoUrl ?? "/image/cat.jpg"}
+              image={avatarURL ? avatarURL : "/image/user.jpg"}
               shape="circle"
               size="large"
-            />{" "}
-            {/* The backend returns the S3 URL */}
+            />
             <div>
-              <div>{"Jonas"}</div> {/* // The backend return user name */}
+              <div>{userName}</div>
             </div>
           </div>
         )
@@ -99,6 +154,9 @@ function Header() {
 
   return (
     <div className="row header-container">
+      <div>
+        <Toast ref={toast} />
+      </div>
       <div className="col left-layout">
         <BreadCrumb className="custom-breadcrumb" model={items} home={home} />
       </div>
@@ -118,7 +176,7 @@ function Header() {
           </div>
           <div className="d-flex align-items-center justify-content-end">
             <Avatar
-              image={userPhotoUrl ?? "/image/cat.jpg"}
+              image={avatarURL ? avatarURL : "/image/user.jpg"}
               shape="circle"
               size="large"
               onClick={(event) => menuRight.current.toggle(event)}

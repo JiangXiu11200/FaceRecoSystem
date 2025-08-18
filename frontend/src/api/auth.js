@@ -38,7 +38,10 @@ export const loginApi = (method, data) => {
       const token = response.data.access_token
       const decoded = jwtDecode(token)
       const permissions = decoded.permissions || []
+      const avatar_file_key = response.data.profile_picture_file_name || null
       saveLocalStorage("access_token", token)
+      saveLocalStorage("profile_picture_file_name", avatar_file_key)
+      saveLocalStorage("user_name", response.data.account)
       return permissions
     })
     .catch((error) => {

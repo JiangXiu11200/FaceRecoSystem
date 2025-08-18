@@ -32,6 +32,7 @@ class LoginSerializer(serializers.Serializer):
             "remember_me": attrs.get("remember_me"),
             "is_active": user_profile.is_active,
             "group_active": user_profile.user_groups.filter(is_active=True).exists(),
+            "profile_picture_file_name": user_profile.profile_picture_file_name,
         }
 
     def find_user_permissions(self, user_id: int) -> list[str]:
