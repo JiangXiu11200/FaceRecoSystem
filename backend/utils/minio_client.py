@@ -218,3 +218,25 @@ class MinioClient:
             return True, {"status": True, "directory_name": directory_name}
         except error.S3Error as e:
             return False, {"status": False, "error": str(e)}
+
+    @classmethod
+    def cleanup_old_files(cls, bucket_name: str, max_age_seconds: int) -> dict:
+        """
+        Delete files older than max_age_seconds in the given bucket.
+        Returns a dict with deleted file names.
+        """
+        client = cls.get_client()
+        now = datetime.now(datetime.timezone.utc)
+        deleted_files = []
+
+        try:
+            for obj in client.list_objects(bucket_name, recursive=True):
+                file_age = (now - obj.last_modified).total_seconds()
+                if file_age > max_age_seconds:
+                    client.remove_object(bucket_name, obj.object_name)
+                    deleted_files.append(obj.object_name)
+                    print(f"Deleted old file: {obj.object_name}")
+            return {"status": True, "deleted_files": deleted_files}
+        except error.S3Error as e:
+            print(f"Error cleaning up files: {e}")
+            return {"status": False, "error": str(e)}
