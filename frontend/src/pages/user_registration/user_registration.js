@@ -3,7 +3,7 @@ import React from "react"
 import { TabPanel, TabView } from "primereact/tabview"
 
 import Group from "../../containers/group/group"
-import Register from "../../containers/register/register"
+import Register from "../../containers/user_register/user_register"
 import Users from "../../containers/users/users"
 
 import "./user_registration.css"

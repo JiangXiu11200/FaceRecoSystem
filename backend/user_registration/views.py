@@ -52,7 +52,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     def create(self, request):
         name = request.data.get("name")
         register_group = request.data.get("register_group")
-        image = request.FILES.get("image")
+        image = request.data.get("image")
 
         if not name or not register_group or not image:
             return Response(
@@ -67,8 +67,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
         # TODO: 重構將其呼叫方法獨立成一個模組
         response = requests.post(
             MICROSERVICE_URL + "/api/register-face",
-            files={"face_image": (image.name, image.file, image.content_type)},
-            data={"name": name},
+            data={"name": name, "base64_face_image": image},
         )
 
         if response.status_code != 201:

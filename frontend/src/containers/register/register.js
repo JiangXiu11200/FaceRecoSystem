@@ -1,3 +1,9 @@
+// This page is deprecated, please use /containers/user_register/ instead.
+// Because of two issues:
+// 1. m3u8 stream is very laggy.
+// 2. When registering a face with face recognition service, there is a discrepancy in the facial features stored in image.
+// Why not delete this file?
+// Because this is an m3u8 streaming page, it may be used in the future.
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
 import cloneDeep from "lodash/cloneDeep"
