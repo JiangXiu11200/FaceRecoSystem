@@ -110,7 +110,6 @@ function FaceRecognition() {
   }, [])
 
   useEffect(() => {
-    connectWebSocket()
 
     return () => {
       disconnectWebSocket()
@@ -163,15 +162,25 @@ function FaceRecognition() {
   //   }
   // }, [])
 
+  const connectToService = () => {
+    if (isConnected) {
+      disconnectWebSocket()
+      showToast("info", "Info", "WebSocket connection closed")
+    } else {
+      connectWebSocket()
+      showToast("info", "Info", "WebSocket connection established")
+    }
+  }
+
   const controlStream = () => {
     if (!isStreaming) {
       setIsStreaming(true)
       ws.current.send(JSON.stringify({ type: "start_detection" }))
-      showToast("info", "Stream Started", "Video stream has been started")
+      showToast("info", "Success", "Video stream has been started")
     } else {
       setIsStreaming(false)
       ws.current.send(JSON.stringify({ type: "stop_detection" }))
-      showToast("info", "Stream Stopped", "Video stream has been stopped")
+      showToast("info", "Success", "Video stream has been stopped")
     }
   }
 
@@ -200,7 +209,7 @@ function FaceRecognition() {
 
   const clearLogs = useCallback(() => {
     setLogs([])
-    showToast("success", "Logs Cleared", "All logs have been cleared")
+    showToast("success", "Success", "All logs have been cleared")
   }, [])
 
   // const updateFPS = useCallback(() => {
@@ -251,6 +260,14 @@ function FaceRecognition() {
             <div className="me-2">
               <Button
                 className="p-button-info func-btn"
+                label={isConnected ? "Disconnect" : "Connect"}
+                icon={isConnected ? "pi pi-circle-fill" : "pi pi-circle"}
+                onClick={() => connectToService()}
+              />
+            </div>
+            <div className="me-2">
+              <Button
+                className="p-button-info func-btn"
                 label={isStreaming ? "Stop Stream" : "Start Stream"}
                 icon={isStreaming ? "pi pi-stop" : "pi pi-play"}
                 onClick={() => controlStream()}
@@ -263,7 +280,6 @@ function FaceRecognition() {
                 label="Clear Logs"
                 icon="pi pi-trash"
                 onClick={() => clearLogs()}
-                disabled={!isConnected}
               />
             </div>
           </div>
