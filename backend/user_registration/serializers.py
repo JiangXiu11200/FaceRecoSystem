@@ -9,9 +9,7 @@ class RegisterUserProfileSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "minio_key",
-            "face_details",
-            "file_name",
+            "s3_object_key",
             "is_active",
             "register_group",
         ]
@@ -20,7 +18,6 @@ class RegisterUserProfileSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         request = self.context.get("request")
         if request and request.method == "GET":
-            self.fields.pop("face_details", None)
             self.fields["register_time"] = serializers.DateTimeField(read_only=True)
             self.fields["update_time"] = serializers.DateTimeField(read_only=True)
             self.fields["annotations"] = serializers.CharField(read_only=True, allow_blank=True, allow_null=True)
@@ -30,15 +27,21 @@ class RegisterUserProfileSerializer(serializers.ModelSerializer):
             )
 
         elif request and request.method in ["PUT", "PATCH"]:
-            self.fields["minio_key"].required = False
-            self.fields["face_details"].required = False
-            self.fields["file_name"].required = False
+            self.fields["s3_object_key"].required = False
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        urls = self.context.get("minio_urls", {})
+        s3_object_key = rep.get("s3_object_key")
+        if s3_object_key and s3_object_key in urls:
+            rep["register_picture_url"] = urls[s3_object_key]
+        return rep
 
 
 class RegisterUserFeatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegisterUserProfile
-        fields = ["id", "name", "face_details", "minio_key", "file_name"]
+        fields = ["id", "name", "s3_object_key"]
 
 
 class UserRegistrationGroupSerializer(serializers.ModelSerializer):

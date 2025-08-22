@@ -1,10 +1,10 @@
-import os
-
+import requests
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
+from utils.minio_client import MinioClient
 
 from user_registration.filters import RegisterGroupFilter
 from user_registration.models import RegisterGroup, RegisterUserProfile
@@ -16,6 +16,8 @@ from user_registration.serializers import (
 
 from .filters import RegisterUserProfileFilter
 
+MICROSERVICE_URL = settings.MICROSERVICE.get("URL", None)
+
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     queryset = RegisterUserProfile.objects.all().order_by("id")
@@ -24,6 +26,28 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = RegisterUserProfileFilter
     filterset_fields = ["name", "register_group"]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        object_names = [obj.s3_object_key for obj in (page or queryset) if obj.s3_object_key]
+        urls = {}
+
+        if object_names:
+            try:
+                state, results = MinioClient.get_multiple_objects_url(
+                    bucket_name="user-registration",
+                    object_names=object_names,
+                    expires_in_sec=3600,
+                )
+                urls = results.get("urls", {}) if state else {}
+            except Exception:
+                urls = {}
+        serializer = self.get_serializer(page or queryset, many=True, context={"request": request, "minio_urls": urls})
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         name = request.data.get("name")
@@ -36,26 +60,28 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # TODO: 將二進制圖片傳給 Microservice 做特徵擷取
-        image_path = settings.SCREENSHOT_OUTPUT_PATH + os.sep + image.name
-        os.makedirs(settings.SCREENSHOT_OUTPUT_PATH, exist_ok=True)
-        with open(image_path, "wb") as f:
-            for chunk in image.chunks():
-                f.write(chunk)
-        # response = requests.post(
-        #     settings.MICROSERVICE_URL + "/api/feature-extraction",
-        #     files={"image": open(image_path, "rb")},
-        #     data={"user_name": user_name, "group": group},
-        # )
-        # face_details = call_microservice(image_path)  # 回傳 dict
-        face_details = {"test": "face details"}  # 範例用
+        if not MICROSERVICE_URL:
+            return Response(
+                {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        # TODO: 重構將其呼叫方法獨立成一個模組
+        response = requests.post(
+            MICROSERVICE_URL + "/api/register-face",
+            files={"face_image": (image.name, image.file, image.content_type)},
+            data={"name": name},
+        )
 
+        if response.status_code != 201:
+            print("Error from microservice:", response.json())
+            return Response(
+                {"error": "Service exception, please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        response = response.json()
         serializer = self.get_serializer(
             data={
                 "name": name,
-                "face_details": face_details,
-                "minio_key": "http://example.com/minio_key",
-                "file_name": f"{name}_{register_group}.jpg",
+                "s3_object_key": response.get("s3_object_key"),
                 "is_active": True,
                 "register_group": register_group,
             }
@@ -66,11 +92,21 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # TODO: Delete MinIO file when user is deleted
-    # def destroy(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     instance.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        name = instance.name
+
+        response = requests.post(
+            MICROSERVICE_URL + f"/api/delete-registered-face/{name}",
+        )
+        if response.status_code != 200:
+            print("Error from microservice:", response.json())
+            return Response(
+                {"error": "Service exception, please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        return super().destroy(request, *args, **kwargs)
 
 
 class RegisterUserFeatureViewSet(viewsets.ModelViewSet):

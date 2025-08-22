@@ -3,9 +3,7 @@ from django.db import models
 
 class RegisterUserProfile(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    face_details = models.JSONField()
-    minio_key = models.CharField(max_length=128)
-    file_name = models.CharField(max_length=128)
+    s3_object_key = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
     register_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
