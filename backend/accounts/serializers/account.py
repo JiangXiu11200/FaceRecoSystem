@@ -31,7 +31,6 @@ class AccountsSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and request.method != "GET":
             self.fields.pop("user_group_labels", None)
-            self.fields.pop("profile_picture_file_name", None)
 
 
 class AccountsProfilePictureSerializer(serializers.ModelSerializer):

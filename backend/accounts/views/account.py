@@ -274,7 +274,7 @@ class ChangePasswordViewSet(viewsets.ViewSet):
 class AccountsAvatarViewSet(GenericViewSet):
     def list(self, request, *args, **kwargs):
         profile_picture_file_name = request.query_params.get("profile_picture_file_name")
-        if not profile_picture_file_name:
+        if not profile_picture_file_name or profile_picture_file_name is None:
             return Response({"error": "Missing profile picture file name"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:

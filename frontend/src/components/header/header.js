@@ -50,6 +50,7 @@ function Header() {
   const showToast = (severity, summary, detail, life = 3000) => {
     toast.current.show({ severity, summary, detail, life })
   }
+
   const updateAvatarURL = useCallback(async () => {
     const profilePictureFileName = localStorage.getItem(
       "profile_picture_file_name"
@@ -60,9 +61,10 @@ function Header() {
     const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes
 
     const needsUpdate =
-      !cachedURL.current ||
-      cachedFileName.current !== profilePictureFileName ||
-      now - lastFetchTime.current > CACHE_DURATION
+      (!cachedURL.current ||
+        cachedFileName.current !== profilePictureFileName ||
+        now - lastFetchTime.current > CACHE_DURATION) &&
+      profilePictureFileName !== "null"
 
     if (!needsUpdate) {
       // Use cached URL if it matches the current file name
@@ -71,7 +73,7 @@ function Header() {
       }
       return
     }
-
+    console.log("profilePictureFileName: ", profilePictureFileName)
     try {
       const response = await accountsAPI("get", "/avatars/", {
         profile_picture_file_name: profilePictureFileName,
@@ -85,7 +87,7 @@ function Header() {
       cachedFileName.current = profilePictureFileName
       lastFetchTime.current = now
     } catch (err) {
-      showToast("error", "Header", "Failed to fetch user avatar")
+      showToast("error", "Header", err.response.data)
     }
   }, [avatarURL])
 

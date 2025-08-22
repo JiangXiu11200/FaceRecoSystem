@@ -2,7 +2,6 @@ import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 
 import { clearLocalStorage, saveLocalStorage } from "../utils/local_storage"
-import { parseError } from "../utils/parse_error"
 
 export const refreshTokenApi = async () => {
   const accessToken = localStorage.getItem("access_token")
@@ -41,6 +40,7 @@ export const loginApi = (method, data) => {
       const avatar_file_key = response.data.profile_picture_file_name || null
       saveLocalStorage("access_token", token)
       saveLocalStorage("profile_picture_file_name", avatar_file_key)
+      saveLocalStorage("user_id", response.data.user_id)
       saveLocalStorage("user_name", response.data.account)
       return permissions
     })

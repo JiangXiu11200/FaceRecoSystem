@@ -14,6 +14,7 @@ import { Toolbar } from "primereact/toolbar"
 
 import { accountsAPI } from "../../api/accounts"
 import { Table } from "../../components/data_table/data_table"
+import { saveLocalStorage } from "../../utils/local_storage"
 
 import "./accounts.css"
 
@@ -163,10 +164,16 @@ function Accounts() {
       mode === ACTIONS.CREATE ? "/register/" : `/${accountDetails.id}/`
 
     accountsAPI(action, url, accountDetails)
-      .then(() => {
+      .then((response) => {
         showToast("success", "Success", "Account saved successfully.")
         setAccountDetailsDialog(false)
         getAccounts()
+        if (localStorage.getItem("user_id") == response.data.id) {
+          saveLocalStorage(
+            "profile_picture_file_name",
+            response.data.profile_picture_file_name
+          )
+        }
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -266,6 +273,7 @@ function Accounts() {
           profile_picture_url: response.data.image_url || null,
           profile_picture_file_name: response.data.file_name || null,
         })
+        getAccounts()
       })
       .catch((err) => {
         console.error("Upload error:", err)

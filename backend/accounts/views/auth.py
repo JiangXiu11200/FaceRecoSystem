@@ -54,6 +54,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         if profile_picture_file_name:
             response.data["profile_picture_file_name"] = profile_picture_file_name
         response.data["account"] = account
+        response.data["user_id"] = user_id
 
         self.create_login_activity(user=account, status_code=status.HTTP_200_OK, activity="Login successful.")
 
