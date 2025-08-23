@@ -54,7 +54,7 @@ const AlarmLogs = () => {
     { header: "Alarm Type", field: "alarm_type_name" },
     { header: "Alarm Message", field: "alarm_message" },
     { header: "Acknowledged", field: "acknowledged", type: "boolean" },
-    { header: "Trigger Time", field: "create_time", type: "date" },
+    { header: "Trigger Time", field: "timestamp", type: "date" },
   ]
 
   const showToast = (severity, summary, detail, life = 3000) => {
@@ -247,7 +247,7 @@ const AlarmLogs = () => {
                 className="p-inputtext"
                 value={
                   alarmDetails
-                    ? new Date(alarmDetails.create_time).toLocaleString()
+                    ? new Date(alarmDetails.timestamp).toLocaleString()
                     : ""
                 }
                 disabled
@@ -263,8 +263,14 @@ const AlarmLogs = () => {
             </div>
           </div>
           <div className="alarm-details-left-content">
-            <img src="/image/roi_not_found.jpg" alt="Alarm" />
-            {/* TODO: S3 image link */}
+            <img
+              src={
+                alarmDetails.minio_urls
+                  ? alarmDetails.minio_urls
+                  : "/image/roi_not_found.jpg"
+              }
+              alt="Alarm"
+            />
           </div>
         </div>
       </Dialog>

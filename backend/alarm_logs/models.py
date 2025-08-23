@@ -10,10 +10,10 @@ _LEVEL_CHOICES = (
 
 
 class AlarmLogs(models.Model):
-    minio_key = models.CharField(max_length=128)
-    file_name = models.CharField(max_length=128)
+    name = models.CharField(max_length=64)
+    s3_object_key = models.CharField(max_length=128, blank=True, null=True)
     acknowledged = models.BooleanField(default=False)
     alarm_type = models.IntegerField(choices=_LEVEL_CHOICES, default=1)
     alarm_message = models.TextField(blank=True, null=True)
-    create_time = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
