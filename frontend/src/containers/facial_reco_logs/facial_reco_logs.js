@@ -1,18 +1,17 @@
+import React, { useEffect, useRef, useState } from "react"
+
 import { cloneDeep } from "lodash"
 import { Button } from "primereact/button"
+import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
-import { MultiSelect } from "primereact/multiselect"
 import { Toast } from "primereact/toast"
 import { Toolbar } from "primereact/toolbar"
-import React, { use, useEffect, useRef, useState } from "react"
 
+import { activityLogsApi } from "../../api/activity_logs"
 import { userRegistrationApi } from "../../api/user_registration"
-import { alarmLogsApi } from "../../api/alarm_logs"
 import { Table } from "../../components/data_table/data_table"
 
 import "./facial_reco_logs.css"
-import { activityLogsApi } from "../../api/activity_logs"
-import { Dropdown } from "primereact/dropdown"
 
 const EMPTY_SEARCH = {
   name: "",
@@ -35,10 +34,9 @@ function FacialRecoLogs() {
   const columns = [
     { header: "Account", field: "name" },
     { header: "Group", field: "group" },
-    { header: "Status", field: "status", type: "boolean" },
-    { header: "Status Code", field: "status_code" },
+    { header: "Status", field: "detection_results", type: "boolean" },
     { header: "Timestamp", field: "timestamp", type: "date" },
-    { header: "Image", field: "minio_url", type: "image" },
+    { header: "Image", field: "minio_urls", type: "image" },
   ]
 
   const showToast = (severity, summary, detail, life = 3000) => {
@@ -66,6 +64,13 @@ function FacialRecoLogs() {
     activityLogsApi("get", `/face-recognition${url}`, tablePage)
       .then((response) => {
         setTableData(response.data.results)
+        if (searchUsers.name !== "" || searchUsers.group !== "") {
+          showToast(
+            "success",
+            "Search Results",
+            `Found ${response.data.count} logs`
+          )
+        }
       })
       .catch((err) => {
         showToast("error", "Error", err.response.data)
@@ -102,7 +107,7 @@ function FacialRecoLogs() {
             onChange={(e) => setSearchUsers({ ...searchUsers, group: e.value })}
           />
         </div>
-        <div className="col-4">
+        <div className="col-4 align-self-end">
           <Button
             icon="pi pi-search"
             className="func-btn"

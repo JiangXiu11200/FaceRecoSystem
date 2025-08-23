@@ -13,14 +13,11 @@ class SystemActivtiyLogs(models.Model):
 
 class FaceRecognitionActivityLogs(models.Model):
     name = models.CharField(max_length=64)
-    group = models.CharField(max_length=64)  # The group name obtained from microservice, so no ID is used
-    minio_key = models.CharField(max_length=128, blank=True, null=True)
-    file_name = models.CharField(max_length=128, blank=True, null=True)
-    actions = models.CharField(max_length=8)
-    status = models.BooleanField(default=True)
-    status_code = models.IntegerField()
-    activity = models.CharField(max_length=255, blank=True, null=True)
-    message = models.TextField(blank=True, null=True)
+    group = models.CharField(
+        max_length=64, blank=True, null=True
+    )  # 預留欄位。當前 face recognition app 尚無同步 group ID
+    s3_object_key = models.CharField(max_length=128, blank=True, null=True)
+    detection_results = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
