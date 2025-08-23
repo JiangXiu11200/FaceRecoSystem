@@ -110,7 +110,6 @@ function FaceRecognition() {
   }, [])
 
   useEffect(() => {
-
     return () => {
       disconnectWebSocket()
     }
@@ -133,7 +132,7 @@ function FaceRecognition() {
       " Detection: " +
       detectionLogs.detection_results +
       " User name: " +
-      detectionLogs.person_name
+      detectionLogs.name
 
     const logEntry = {
       id: logCounter,
@@ -209,6 +208,7 @@ function FaceRecognition() {
 
   const clearLogs = useCallback(() => {
     setLogs([])
+    setVideoFrame(null)
     showToast("success", "Success", "All logs have been cleared")
   }, [])
 
@@ -280,6 +280,7 @@ function FaceRecognition() {
                 label="Clear Logs"
                 icon="pi pi-trash"
                 onClick={() => clearLogs()}
+                disabled={logs.length === 0 && !videoFrame}
               />
             </div>
           </div>
