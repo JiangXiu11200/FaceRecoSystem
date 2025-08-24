@@ -28,6 +28,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         user_id = validated["user_id"]
         account = validated["account"]
         permissions = validated["permissions"]
+        select_mode = validated["select_mode"]
         is_active = validated["is_active"]
         group_active = validated["group_active"]
         keep_days = validated.get("keep_expiration_days", 1)  # Default refresh token expiration to 1 day
@@ -37,6 +38,14 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
             return Response({"message": "User account is inactive."}, status=status.HTTP_403_FORBIDDEN)
         if not group_active:
             return Response({"message": "User group is inactive."}, status=status.HTTP_403_FORBIDDEN)
+
+        if select_mode == "Standard" and "face-recognition" in permissions:
+            permissions = []
+            permissions.append("face-recognition")
+        elif select_mode == "Standard" and len(permissions) > 0 and "face-recognition" not in permissions:
+            return Response(
+                {"message": "This user has no face recognition permission."}, status=status.HTTP_403_FORBIDDEN
+            )
 
         if len(permissions) == 0:
             return Response({"message": "No permissions found for this user."}, status=status.HTTP_403_FORBIDDEN)

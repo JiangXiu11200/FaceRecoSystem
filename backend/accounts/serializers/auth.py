@@ -8,10 +8,12 @@ class LoginSerializer(serializers.Serializer):
     account = serializers.CharField(max_length=64)
     password = serializers.CharField(max_length=128, write_only=True)
     remember_me = serializers.BooleanField(default=False, write_only=True)
+    select_mode = serializers.CharField(max_length=8, write_only=True)
 
     def validate(self, attrs):
         login_account = attrs.get("account")
         login_password = attrs.get("password")
+        select_mode = attrs.get("select_mode")
 
         if not login_account or not login_password:
             raise serializers.ValidationError("Account and password are required.")
@@ -27,6 +29,7 @@ class LoginSerializer(serializers.Serializer):
         return {
             "user_id": user_profile.id,
             "permissions": self.find_user_permissions(user_profile.id),
+            "select_mode": select_mode,
             "account": user_profile.account,
             "keep_expiration_days": user_profile.keep_expiration_days,
             "remember_me": attrs.get("remember_me"),

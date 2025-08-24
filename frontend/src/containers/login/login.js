@@ -62,6 +62,7 @@ function Login() {
       account: userName,
       password: password,
       remember_me: true,
+      select_mode: select_mode,
     }
 
     loginApi("post", data)
