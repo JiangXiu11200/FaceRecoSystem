@@ -13,21 +13,30 @@ import ImageROI from "../../components/image_roi_canvas/image_roi"
 import "./face_recognition_config.css"
 
 const ENABLE_STATE = [
-  { code: false, name: "OFF" },
-  { code: true, name: "ON" },
+  { code: 0, name: "OFF" },
+  { code: 1, name: "ON" },
 ]
 
-const EMPTY_DETECTION_CONFIG = {
+const DEBUG_STATE = {
   debug: 0,
+}
+
+const EMPTY_VIDEO_CONFIG = {
   rtsp: "",
-  image_width: 0,
+  web_camera: null,
   image_height: 0,
-  dlib_predictor_path: "",
-  dlib_recognition_model_path: "",
+  image_width: 0,
   detection_range_start_point_x: 0,
   detection_range_start_point_y: 0,
   detection_range_end_point_x: 0,
   detection_range_end_point_y: 0,
+}
+
+const EMPTY_DETECTION_CONFIG = {
+  enable_blink_detection: 0,
+  dlib_predictor_path: "",
+  dlib_recognition_model_path: "",
+  face_model: "",
   minimum_bounding_box_height: 0,
   minimum_face_detection_score: 0,
   eyes_detection_brightness_threshold: 0,
@@ -50,6 +59,8 @@ function FaceRecognitionConfig() {
   const [detectionConfig, setDetectionConfig] = useState(
     cloneDeep(EMPTY_DETECTION_CONFIG)
   )
+  const [videoConfig, setVideoConfig] = useState(cloneDeep(EMPTY_VIDEO_CONFIG))
+  const [debugConfig, setDebugConfig] = useState(cloneDeep(DEBUG_STATE))
   const [detection_range, setDetectionRange] = useState(
     cloneDeep(EMPTY_DETECTION_RANGE)
   )
@@ -58,17 +69,59 @@ function FaceRecognitionConfig() {
     toast.current.show({ severity, summary, detail, life })
   }
 
-  const getFaceRecognitionConfig = () => {
-    faceRecognitionConfigApi("get", "/1/")
+  const getDebugConfig = () => {
+    faceRecognitionConfigApi("get", "/debug/")
       .then((response) => {
-        console.log(response)
-        setDetectionConfig(response.data)
+        setDebugConfig(response.data.results[0])
+      })
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+  }
+
+  const getVideoConfig = () => {
+    faceRecognitionConfigApi("get", "/video/")
+      .then((response) => {
         setDetectionRange({
-          x1: response.data.detection_range_start_point_x,
-          y1: response.data.detection_range_start_point_y,
-          x2: response.data.detection_range_end_point_x,
-          y2: response.data.detection_range_end_point_y,
+          x1: response.data.results[0].detection_range_start_point_x,
+          y1: response.data.results[0].detection_range_start_point_y,
+          x2: response.data.results[0].detection_range_end_point_x,
+          y2: response.data.results[0].detection_range_end_point_y,
         })
+        setVideoConfig(response.data.results[0])
+      })
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+  }
+
+  const getFaceRecognitionConfig = () => {
+    faceRecognitionConfigApi("get", "/recognition/")
+      .then((response) => {
+        setDetectionConfig(response.data.results[0])
+      })
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+  }
+
+  const handleVideoConfigUpdate = () => {
+    if (videoConfig.web_camera == "") {
+      videoConfig.web_camera = null
+    }
+    faceRecognitionConfigApi("put", "/video/1/", videoConfig)
+      .then((response) => {
+        setDetectionRange({
+          x1: response.data.results[0].detection_range_start_point_x,
+          y1: response.data.results[0].detection_range_start_point_y,
+          x2: response.data.results[0].detection_range_end_point_x,
+          y2: response.data.results[0].detection_range_end_point_y,
+        })
+        showToast(
+          "success",
+          "Success",
+          "Video configuration updated successfully"
+        )
       })
       .catch((error) => {
         showToast("error", "Error", error.response.data)
@@ -76,17 +129,9 @@ function FaceRecognitionConfig() {
   }
 
   const handleRecognitionConfigUpdate = () => {
-    console.log(detectionConfig)
-    faceRecognitionConfigApi("put", "/1/", detectionConfig)
+    faceRecognitionConfigApi("put", "/recognition/1/", detectionConfig)
       .then((response) => {
-        console.log(response)
         setDetectionConfig(response.data)
-        setDetectionRange({
-          x1: response.data.detection_range_start_point_x,
-          y1: response.data.detection_range_start_point_y,
-          x2: response.data.detection_range_end_point_x,
-          y2: response.data.detection_range_end_point_y,
-        })
         showToast(
           "success",
           "Success",
@@ -101,7 +146,6 @@ function FaceRecognitionConfig() {
   const handlePreview = () => {
     faceRecognitionConfigApi("get", "/preview/")
       .then((response) => {
-        console.log(response)
         setCameraImage(response.data.image)
         showToast("success", "Preview", "Preview image fetched successfully")
       })
@@ -110,21 +154,33 @@ function FaceRecognitionConfig() {
       })
   }
 
+  const hendleDebugConfigUpdate = () => {
+    faceRecognitionConfigApi("put", "/debug/1/", debugConfig)
+      .then((response) => {
+        setDebugConfig(response.data)
+        showToast(
+          "success",
+          "Success",
+          "Face recognition debug configuration updated successfully"
+        )
+      })
+      .catch((error) => {
+        showToast("error", "Error", error.response.data)
+      })
+  }
   useEffect(() => {
-    console.log(detectionConfig)
-  }, [detectionConfig])
-
-  useEffect(() => {
+    getVideoConfig()
+    getDebugConfig()
     getFaceRecognitionConfig()
   }, [])
 
   const video_footer = (
     <div className="d-flex d-flex-row justify-content-end">
       <Button
-        icon="pi pi-eye"
+        icon="pi pi-check"
         className="func-btn"
-        label="Preview"
-        onClick={handlePreview}
+        label="Apply"
+        onClick={handleVideoConfigUpdate}
       />
     </div>
   )
@@ -151,16 +207,31 @@ function FaceRecognitionConfig() {
             footer={video_footer}
           >
             <div>
-              <label className="">RTSP / Web cam path / ...</label>
+              <label className="">RTSP</label>
               <InputText
                 className="input-container"
-                value={detectionConfig ? detectionConfig.rtsp : ""}
+                value={videoConfig ? videoConfig.rtsp : ""}
                 onChange={(e) => {
-                  setDetectionConfig({
-                    ...detectionConfig,
+                  setVideoConfig({
+                    ...videoConfig,
                     rtsp: e.target.value,
                   })
                 }}
+                disabled={Boolean(videoConfig.web_camera)}
+              />
+            </div>
+            <div>
+              <label className="">Web Camera</label>
+              <InputText
+                className="input-container"
+                value={videoConfig ? videoConfig.web_camera : ""}
+                onChange={(e) => {
+                  setVideoConfig({
+                    ...videoConfig,
+                    web_camera: e.target.value,
+                  })
+                }}
+                disabled={Boolean(videoConfig.rtsp)}
               />
             </div>
             <div className="d-flex d-flex-row gap-2">
@@ -168,10 +239,10 @@ function FaceRecognitionConfig() {
                 <label className="">Image Width</label>
                 <InputText
                   className="input-container"
-                  value={detectionConfig ? detectionConfig.image_width : 0}
+                  value={videoConfig ? videoConfig.image_width : 0}
                   onChange={(e) => {
-                    setDetectionConfig({
-                      ...detectionConfig,
+                    setVideoConfig({
+                      ...videoConfig,
                       image_width: e.target.value,
                     })
                   }}
@@ -181,10 +252,10 @@ function FaceRecognitionConfig() {
                 <label className="">Image Height</label>
                 <InputText
                   className="input-container"
-                  value={detectionConfig ? detectionConfig.image_height : 0}
+                  value={videoConfig ? videoConfig.image_height : 0}
                   onChange={(e) => {
-                    setDetectionConfig({
-                      ...detectionConfig,
+                    setVideoConfig({
+                      ...videoConfig,
                       image_height: e.target.value,
                     })
                   }}
@@ -200,14 +271,12 @@ function FaceRecognitionConfig() {
                 <InputText
                   className="input-container"
                   value={
-                    detectionConfig
-                      ? detectionConfig.detection_range_start_point_x
-                      : 0
+                    videoConfig ? videoConfig.detection_range_start_point_x : 0
                   }
                   onChange={(e) =>
-                    setDetectionConfig(
+                    setVideoConfig(
                       {
-                        ...detectionConfig,
+                        ...videoConfig,
                         detection_range_start_point_x: e.target.value,
                       },
                       setDetectionRange({
@@ -223,14 +292,12 @@ function FaceRecognitionConfig() {
                 <InputText
                   className="input-container"
                   value={
-                    detectionConfig
-                      ? detectionConfig.detection_range_start_point_y
-                      : 0
+                    videoConfig ? videoConfig.detection_range_start_point_y : 0
                   }
                   onChange={(e) => {
-                    setDetectionConfig(
+                    setVideoConfig(
                       {
-                        ...detectionConfig,
+                        ...videoConfig,
                         detection_range_start_point_y: e.target.value,
                       },
                       setDetectionRange({
@@ -246,14 +313,12 @@ function FaceRecognitionConfig() {
                 <InputText
                   className="input-container"
                   value={
-                    detectionConfig
-                      ? detectionConfig.detection_range_end_point_x
-                      : 0
+                    videoConfig ? videoConfig.detection_range_end_point_x : 0
                   }
                   onChange={(e) => {
-                    setDetectionConfig(
+                    setVideoConfig(
                       {
-                        ...detectionConfig,
+                        ...videoConfig,
                         detection_range_end_point_x: e.target.value,
                       },
                       setDetectionRange({
@@ -269,14 +334,12 @@ function FaceRecognitionConfig() {
                 <InputText
                   className="input-container"
                   value={
-                    detectionConfig
-                      ? detectionConfig.detection_range_end_point_y
-                      : 0
+                    videoConfig ? videoConfig.detection_range_end_point_y : 0
                   }
                   onChange={(e) => {
-                    setDetectionConfig(
+                    setVideoConfig(
                       {
-                        ...detectionConfig,
+                        ...videoConfig,
                         detection_range_end_point_y: e.target.value,
                       },
                       setDetectionRange({
@@ -289,23 +352,48 @@ function FaceRecognitionConfig() {
               </div>
             </div>
           </Card>
+          <Card className="config-card-container" title="Debug">
+            <div className="d-flex d-flex-row justify-content-between">
+              <div>
+                <label>Debug</label>
+                <SelectButton
+                  className="select-button"
+                  value={debugConfig.debug ? 1 : 0}
+                  options={ENABLE_STATE}
+                  optionValue="code"
+                  optionLabel="name"
+                  onChange={(e) =>
+                    setDebugConfig({ ...debugConfig, debug: e.value })
+                  }
+                />
+              </div>
+              <div className="justify-content-end align-self-end">
+                <Button
+                  icon="pi pi-check"
+                  className="func-btn"
+                  label="Apply"
+                  onClick={hendleDebugConfigUpdate}
+                />
+              </div>
+            </div>
+          </Card>
           <Card
             className="config-card-container"
             title="Recognition"
             footer={reco_footer}
           >
             <div>
-              <label>Debug</label>
+              <label>Blink Detection</label>
               <SelectButton
                 className="select-button"
-                value={detectionConfig ? detectionConfig.debug : 0}
+                value={detectionConfig.enable_blink_detection ? 1 : 0}
                 options={ENABLE_STATE}
                 optionValue="code"
                 optionLabel="name"
                 onChange={(e) =>
                   setDetectionConfig({
                     ...detectionConfig,
-                    debug: e.value,
+                    enable_blink_detection: e.value,
                   })
                 }
               />
@@ -341,6 +429,21 @@ function FaceRecognitionConfig() {
                     setDetectionConfig({
                       ...detectionConfig,
                       dlib_recognition_model_path: e.target.value,
+                    })
+                  }}
+                />
+              </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Face Model</label>
+                <InputText
+                  className="input-container"
+                  value={detectionConfig ? detectionConfig.face_model : ""}
+                  onChange={(e) => {
+                    setDetectionConfig({
+                      ...detectionConfig,
+                      face_model: e.target.value,
                     })
                   }}
                 />
@@ -457,20 +560,18 @@ function FaceRecognitionConfig() {
             <ImageROI
               image={cameraImage}
               detectionRange={detection_range}
-              image_width={detectionConfig.image_width}
-              image_height={detectionConfig.image_height}
+              image_width={videoConfig.image_width}
+              image_height={videoConfig.image_height}
             />
           </div>
           <div className="d-flex">
-            <div className="config-roi-image-container">
-              <img src="/image/roi_not_found.jpg" alt="video_stream" />
-            </div>
-            <div className="config-roi-image-container">
-              <img src="/image/roi_not_found.jpg" alt="video_stream" />
-            </div>
             <div className="d-flex  justify-content-end align-items-end w-100 gap-2">
-              <Button label="Stop" icon="pi pi-times" className="cancel-btn" />
-              <Button label="Start" icon="pi pi-check" className="func-btn" />
+              <Button
+                label="Preview"
+                icon="pi pi-eye"
+                className="func-btn"
+                onClick={handlePreview}
+              />
             </div>
           </div>
         </div>

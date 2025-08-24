@@ -13,7 +13,7 @@ const ImageROI = ({ image, image_width, image_height, detectionRange }) => {
       { x: detectionRange.x1 || 0, y: detectionRange.y1 || 0 },
       { x: detectionRange.x2 || 0, y: detectionRange.y2 || 0 },
     ])
-  }, [detectionRange])
+  }, [image_width, image_height, detectionRange])
 
   useEffect(() => {
     const img = imgRef.current
@@ -79,7 +79,7 @@ const ImageROI = ({ image, image_width, image_height, detectionRange }) => {
     <div style={{ position: "relative", display: "inline-block" }}>
       <img
         ref={imgRef}
-        src={image || "/image/not_found.jpg"}
+        src={image ? image : "/image/not_found.jpg"}
         alt="roi_canvas"
         style={{ display: "block", width: "100%", height: "auto" }}
       />

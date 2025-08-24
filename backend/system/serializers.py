@@ -1,17 +1,21 @@
 from rest_framework import serializers
 
-from .models import UserRecognitionConfig
+from .models import DebugConfig, RecognitionConfig, VideoConfig
 
 
-class UserRecognitionConfigSerializer(serializers.ModelSerializer):
+class FaceRecognitionConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserRecognitionConfig
+        model = RecognitionConfig
         fields = "__all__"
 
 
-class UserRecognitionDebugSerializer(serializers.ModelSerializer):
-    debug = serializers.BooleanField()
-
+class VideoConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserRecognitionConfig
-        fields = ["debug"]
+        model = VideoConfig
+        fields = "__all__"
+
+
+class FaceRecognitionDebugSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DebugConfig
+        fields = "__all__"
