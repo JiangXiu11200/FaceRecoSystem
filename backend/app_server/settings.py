@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+import tomli
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -64,8 +66,6 @@ CHANNEL_LAYERS = {
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-
-# AUTH_USER_MODEL = 'accounts.UserProfile'
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -146,41 +146,41 @@ WSGI_APPLICATION = "app_server.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+with open("settings.toml", "rb") as f:
+    _config = tomli.load(f)
+    POSTGRES = _config["postgres"]
+    MINIOS3 = _config["minios3"]
+    MICROSERVICE = _config["microservice"]
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": POSTGRES["name"],
+        "USER": POSTGRES["user"],
+        "PASSWORD": POSTGRES["password"],
+        "HOST": POSTGRES["host"],
+        "PORT": POSTGRES["port"],
     }
 }
-
-# TODO: use PostgreSQL in production
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'facereco',
-#         'USER': 'facereco',
-#         'PASSWORD': 'qqq123',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 
 MINIO = {
     "ENABLE_SSL": False,
     "CA_PATH": BASE_DIR / "ca/ca.pem",
-    "ENDPOINT": "127.0.0.1:9000",
-    "ACCESS_KEY": "user",
-    "SECRET_KEY": "abcde12345",
-    "CONNECT_TIMEOUT": 3,
-    "READ_TIMEOUT": 3,
-    "TOTAL_TIMEOUT": 3,
-    "MAX_RETRIES": 1,
-    "BACKOFF_FACTOR": 0.3,
-    "POOL_MAXSIZE": 10,
-    "POOL_BLOCK": False,
+    "ENDPOINT": MINIOS3["endpoint"],
+    "ACCESS_KEY": MINIOS3["access_key"],
+    "SECRET_KEY": MINIOS3["secret_key"],
+    "CONNECT_TIMEOUT": MINIOS3["connect_timeout"],
+    "READ_TIMEOUT": MINIOS3["read_timeout"],
+    "TOTAL_TIMEOUT": MINIOS3["total_timeout"],
+    "MAX_RETRIES": MINIOS3["max_retries"],
+    "BACKOFF_FACTOR": MINIOS3["backoff_factor"],
+    "POOL_MAXSIZE": MINIOS3["pool_maxsize"],
+    "POOL_BLOCK": MINIOS3["pool_block"],
 }
 
-MICROSERVICE = {"URL": "http://127.0.0.1:8001"}
+MICROSERVICE = {
+    "URL": MICROSERVICE["endpoint"],
+}
 
 
 # Password validation

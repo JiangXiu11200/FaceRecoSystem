@@ -1,0 +1,24 @@
+
+[postgres]
+host=""
+port = ""
+name = ""
+user = ""
+password = ""
+
+[minios3]
+enable_ssl = false
+ca_path = "ca/ca.pem"
+endpoint = ""
+access_key = ""
+secret_key = ""
+connect_timeout = 3
+read_timeout = 3
+total_timeout = 3
+max_retries = 1
+backoff_factor = 0.3
+pool_maxsize = 10
+pool_block = false
+
+[microservice]
+endpoint = "http://127.0.0.1:8001"
