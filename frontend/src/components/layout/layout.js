@@ -15,9 +15,8 @@ const Layout = ({ children }) => {
 
   const is_login_page = location.pathname === "/login"
 
-  // 使用 useCallback 避免不必要的重新渲染
   const setSidebar = useCallback(() => {
-    setSidebarVisible((prev) => !prev) // ← 修正參數名稱
+    setSidebarVisible((prev) => !prev)
   }, [])
 
   return (

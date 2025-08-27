@@ -44,7 +44,7 @@ function Header() {
 
   const languages = [
     { label: "English", value: "en", countryCode: "US" },
-    { label: "繁體中文", value: "zh-TW", countryCode: "TW" },
+    // { label: "繁體中文", value: "zh-TW", countryCode: "TW" }, // TODO: add i18n support
   ]
 
   const showToast = (severity, summary, detail, life = 3000) => {
@@ -73,7 +73,6 @@ function Header() {
       }
       return
     }
-    console.log("profilePictureFileName: ", profilePictureFileName)
     try {
       const response = await accountsAPI("get", "/avatars/", {
         profile_picture_file_name: profilePictureFileName,
@@ -165,6 +164,7 @@ function Header() {
       <div className="col right-layout">
         <div className="avatar-wrapper user_menu_btn">
           <div className="d-flex align-items-center justify-content-end">
+            {/* TODO: i18n for language selection */}
             <Dropdown
               className="language-dropdown"
               value={selectedLang}

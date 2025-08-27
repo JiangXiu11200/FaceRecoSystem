@@ -1,26 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react"
 
+import { cloneDeep } from "lodash"
+import { Button } from "primereact/button"
+import { Card } from "primereact/card"
+import { InputText } from "primereact/inputtext"
+import { SelectButton } from "primereact/selectbutton"
+import { Toast } from "primereact/toast"
 
+import { faceRecognitionConfigApi } from "../../api/face_recognition_config"
+import ImageROI from "../../components/image_roi_canvas/image_roi"
 
-import { cloneDeep } from "lodash";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import { InputText } from "primereact/inputtext";
-import { SelectButton } from "primereact/selectbutton";
-import { Toast } from "primereact/toast";
-
-
-
-import { faceRecognitionConfigApi } from "../../api/face_recognition_config";
-import ImageROI from "../../components/image_roi_canvas/image_roi";
-
-
-
-import "./face_recognition_config.css";
-
-
-
-
+import "./face_recognition_config.css"
 
 const ENABLE_STATE = [
   { code: 0, name: "OFF" },
