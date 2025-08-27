@@ -1,6 +1,6 @@
 from typing import Union
 
-from accounts.models import UserProfile
+from accounts.models import SystemApps, UserProfile
 from accounts.utils.jwt_utils import verify_access_jwt
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
@@ -39,11 +39,10 @@ class Permission(BasePermission):
         if jwt_token is None:
             raise AuthenticationFailed("Authorization header is missing.")
 
-        user_group = getattr(user, "user_group", None)
-        if user_group is None:
-            raise AuthenticationFailed("Access denied.")
+        allowed_app_names = list(SystemApps.objects.filter(user_groups__users=user).values_list("app_name", flat=True))
+        if allowed_app_names is None or len(allowed_app_names) == 0:
+            raise AuthenticationFailed("No app permissions.")
 
-        allowed_app_names = list(user_group.apps.values_list("app_name", flat=True))
         path_segments = request.path.strip("/").split("/")
         api_prefix = path_segments[0] if path_segments else ""
 
