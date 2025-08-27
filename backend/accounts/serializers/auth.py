@@ -54,3 +54,7 @@ class LoginSerializer(serializers.Serializer):
         app_names = {app.app_name for group in user.user_groups.all() for app in group.apps.all()}
 
         return sorted(app_names)
+
+
+class RefreshTokenResponseSerializer(serializers.Serializer):
+    pass

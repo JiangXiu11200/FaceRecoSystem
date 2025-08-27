@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",  # session 管理
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
     "corsheaders",
     "channels",
     "django_celery_beat",
@@ -74,6 +75,18 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "FaceRecoSystem API",
+    "DESCRIPTION": (
+        "This project is a web-based system built on FaceRecognition, "
+        "designed to integrate and extend the capabilities of the original FaceRecognition project. \n\n"
+        "For more details, see the GitHub repository: [FaceRecognition](https://github.com/JiangXiu11200/FaceRecognition) \n\n"
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 if not USE_AUTHENTICATION:

@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.mixins import ListModelMixin, UpdateModelMixin
 from rest_framework.response import Response
@@ -14,6 +15,20 @@ from .serializers import (
 MICROSERVICE_URL = settings.MICROSERVICE.get("URL", None)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="List Configuration",
+        description="Retrieve the current configuration settings.",
+    ),
+    update=extend_schema(
+        summary="Update Configuration, ID is always 1",
+        description="Update the configuration settings and propagate changes to the microservice.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update Configuration, ID is always 1",
+        description="Partially update the configuration settings and propagate changes to the microservice.",
+    ),
+)
 class FaceRecognitionConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = RecognitionConfig.objects.all()
     serializer_class = FaceRecognitionConfigSerializer
@@ -46,6 +61,20 @@ class FaceRecognitionConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.Ge
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="List Video Configuration",
+        description="Retrieve the current video configuration settings.",
+    ),
+    update=extend_schema(
+        summary="Update Video Configuration, ID is always 1",
+        description="Update the video configuration settings and propagate changes to the microservice.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update Video Configuration, ID is always 1",
+        description="Partially update the video configuration settings and propagate changes to the microservice.",
+    ),
+)
 class VideoConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = VideoConfig.objects.all()
     serializer_class = VideoConfigSerializer
@@ -78,6 +107,13 @@ class VideoConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewS
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="Get one preview image from the camera",
+        description="Fetch a preview image from the camera via the microservice.",
+        responses={200: {"type": "object", "properties": {"image": {"type": "string", "format": "uri"}}}},
+    ),
+)
 class PreviewViewSet(ListModelMixin, viewsets.GenericViewSet):
     queryset = RecognitionConfig.objects.all()
     serializer_class = []
@@ -107,6 +143,20 @@ class PreviewViewSet(ListModelMixin, viewsets.GenericViewSet):
             )
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="List Debug Configuration",
+        description="Retrieve the current debug configuration settings.",
+    ),
+    update=extend_schema(
+        summary="Update Debug Configuration, ID is always 1",
+        description="Update the debug configuration settings and propagate changes to the microservice.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update Debug Configuration, ID is always 1",
+        description="Partially update the debug configuration settings and propagate changes to the microservice.",
+    ),
+)
 class FaceRecognitionDebugViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = DebugConfig.objects.all()
     serializer_class = FaceRecognitionDebugSerializer

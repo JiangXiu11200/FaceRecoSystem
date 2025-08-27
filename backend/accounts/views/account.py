@@ -13,6 +13,7 @@ from accounts.serializers.account import (
     UserRegisterSerializer,
 )
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -26,6 +27,16 @@ from rest_framework.viewsets import GenericViewSet
 from utils.minio_client import MinioClient
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        summary="Retrieve User Account",
+        description="Retrieve a user account by ID.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update User Account",
+        description="Partially update user account details.",
+    ),
+)
 class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = AccountsSerializer
@@ -38,6 +49,10 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
         "DELETE": "Delete system account.",
     }
 
+    @extend_schema(
+        summary="Retrieve User Accounts",
+        description="Retrieve a list of user accounts with optional filtering by account name.",
+    )
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -61,6 +76,10 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="Update User Account",
+        description="Update user account details, including profile picture management.",
+    )
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
@@ -93,6 +112,10 @@ class AccountsViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Dest
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="Delete User Account",
+        description="Delete a user account and associated profile picture from storage.",
+    )
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.id == 1:
@@ -118,6 +141,10 @@ class AccountsProfilePictureViewSet(CreateModelMixin, GenericViewSet):
     serializer_class = AccountsProfilePictureSerializer
     activity_logs = {"POST": "Upload photo stickers for user."}
 
+    @extend_schema(
+        summary="Upload Profile Picture",
+        description="Upload a profile picture to MinIO S3 and get a presigned URL.",
+    )
     def create(self, request):
         uploaded_file = request.FILES.get("file")
 
@@ -207,6 +234,28 @@ class AccountsProfilePictureViewSet(CreateModelMixin, GenericViewSet):
             return False, {"status": False, "error": str(e)}
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="List User Groups",
+        description="Retrieve a list of user groups.",
+    ),
+    update=extend_schema(
+        summary="Update User Group",
+        description="Update user group details.",
+    ),
+    retrieve=extend_schema(
+        summary="Retrieve User Group",
+        description="Retrieve a user group by ID.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update User Group",
+        description="Partially update user group details.",
+    ),
+    create=extend_schema(
+        summary="Create User Group",
+        description="Create a new user group.",
+    ),
+)
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = UserGroup.objects.all()
     serializer_class = UserGroupSerializer
@@ -219,6 +268,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     filterset_class = AccountsGroupFilter
     filter_backends = [DjangoFilterBackend]
 
+    @extend_schema(
+        summary="Delete User Group by ID",
+        description=" Delete a user group by ID. The default user group (ID=1) cannot be deleted.",
+    )
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.id == 1:
@@ -231,6 +284,10 @@ class RegisterViewSet(CreateModelMixin, GenericViewSet):
     serializer_class = UserRegisterSerializer
     activity_logs = {"POST": "Register new user."}
 
+    @extend_schema(
+        summary="Register New User Account",
+        description="Create a new user account.",
+    )
     def create(self, request):
         """Create a new user account."""
         serializer = self.get_serializer(data=request.data)
@@ -252,6 +309,12 @@ class RegisterViewSet(CreateModelMixin, GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="List System Applications",
+        description="Retrieve a list of system applications.",
+    ),
+)
 class SystemAppsViewSet(ListModelMixin, GenericViewSet):
     queryset = SystemApps.objects.all()
     serializer_class = SystemAppsSerializer
@@ -259,19 +322,38 @@ class SystemAppsViewSet(ListModelMixin, GenericViewSet):
 
 class ChangePasswordViewSet(viewsets.ViewSet):
     activity_logs = {"POST": "Change user password."}
+    serializer_class = ChangePasswordSerializer  # <-- 加上這行
 
+    @extend_schema(
+        summary="Change User Password",
+        description="Change the password for a specified user.",
+    )
     def change_password(self, request, user_id):
         """Change password for a user."""
         try:
             user = UserProfile.objects.get(id=user_id)
         except UserProfile.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = ChangePasswordSerializer(data=request.data, context={"request": request, "user": user})
+
+        serializer = self.serializer_class(data=request.data, context={"request": request, "user": user})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
 
+
 class AccountsAvatarViewSet(GenericViewSet):
+    queryset = UserProfile.objects.none()
+
+    @extend_schema(
+        summary="Get the Presigned URL of the profile picture from the MniIO S3",
+        description="Get the Presigned URL of the profile picture from the MniIO S3",
+        responses={
+            200: OpenApiResponse(description="{'url': 'http://...'}"),
+            400: OpenApiResponse(description="Missing profile picture file name"),
+            404: OpenApiResponse(description="Failed to get presigned URL"),
+            503: OpenApiResponse(description="MinIO connection failed"),
+        },
+    )
     def list(self, request, *args, **kwargs):
         profile_picture_file_name = request.query_params.get("profile_picture_file_name")
         if not profile_picture_file_name or profile_picture_file_name is None:

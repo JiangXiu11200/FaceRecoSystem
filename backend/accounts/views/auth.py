@@ -1,9 +1,10 @@
 import datetime
 
 from accounts.models import UserProfile
-from accounts.serializers.auth import LoginSerializer
+from accounts.serializers.auth import LoginSerializer, RefreshTokenResponseSerializer
 from accounts.utils.jwt_utils import generate_access_jwt, generate_refresh_jwt, verify_refresh_jwt
 from activity_logs.utils.create_system_activity import create_system_activity
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
@@ -17,6 +18,10 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
     permission_classes = []
     activity_logs = {"POST": "Login."}
 
+    @extend_schema(
+        summary="User Login.",
+        description="User login endpoint. Returns an access token and sets a refresh token in a secure cookie.",
+    )
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
@@ -101,7 +106,12 @@ class LogoutViewSet(CreateModelMixin, GenericViewSet):
     activity_logs = {"POST": "Logout."}
     authentication_classes = []
     permission_classes = []
+    serializer_class = RefreshTokenResponseSerializer
 
+    @extend_schema(
+        summary="User Logout.",
+        description=" User logout endpoint. Clears the refresh token cookie.",
+    )
     def create(self, request):
         """Handle user logout by clearing the refresh token cookie."""
         # TODO: 需要透過 Redis 或 DB 來管理 Refresh Token 的有效性，登出時應該將對應的 Refresh Token 刪除
@@ -112,10 +122,15 @@ class LogoutViewSet(CreateModelMixin, GenericViewSet):
 
 class RefreshTokenViewSet(CreateModelMixin, GenericViewSet):
     queryset = []
+    serializer_class = RefreshTokenResponseSerializer
     activity_logs = {"POST": "Refresh Token."}
     authentication_classes = []
     permission_classes = []
 
+    @extend_schema(
+        summary="Refresh Access Token",
+        description="Endpoint to refresh the access token using a valid refresh token from cookies.",
+    )
     def create(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
 

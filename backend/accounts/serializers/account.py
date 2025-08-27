@@ -1,5 +1,6 @@
 from accounts.models import SystemApps, UserGroup, UserProfile
 from accounts.utils.verify_passward import format_check, make_hashed_password, verify_password
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 
@@ -12,9 +13,11 @@ class AccountsSerializer(serializers.ModelSerializer):
         exclude = ["password"]
         read_only_fields = ["user_group_labels", "profile_picture_url"]
 
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_user_group_labels(self, obj):
         return ", ".join(obj.user_groups.values_list("group_name", flat=True))
 
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_profile_picture_url(self, obj):
         return None
 
@@ -33,7 +36,7 @@ class AccountsSerializer(serializers.ModelSerializer):
             self.fields.pop("user_group_labels", None)
 
 
-class AccountsProfilePictureSerializer(serializers.ModelSerializer):
+class AccountsProfilePictureSerializer(serializers.Serializer):
     profile_picture_file_name = serializers.FileField(write_only=True)
 
     class Meta:
@@ -117,3 +120,7 @@ def password_format_check(value: str) -> bool:
         return value
     if error_message:
         raise serializers.ValidationError(error_message)
+
+
+class AccountsAvatarSerializer(serializers.Serializer):
+    url = serializers.URLField(read_only=True)

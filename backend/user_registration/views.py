@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
@@ -9,7 +10,6 @@ from utils.minio_client import MinioClient
 from user_registration.filters import RegisterGroupFilter
 from user_registration.models import RegisterGroup, RegisterUserProfile
 from user_registration.serializers import (
-    RegisterUserFeatureSerializer,
     RegisterUserProfileSerializer,
     UserRegistrationGroupSerializer,
 )
@@ -19,6 +19,20 @@ from .filters import RegisterUserProfileFilter
 MICROSERVICE_URL = settings.MICROSERVICE.get("URL", None)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        summary="Retrieve Registered User",
+        description="Retrieve the details of a registered user by their ID.",
+    ),
+    update=extend_schema(
+        summary="Update Registered User",
+        description="Update the details of a registered user.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update Registered User",
+        description="Partially update the details of a registered user.",
+    ),
+)
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     queryset = RegisterUserProfile.objects.all().order_by("id")
     serializer_class = RegisterUserProfileSerializer
@@ -27,6 +41,10 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     filterset_class = RegisterUserProfileFilter
     filterset_fields = ["name", "register_group"]
 
+    @extend_schema(
+        summary="List Registered Users",
+        description="Retrieve a list of registered users along with their details and pre-signed URLs for their images.",
+    )
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -49,6 +67,10 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="Register a New User",
+        description="Register a new user and post their image to an external microservice.",
+    )
     def create(self, request):
         name = request.data.get("name")
         register_group = request.data.get("register_group")
@@ -91,6 +113,10 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        summary="Delete a Registered User",
+        description="Delete a registered user and notify the external microservice to remove their data.",
+    )
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         name = instance.name
@@ -107,12 +133,37 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
 
         return super().destroy(request, *args, **kwargs)
 
+    # TODO: 新增 update 方法，當使用者更新圖片時，也要 call microservice 更新用戶名稱
+    # def update(self, request, *args, **kwargs):
+    #     ...
 
-class RegisterUserFeatureViewSet(viewsets.ModelViewSet):
-    queryset = RegisterUserProfile.objects.all()
-    serializer_class = RegisterUserFeatureSerializer
 
-
+@extend_schema_view(
+    list=extend_schema(
+        summary="List User Registration Groups",
+        description="Retrieve a list of user registration groups along with their details.",
+    ),
+    create=extend_schema(
+        summary="Create User Registration Group",
+        description="Create a new user registration group.",
+    ),
+    retrieve=extend_schema(
+        summary="Retrieve User Registration Group",
+        description="Retrieve the details of a user registration group by its ID.",
+    ),
+    update=extend_schema(
+        summary="Update User Registration Group",
+        description="Update the details of a user registration group.",
+    ),
+    partial_update=extend_schema(
+        summary="Partially Update User Registration Group",
+        description="Partially update the details of a user registration group.",
+    ),
+    destroy=extend_schema(
+        summary="Delete User Registration Group",
+        description="Delete a user registration group.",
+    ),
+)
 class UserRegistrationGroupViewSet(viewsets.ModelViewSet):
     queryset = RegisterGroup.objects.all().order_by("group_name")
     serializer_class = UserRegistrationGroupSerializer

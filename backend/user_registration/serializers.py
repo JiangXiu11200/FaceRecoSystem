@@ -38,12 +38,6 @@ class RegisterUserProfileSerializer(serializers.ModelSerializer):
         return rep
 
 
-class RegisterUserFeatureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RegisterUserProfile
-        fields = ["id", "name", "s3_object_key"]
-
-
 class UserRegistrationGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegisterGroup
