@@ -1,16 +1,26 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react";
 
-import { cloneDeep } from "lodash"
-import { Button } from "primereact/button"
-import { Card } from "primereact/card"
-import { InputText } from "primereact/inputtext"
-import { SelectButton } from "primereact/selectbutton"
-import { Toast } from "primereact/toast"
 
-import { faceRecognitionConfigApi } from "../../api/face_recognition_config"
-import ImageROI from "../../components/image_roi_canvas/image_roi"
 
-import "./face_recognition_config.css"
+import { cloneDeep } from "lodash";
+import { Button } from "primereact/button";
+import { Card } from "primereact/card";
+import { InputText } from "primereact/inputtext";
+import { SelectButton } from "primereact/selectbutton";
+import { Toast } from "primereact/toast";
+
+
+
+import { faceRecognitionConfigApi } from "../../api/face_recognition_config";
+import ImageROI from "../../components/image_roi_canvas/image_roi";
+
+
+
+import "./face_recognition_config.css";
+
+
+
+
 
 const ENABLE_STATE = [
   { code: 0, name: "OFF" },
@@ -23,7 +33,7 @@ const DEBUG_STATE = {
 
 const EMPTY_VIDEO_CONFIG = {
   rtsp: "",
-  web_camera: null,
+  web_camera: "",
   image_height: 0,
   image_width: 0,
   detection_range_start_point_x: 0,
@@ -111,12 +121,6 @@ function FaceRecognitionConfig() {
     }
     faceRecognitionConfigApi("put", "/video/1/", videoConfig)
       .then((response) => {
-        setDetectionRange({
-          x1: response.data.results[0].detection_range_start_point_x,
-          y1: response.data.results[0].detection_range_start_point_y,
-          x2: response.data.results[0].detection_range_end_point_x,
-          y2: response.data.results[0].detection_range_end_point_y,
-        })
         showToast(
           "success",
           "Success",
@@ -224,7 +228,7 @@ function FaceRecognitionConfig() {
               <label className="">Web Camera</label>
               <InputText
                 className="input-container"
-                value={videoConfig ? videoConfig.web_camera : ""}
+                value={videoConfig ? videoConfig.web_camera : null}
                 onChange={(e) => {
                   setVideoConfig({
                     ...videoConfig,
@@ -363,7 +367,7 @@ function FaceRecognitionConfig() {
                   optionValue="code"
                   optionLabel="name"
                   onChange={(e) =>
-                    setDebugConfig({ ...debugConfig, debug: e.value })
+                    setDebugConfig({ ...debugConfig, debug: e.target.value })
                   }
                 />
               </div>
@@ -393,7 +397,7 @@ function FaceRecognitionConfig() {
                 onChange={(e) =>
                   setDetectionConfig({
                     ...detectionConfig,
-                    enable_blink_detection: e.value,
+                    enable_blink_detection: e.target.value,
                   })
                 }
               />
@@ -498,7 +502,7 @@ function FaceRecognitionConfig() {
                   onChange={(e) => {
                     setDetectionConfig({
                       ...detectionConfig,
-                      eyes_detection_brightness_threshold: e.target.value,
+                      eyes_detection_brightness_value_max: e.target.value,
                     })
                   }}
                 />
@@ -539,6 +543,27 @@ function FaceRecognitionConfig() {
                   }}
                 />
               </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
+              <div className="w-100">
+                <label className="">Eyes detection brightness threshold</label>
+                <InputText
+                  className="input-container"
+                  value={
+                    detectionConfig
+                      ? detectionConfig.eyes_detection_brightness_threshold
+                      : 0
+                  }
+                  onChange={(e) => {
+                    setDetectionConfig({
+                      ...detectionConfig,
+                      eyes_detection_brightness_threshold: e.target.value,
+                    })
+                  }}
+                />
+              </div>
+            </div>
+            <div className="d-flex d-flex-row gap-2">
               <div className="w-100">
                 <label className="">Sensitivity</label>
                 <InputText
