@@ -44,6 +44,9 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         if not group_active:
             return Response({"message": "User group is inactive."}, status=status.HTTP_403_FORBIDDEN)
 
+        if select_mode not in ["Standard", "Advanced"]:
+            return Response({"message": "Invalid mode selected."}, status=status.HTTP_400_BAD_REQUEST)
+
         if select_mode == "Standard" and "face-recognition" in permissions:
             permissions = []
             permissions.append("face-recognition")
