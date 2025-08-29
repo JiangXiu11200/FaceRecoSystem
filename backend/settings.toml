@@ -22,3 +22,6 @@ pool_block = false
 
 [microservice]
 endpoint = "http://127.0.0.1:8001"
+
+[tests]
+test_server_url = "http://127.0.0.1:8000"
