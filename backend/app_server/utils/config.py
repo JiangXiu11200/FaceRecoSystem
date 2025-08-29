@@ -2,7 +2,6 @@
 import socket
 from pathlib import Path
 
-import requests
 import tomli
 from minio import Minio
 from pydantic import BaseModel
@@ -34,6 +33,7 @@ class MinioConfig(BaseModel):
 
 class MicroserviceConfig(BaseModel):
     endpoint: str
+    internal_token: str
 
 
 class Settings(BaseModel):
@@ -69,15 +69,6 @@ def runtime_check(settings: Settings) -> None:
         client.list_buckets()
     except Exception as e:
         errors.append(f"MinIO endpoint failed: {e}")
-
-    # Check microservice endpoint
-    try:
-        print("Checking microservice endpoint:", settings.microservice.endpoint)
-        resp = requests.get(settings.microservice.endpoint + "/api/health", timeout=5)
-        if resp.status_code != 200:
-            errors.append(f"Microservice health check failed with status code {resp.status_code}")
-    except Exception as e:
-        errors.append(f"Microservice unreachable: {e}")
 
     if errors:
         raise RuntimeError("Runtime config checks failed: ", errors)

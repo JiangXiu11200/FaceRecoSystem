@@ -2,15 +2,23 @@ from typing import Union
 
 from accounts.models import SystemApps, UserProfile
 from accounts.utils.jwt_utils import verify_access_jwt
+from django.conf import settings
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import BasePermission
 
+INTERNAL_TOKEN = settings.MICROSERVICE.get("internal_token", None)
+
 
 class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request) -> Union[tuple, None]:
         """Authenticate the user using JWT token."""
+        internal_token = request.headers.get("X-Internal-Token", None)
+        if internal_token == INTERNAL_TOKEN:
+            user = "internal_service"
+            return (user, None)
+
         token = request.headers.get("Authorization")
         if not token:
             raise AuthenticationFailed("Authorization header is missing.")
@@ -32,6 +40,9 @@ class Permission(BasePermission):
     def has_permission(self, request, view) -> bool:
         """User permission check."""
         user = request.user
+        if user == "internal_service":
+            return True
+
         if not user or not user.is_authenticated:
             raise AuthenticationFailed("Unauthorized.")
 

@@ -12,7 +12,7 @@ from .serializers import (
     VideoConfigSerializer,
 )
 
-MICROSERVICE_URL = settings.MICROSERVICE.get("URL", None)
+MICROSERVICE_URL = settings.MICROSERVICE.get("endpoint", None)
 
 
 @extend_schema_view(

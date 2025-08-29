@@ -162,8 +162,7 @@ DATABASES = {
 }
 
 MINIO = settings.minios3.model_dump()
-MICROSERVICE = {"URL": settings.microservice.endpoint}
-
+MICROSERVICE = settings.microservice.model_dump()
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
