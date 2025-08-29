@@ -4,6 +4,7 @@ import unittest
 from dataclasses import dataclass
 
 import requests
+import tomli
 from accounts.tests.tests_api_accounts import ApiAccountsTests
 from accounts.tests.tests_api_auth import ApiAuthTests
 from activity_logs.tests.face_recognition import ApiFaceRecognitionActivityLogsTests
@@ -17,12 +18,17 @@ from system.tests.video_config import ApiFaceRecognitionConfigVideoTests
 from user_registration.tests.group import ApiUserRegistrationGroupTests
 from user_registration.tests.user import ApiUserRegistrationTests
 
-logging.basicConfig(
-    filename="test_run.log",
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
+formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
+file_handler = logging.FileHandler("test_run.log")
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(formatter)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
 
 
 @dataclass
@@ -99,14 +105,12 @@ def initial_system_config(server_url: str = None) -> bool:
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app_server.settings")
-    # TODO: Stress test for initialization of system configuration.
-    # import tomli
-    # with open("settings.toml", "rb") as f:
-    #     config = tomli.load(f)
-    # test_config = TestConfig(**config.get("tests", {}))
-    # if not initial_system_config(test_config.test_server_url):
-    #     logging.error("Initial system configuration failed. Exiting tests.")
-    #     os._exit(1)
+    with open("settings.toml", "rb") as f:
+        config = tomli.load(f)
+    test_config = TestConfig(**config.get("tests", {}))
+    if not initial_system_config(test_config.test_server_url):
+        logging.error("Initial system configuration failed. Exiting tests.")
+        os._exit(1)
     loader = unittest.TestLoader()
     runner = unittest.TextTestRunner(verbosity=2)
     suite_test = unittest.TestSuite()
