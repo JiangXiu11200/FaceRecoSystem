@@ -80,7 +80,6 @@ class ApiFaceRecognitionActivityLogsTests(TestCase):
 
     # 正向測試: 取得列表包含 MinIO URLs、過濾、排序等
     def test_list_with_minio_urls(self):
-        """測試列表回應包含 MinIO URLs"""
         # 創建測試資料
         test_log = {
             "name": "minio_test_user",
