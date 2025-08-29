@@ -1,7 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.response import Response
 from utils.minio_client import MinioClient
 
@@ -27,6 +33,10 @@ from .serializers import (
         summary="List system activity logs",
         description="Retrieve a list of system activity logs with optional filtering by account.",
     ),
+    retrieve=extend_schema(
+        summary="Retrieve a specific system activity log entry",
+        description="Retrieve detailed information about a specific system activity log entry by its ID.",
+    ),
     create=extend_schema(
         summary="Create a new system activity log entry",
         description="Create a new system activity log entry with the provided details.",
@@ -36,7 +46,9 @@ from .serializers import (
         description="Delete a specific system activity log entry by its ID.",
     ),
 )
-class SystemActivityLogsViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, viewsets.GenericViewSet):
+class SystemActivityLogsViewSet(
+    ListModelMixin, RetrieveModelMixin, CreateModelMixin, DestroyModelMixin, viewsets.GenericViewSet
+):
     queryset = SystemActivtiyLogs.objects.all().order_by("-timestamp")
     serializer_class = SystemActivityLogsSerializer
     filterset_class = SystemActivityLogsFilter
@@ -49,8 +61,18 @@ class SystemActivityLogsViewSet(ListModelMixin, CreateModelMixin, DestroyModelMi
         summary="Create a new system activity log entry",
         description="Create a new system activity log entry with the provided details.",
     ),
+    retrieve=extend_schema(
+        summary="Retrieve a specific facial recognition activity log entry",
+        description="Retrieve detailed information about a specific facial recognition activity log entry by its ID.",
+    ),
+    destroy=extend_schema(
+        summary="Delete a facial recognition activity log entry",
+        description="Delete a specific facial recognition activity log entry by its ID.",
+    ),
 )
-class FaceRecognitionActivityLogsViewSet(ListModelMixin, CreateModelMixin, viewsets.GenericViewSet):
+class FaceRecognitionActivityLogsViewSet(
+    ListModelMixin, RetrieveModelMixin, CreateModelMixin, DestroyModelMixin, viewsets.GenericViewSet
+):
     queryset = FaceRecognitionActivityLogs.objects.all().order_by("-timestamp")
     serializer_class = FaceRecognitionActivityLogsSerializer
     filterset_class = FaceRecognitionActivityLogsFilter

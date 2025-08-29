@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -22,7 +23,7 @@ class FaceRecognitionActivityLogs(models.Model):
 
 
 class SystemActivityLogsRetention(models.Model):
-    retention_days = models.IntegerField(default=90)
+    retention_days = models.IntegerField(default=90, validators=[MinValueValidator(1), MaxValueValidator(365)])
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -30,7 +31,7 @@ class SystemActivityLogsRetention(models.Model):
 
 
 class FaceRecognitionActivityLogsRetention(models.Model):
-    retention_days = models.IntegerField(default=90)
+    retention_days = models.IntegerField(default=90, validators=[MinValueValidator(1), MaxValueValidator(365)])
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
