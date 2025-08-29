@@ -1,12 +1,46 @@
-# Backend
+# ===========================
+# Backend - Python / Django
+# ===========================
 
-## Database
-db.sqlite3
+# Virtual environment
+.venv/
 
-## System
-*.pem
-
-## Python
+# Compiled Python files
 *.pyc
 __pycache__/
-.venv/
+
+# Runtime data
+docker-volumes/
+backend/media/
+*.m3u8
+
+# Database
+db.sqlite3
+
+# Sensitive files
+*.pem
+*.key
+
+# ===========================
+# Frontend - Node / React
+# ===========================
+
+## Node modules
+node_modules/
+
+## Build output
+dist/
+build/
+static/bundles/
+
+# ===========================
+# Logs & Runtime
+# ===========================
+
+# Logs
+*.log
+
+
+
+
+
