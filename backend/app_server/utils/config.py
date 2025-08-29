@@ -53,6 +53,7 @@ def runtime_check(settings: Settings) -> None:
 
     # Check Postgres connection
     try:
+        print("Checking Postgres connection... host:", settings.postgres.host, "port:", settings.postgres.port)
         with socket.create_connection((settings.postgres.host, settings.postgres.port), timeout=3):
             pass
     except Exception as e:
@@ -60,6 +61,7 @@ def runtime_check(settings: Settings) -> None:
 
     # Check MinIO connection
     try:
+        print("Checking MinIO connection... endpoint:", settings.minios3.endpoint)
         client = Minio(
             settings.minios3.endpoint,
             access_key=settings.minios3.access_key,
