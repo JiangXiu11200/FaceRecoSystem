@@ -3,7 +3,7 @@ name = "FaceRecoSystem"
 version = "0.0.1"
 description = ""
 readme = "README.md"
-requires-python = ">=3.9,<3.10"
+requires-python = ">=3.10,<3.11"
 dependencies = [
     "celery>=5.5.3",
     "channels>=4.2.2",

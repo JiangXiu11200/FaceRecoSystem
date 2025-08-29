@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+.venv/
+env/
+
+# Django
+db.sqlite3
+media/
+*.pem
+
+# Logs
+*.log
+
+# Node / frontend
+node_modules/
+dist/
+build/
+static/bundles
+docker-volume/
+
+# Git
+.git
+.gitignore
