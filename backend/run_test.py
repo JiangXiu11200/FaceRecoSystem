@@ -10,6 +10,8 @@ from activity_logs.tests.retention import ApiActivityLogsRetentionTests
 from activity_logs.tests.system import ApiSystemActivtityLogsTests
 from alarm_logs.tests import ApiAlarmLogsTests
 from django.core.management import call_command
+from user_registration.tests.group import ApiUserRegistrationGroupTests
+from user_registration.tests.user import ApiUserRegistrationTests
 
 
 def setup_database():
@@ -63,6 +65,8 @@ if __name__ == "__main__":
             loader.loadTestsFromTestCase(ApiSystemActivtityLogsTests),
             loader.loadTestsFromTestCase(ApiFaceRecognitionActivityLogsTests),
             loader.loadTestsFromTestCase(ApiActivityLogsRetentionTests),
+            loader.loadTestsFromTestCase(ApiUserRegistrationGroupTests),
+            loader.loadTestsFromTestCase(ApiUserRegistrationTests),
         ]
     )
     test_result = runner.run(suite_test)
