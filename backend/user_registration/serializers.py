@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 
 from user_registration.models import RegisterGroup, RegisterUserProfile
@@ -42,3 +44,8 @@ class UserRegistrationGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegisterGroup
         fields = "__all__"
+
+    def validate_group_name(self, value):
+        if not re.match(r"^[\w\s]+$", value):
+            raise serializers.ValidationError("group_name contains invalid characters")
+        return value

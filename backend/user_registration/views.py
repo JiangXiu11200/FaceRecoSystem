@@ -70,6 +70,15 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary="Register a New User",
         description="Register a new user and post their image to an external microservice.",
+        request={
+            "application/json": {
+                "properties": {
+                    "name": {"type": "string"},
+                    "register_group": {"type": "integer"},
+                    "image": {"type": "string", "description": "Base64 encoded face image"},
+                },
+            }
+        },
     )
     def create(self, request):
         name = request.data.get("name")
@@ -87,13 +96,20 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
                 {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
         # TODO: 重構將其呼叫方法獨立成一個模組
-        response = requests.post(
-            MICROSERVICE_URL + "/api/register-face",
-            data={"name": name, "base64_face_image": image},
-        )
+        try:
+            response = requests.post(
+                MICROSERVICE_URL + "/api/register-face",
+                data={"name": name, "base64_face_image": image},
+            )
 
-        if response.status_code != 201:
-            print("Error from microservice:", response.json())
+            if response.status_code != 201:
+                print("Error from microservice:", response.json())
+                return Response(
+                    {"error": "Service exception, please try again later."},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+        except requests.exceptions.RequestException as e:
+            print("Request to microservice failed:", str(e))
             return Response(
                 {"error": "Service exception, please try again later."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
