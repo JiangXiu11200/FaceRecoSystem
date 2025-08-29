@@ -11,20 +11,20 @@ from minio.commonconfig import CopySource
 from urllib3.util.timeout import Timeout
 
 TIMEOUT_CONFIG = Timeout(
-    connect=settings.MINIO.get("CONNECT_TIMEOUT", 1.0),
-    read=settings.MINIO.get("READ_TIMEOUT", 3.0),
-    total=settings.MINIO.get("TOTAL_TIMEOUT", 3.0),
+    connect=settings.MINIO.get("connect_timeout", 1.0),
+    read=settings.MINIO.get("read_timeout", 3.0),
+    total=settings.MINIO.get("total_timeout", 3.0),
 )
 
 POOL_KWARGS = {
     "timeout": TIMEOUT_CONFIG,
     "retries": urllib3.Retry(
-        total=settings.MINIO.get("MAX_RETRIES", 1),
-        backoff_factor=settings.MINIO.get("BACKOFF_FACTOR", 0.3),
+        total=settings.MINIO.get("max_retries", 1),
+        backoff_factor=settings.MINIO.get("backoff_factor", 0.3),
         status_forcelist=[500, 502, 503, 504],
     ),
-    "maxsize": settings.MINIO.get("POOL_MAXSIZE", 10),
-    "block": settings.MINIO.get("POOL_BLOCK", False),
+    "maxsize": settings.MINIO.get("pool_maxsize", 10),
+    "block": settings.MINIO.get("pool_block", False),
 }
 
 
@@ -36,24 +36,24 @@ class MinioClient:
         """Get MinIO client instance with timeout configuration."""
         try:
             if not cls._client:
-                if settings.MINIO["ENABLE_SSL"]:
-                    context = ssl.create_default_context(cafile=settings.MINIO["CA_PATH"])
+                if settings.MINIO["enable_ssl"]:
+                    context = ssl.create_default_context(cafile=settings.MINIO["ca_path"])
                     context.check_hostname = False
                     POOL_KWARGS["ssl_context"] = context
                     http_client = urllib3.PoolManager(**POOL_KWARGS)
                     cls._client = Minio(
-                        endpoint=settings.MINIO["ENDPOINT"],
-                        access_key=settings.MINIO["ACCESS_KEY"],
-                        secret_key=settings.MINIO["SECRET_KEY"],
+                        endpoint=settings.MINIO["endpoint"],
+                        access_key=settings.MINIO["access_key"],
+                        secret_key=settings.MINIO["secret_key"],
                         secure=True,
                         http_client=http_client,
                     )
                 else:
                     http_client = urllib3.PoolManager(**POOL_KWARGS)
                     cls._client = Minio(
-                        endpoint=settings.MINIO["ENDPOINT"],
-                        access_key=settings.MINIO["ACCESS_KEY"],
-                        secret_key=settings.MINIO["SECRET_KEY"],
+                        endpoint=settings.MINIO["endpoint"],
+                        access_key=settings.MINIO["access_key"],
+                        secret_key=settings.MINIO["secret_key"],
                         secure=False,
                         http_client=http_client,
                     )

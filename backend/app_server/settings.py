@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
-import tomli
+from .utils.config import load_settings, runtime_check
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-(r*8*ks!*0b13gbw#ssvno1o4sb!_$s+^1vl6kgru)(74&@iod"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 USE_AUTHENTICATION = True
 
@@ -146,41 +146,23 @@ WSGI_APPLICATION = "app_server.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-with open("settings.toml", "rb") as f:
-    _config = tomli.load(f)
-    POSTGRES = _config["postgres"]
-    MINIOS3 = _config["minios3"]
-    MICROSERVICE = _config["microservice"]
+settings = load_settings()
+runtime_check(settings)
+
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": POSTGRES["name"],
-        "USER": POSTGRES["user"],
-        "PASSWORD": POSTGRES["password"],
-        "HOST": POSTGRES["host"],
-        "PORT": POSTGRES["port"],
+        "NAME": settings.postgres.name,
+        "USER": settings.postgres.user,
+        "PASSWORD": settings.postgres.password,
+        "HOST": settings.postgres.host,
+        "PORT": settings.postgres.port,
     }
 }
 
-MINIO = {
-    "ENABLE_SSL": False,
-    "CA_PATH": BASE_DIR / "ca/ca.pem",
-    "ENDPOINT": MINIOS3["endpoint"],
-    "ACCESS_KEY": MINIOS3["access_key"],
-    "SECRET_KEY": MINIOS3["secret_key"],
-    "CONNECT_TIMEOUT": MINIOS3["connect_timeout"],
-    "READ_TIMEOUT": MINIOS3["read_timeout"],
-    "TOTAL_TIMEOUT": MINIOS3["total_timeout"],
-    "MAX_RETRIES": MINIOS3["max_retries"],
-    "BACKOFF_FACTOR": MINIOS3["backoff_factor"],
-    "POOL_MAXSIZE": MINIOS3["pool_maxsize"],
-    "POOL_BLOCK": MINIOS3["pool_block"],
-}
-
-MICROSERVICE = {
-    "URL": MICROSERVICE["endpoint"],
-}
+MINIO = settings.minios3.model_dump()
+MICROSERVICE = {"URL": settings.microservice.endpoint}
 
 
 # Password validation
