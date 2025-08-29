@@ -5,6 +5,7 @@ from django.test import TestCase
 
 class ApiFaceRecognitionConfigPreviewTests(TestCase):
     """Test cases for the /api/face-recognition-config/preview/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)
@@ -42,4 +43,3 @@ class ApiFaceRecognitionConfigPreviewTests(TestCase):
                 headers=self.auth_headers,
             )
             self.assertEqual(response.status_code, 405)
-

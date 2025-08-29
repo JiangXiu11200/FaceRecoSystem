@@ -14,6 +14,8 @@ BASE64_TEST_IMAGE = base64.b64encode(image_data).decode("utf-8")
 
 
 class ApiUserRegistrationTests(TestCase):
+    """Test cases for the /api/user-registration/group/ endpoint."""
+
     def setUp(self):
         # 讀取測試設定
         with open("settings.toml", "rb") as f:

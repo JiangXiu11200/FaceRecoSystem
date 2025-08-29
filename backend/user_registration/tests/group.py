@@ -7,6 +7,8 @@ from django.test import TestCase
 
 
 class ApiUserRegistrationGroupTests(TestCase):
+    """Test cases for the /api/user-registration/group/ endpoint."""
+
     def setUp(self):
         # 讀取測試設定
         with open("settings.toml", "rb") as f:

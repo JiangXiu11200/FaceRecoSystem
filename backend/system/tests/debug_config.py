@@ -5,6 +5,7 @@ from django.test import TestCase
 
 class ApiFaceRecognitionConfigDebugTests(TestCase):
     """Test cases for the /api/face-recognition-config/debug/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

@@ -7,6 +7,8 @@ from django.test import TestCase
 
 
 class ApiAlarmLogsTests(TestCase):
+    """Test cases for the /api/alarm-logs/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

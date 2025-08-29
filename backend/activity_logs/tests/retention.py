@@ -7,6 +7,8 @@ from django.test import TestCase
 
 
 class ApiActivityLogsRetentionTests(TestCase):
+    """Test cases for the /api/activity-logs/retention/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

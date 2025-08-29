@@ -9,6 +9,8 @@ from django.test import TestCase
 
 
 class ApiFaceRecognitionActivityLogsTests(TestCase):
+    """Test cases for the /api/activity-logs/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

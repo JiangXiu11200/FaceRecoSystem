@@ -7,6 +7,8 @@ from django.test import TestCase
 
 
 class ApiAuthTests(TestCase):
+    """Test cases for the /api/auth/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

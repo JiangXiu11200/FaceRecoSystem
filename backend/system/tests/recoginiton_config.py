@@ -8,6 +8,7 @@ from django.test import TestCase
 
 class ApiFaceRecognitionConfigRecoginitonTests(TestCase):
     """Test cases for the /api/face-recognition-config/recoginiton/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

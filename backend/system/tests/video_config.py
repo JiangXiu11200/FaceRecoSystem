@@ -9,6 +9,7 @@ from django.test import TestCase
 
 class ApiFaceRecognitionConfigVideoTests(TestCase):
     """Test cases for the /api/face-recognition-config/video/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)

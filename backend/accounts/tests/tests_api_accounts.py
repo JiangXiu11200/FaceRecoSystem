@@ -9,6 +9,7 @@ from django.test import TestCase
 
 class ApiAccountsTests(TestCase):
     """Test cases for the /api/accounts/ endpoint."""
+
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)
