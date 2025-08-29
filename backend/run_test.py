@@ -10,6 +10,10 @@ from activity_logs.tests.retention import ApiActivityLogsRetentionTests
 from activity_logs.tests.system import ApiSystemActivtityLogsTests
 from alarm_logs.tests import ApiAlarmLogsTests
 from django.core.management import call_command
+from system.tests.debug_config import ApiFaceRecognitionConfigDebugTests
+from system.tests.preview_config import ApiFaceRecognitionConfigPreviewTests
+from system.tests.recoginiton_config import ApiFaceRecognitionConfigRecoginitonTests
+from system.tests.video_config import ApiFaceRecognitionConfigVideoTests
 from user_registration.tests.group import ApiUserRegistrationGroupTests
 from user_registration.tests.user import ApiUserRegistrationTests
 
@@ -67,6 +71,12 @@ if __name__ == "__main__":
             loader.loadTestsFromTestCase(ApiActivityLogsRetentionTests),
             loader.loadTestsFromTestCase(ApiUserRegistrationGroupTests),
             loader.loadTestsFromTestCase(ApiUserRegistrationTests),
+            loader.loadTestsFromTestCase(ApiFaceRecognitionConfigPreviewTests),
+            loader.loadTestsFromTestCase(
+                ApiFaceRecognitionConfigDebugTests
+            ),  # System testing must be done last because it changes the actual available system parameters
+            loader.loadTestsFromTestCase(ApiFaceRecognitionConfigVideoTests),
+            loader.loadTestsFromTestCase(ApiFaceRecognitionConfigRecoginitonTests),
         ]
     )
     test_result = runner.run(suite_test)
