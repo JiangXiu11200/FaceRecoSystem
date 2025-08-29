@@ -2,11 +2,11 @@
 FROM node:20.11.0 as frontend
 
 
-COPY ./frontend ./frontend
+WORKDIR /app
 
-WORKDIR /frontend
+COPY frontend/ ./
 
-RUN npm install -g webpack
+RUN npm install
 
 RUN npm run build
 
@@ -16,9 +16,9 @@ FROM nginx:stable-alpine
 # remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
 
-COPY --from=frontend /frontend/dist /frontend
+COPY --from=frontend /app/dist /frontend
 
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 3001
 
