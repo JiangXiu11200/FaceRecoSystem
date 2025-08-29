@@ -3,7 +3,9 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.mixins import (
     CreateModelMixin,
+    DestroyModelMixin,
     ListModelMixin,
+    RetrieveModelMixin,
     UpdateModelMixin,
 )
 from rest_framework.response import Response
@@ -14,8 +16,14 @@ from .models import AlarmLogs
 from .serializers import AcknowledgeAlarmLogsSerializer, AlarmLogsSerializer
 
 
-@extend_schema_view(create=extend_schema(summary="Create Alarm Log", description="Create a new alarm log entry."))
-class AlarmLogsViewSet(ListModelMixin, CreateModelMixin, viewsets.GenericViewSet):
+@extend_schema_view(
+    create=extend_schema(summary="Create Alarm Log", description="Create a new alarm log entry."),
+    destroy=extend_schema(summary="Delete Alarm Log", description="Delete an alarm log entry by its ID."),
+    retrieve=extend_schema(summary="Retrieve Alarm Log", description="Retrieve an alarm log entry by its ID."),
+)
+class AlarmLogsViewSet(
+    ListModelMixin, RetrieveModelMixin, CreateModelMixin, DestroyModelMixin, viewsets.GenericViewSet
+):
     queryset = AlarmLogs.objects.all().order_by("-timestamp")
     serializer_class = AlarmLogsSerializer
     filter_backends = [DjangoFilterBackend]
