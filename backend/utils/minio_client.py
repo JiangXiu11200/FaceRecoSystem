@@ -36,8 +36,8 @@ class MinioClient:
         """Get MinIO client instance with timeout configuration."""
         try:
             if not cls._client:
-                if settings.MINIO["enable_ssl"]:
-                    context = ssl.create_default_context(cafile=settings.MINIO["ca_path"])
+                if settings.MINIO.get("enable_ssl", False):
+                    context = ssl.create_default_context(cafile=settings.get("ca_path", None))
                     context.check_hostname = False
                     POOL_KWARGS["ssl_context"] = context
                     http_client = urllib3.PoolManager(**POOL_KWARGS)

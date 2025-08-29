@@ -12,8 +12,6 @@ from .serializers import (
     VideoConfigSerializer,
 )
 
-MICROSERVICE_URL = settings.MICROSERVICE.get("endpoint", None)
-
 
 @extend_schema_view(
     list=extend_schema(
@@ -42,13 +40,14 @@ class FaceRecognitionConfigViewSet(ListModelMixin, RetrieveModelMixin, UpdateMod
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        if not MICROSERVICE_URL:
+        microservice_url = settings.MICROSERVICE.get("endpoint", None)
+        if not microservice_url:
             return Response(
                 {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
 
         try:
-            response = requests.post(MICROSERVICE_URL + "/api/face-reco-config/", json=serializer.validated_data)
+            response = requests.post(microservice_url + "/api/face-reco-config/", json=serializer.validated_data)
             if response.status_code != 200:
                 print("Error from microservice:", response.text)
                 return Response(
@@ -92,13 +91,14 @@ class VideoConfigViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, v
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        if not MICROSERVICE_URL:
+        microservice_url = settings.MICROSERVICE.get("endpoint", None)
+        if not microservice_url:
             return Response(
                 {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
 
         try:
-            response = requests.post(MICROSERVICE_URL + "/api/video-config/", json=serializer.validated_data)
+            response = requests.post(microservice_url + "/api/video-config/", json=serializer.validated_data)
             if response.status_code != 200:
                 print("Error from microservice:", response.text)
                 return Response(
@@ -127,13 +127,15 @@ class PreviewViewSet(ListModelMixin, viewsets.GenericViewSet):
     serializer_class = []
 
     def list(self, request, *args, **kwargs):
-        if not MICROSERVICE_URL:
+        microservice_url = settings.MICROSERVICE.get("endpoint", None)
+
+        if not microservice_url:
             return Response(
                 {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
 
         try:
-            response = requests.get(MICROSERVICE_URL + "/api/preview-camera/")
+            response = requests.get(microservice_url + "/api/preview-camera/")
             if response.status_code != 200:
                 print("Error from microservice:", response.text)
                 return Response(
@@ -174,13 +176,14 @@ class FaceRecognitionDebugViewSet(ListModelMixin, UpdateModelMixin, viewsets.Gen
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        if not MICROSERVICE_URL:
+        microservice_url = settings.MICROSERVICE.get("endpoint", None)
+        if not microservice_url:
             return Response(
                 {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
 
         try:
-            response = requests.post(MICROSERVICE_URL + "/api/debug/", json=serializer.validated_data)
+            response = requests.post(microservice_url + "/api/debug/", json=serializer.validated_data)
             if response.status_code != 200:
                 print("Error from microservice:", response.text)
                 return Response(

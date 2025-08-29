@@ -16,8 +16,6 @@ from user_registration.serializers import (
 
 from .filters import RegisterUserProfileFilter
 
-MICROSERVICE_URL = settings.MICROSERVICE.get("URL", None)
-
 
 @extend_schema_view(
     retrieve=extend_schema(
@@ -91,14 +89,15 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not MICROSERVICE_URL:
+        microservice_url = settings.MICROSERVICE.get("endpoint", None)
+        if not microservice_url:
             return Response(
                 {"error": "Microservice URL is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
         # TODO: 重構將其呼叫方法獨立成一個模組
         try:
             response = requests.post(
-                MICROSERVICE_URL + "/api/register-face",
+                microservice_url + "/api/register-face",
                 data={"name": name, "base64_face_image": image},
             )
 
@@ -136,9 +135,10 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         name = instance.name
+        microservice_url = settings.MICROSERVICE.get("endpoint", None)
 
         response = requests.post(
-            MICROSERVICE_URL + f"/api/delete-registered-face/{name}",
+            microservice_url + f"/api/delete-registered-face/{name}",
         )
         if response.status_code != 200:
             print("Error from microservice:", response.json())
