@@ -10,7 +10,7 @@ class DebugConfig(models.Model):
 
 
 class VideoConfig(models.Model):
-    rtsp = models.CharField(default="", max_length=256, blank=True)
+    rtsp = models.CharField(default="", max_length=64, blank=True)
     web_camera = models.IntegerField(null=True, blank=True)
     image_height = models.IntegerField()
     image_width = models.IntegerField()
@@ -26,9 +26,9 @@ class VideoConfig(models.Model):
 
 class RecognitionConfig(models.Model):
     enable_blink_detection = models.BooleanField(default=True)
-    dlib_predictor_path = models.CharField(max_length=256, default="")
-    dlib_recognition_model_path = models.CharField(max_length=256, default="")
-    face_model = models.CharField(max_length=256, default="")  # TODO: Change to key value db
+    dlib_predictor_path = models.CharField(max_length=256, default="", blank=True, null=True)
+    dlib_recognition_model_path = models.CharField(max_length=256, default="", blank=True, null=True)
+    face_model = models.CharField(max_length=256, default="", blank=True, null=True)  # TODO: Change to key value db
     minimum_bounding_box_height = models.FloatField(default=0.0)
     minimum_face_detection_score = models.FloatField(default=0.0)
     eyes_detection_brightness_threshold = models.IntegerField(default=0)

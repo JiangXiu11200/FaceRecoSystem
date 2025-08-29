@@ -2,7 +2,7 @@ import requests
 from django.conf import settings
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
-from rest_framework.mixins import ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 
 from .models import DebugConfig, RecognitionConfig, VideoConfig
@@ -24,12 +24,16 @@ MICROSERVICE_URL = settings.MICROSERVICE.get("URL", None)
         summary="Update Configuration, ID is always 1",
         description="Update the configuration settings and propagate changes to the microservice.",
     ),
+    retrive=extend_schema(
+        summary="Retrieve Configuration, ID is always 1",
+        description="Retrieve the configuration settings.",
+    ),
     partial_update=extend_schema(
         summary="Partially Update Configuration, ID is always 1",
         description="Partially update the configuration settings and propagate changes to the microservice.",
     ),
 )
-class FaceRecognitionConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
+class FaceRecognitionConfigViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = RecognitionConfig.objects.all()
     serializer_class = FaceRecognitionConfigSerializer
 
@@ -70,12 +74,16 @@ class FaceRecognitionConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.Ge
         summary="Update Video Configuration, ID is always 1",
         description="Update the video configuration settings and propagate changes to the microservice.",
     ),
+    retrive=extend_schema(
+        summary="Retrieve Video Configuration, ID is always 1",
+        description="Retrieve the video configuration settings.",
+    ),
     partial_update=extend_schema(
         summary="Partially Update Video Configuration, ID is always 1",
         description="Partially update the video configuration settings and propagate changes to the microservice.",
     ),
 )
-class VideoConfigViewSet(ListModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
+class VideoConfigViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, viewsets.GenericViewSet):
     queryset = VideoConfig.objects.all()
     serializer_class = VideoConfigSerializer
 
