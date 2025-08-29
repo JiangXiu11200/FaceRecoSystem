@@ -10,11 +10,15 @@ class Command(BaseCommand):
         system_retention, created = SystemActivityLogsRetention.objects.update_or_create(
             defaults={"retention_days": 90}
         )
-        self.stdout.write(f"{'Created' if created else 'Updated'} SystemActivityLogsRetention: {system_retention}")
+        self.stdout.write(
+            self.style.SUCCESS(f"{'Created' if created else 'Updated'} SystemActivityLogsRetention: {system_retention}")
+        )
 
         face_recognition_retention, created = FaceRecognitionActivityLogsRetention.objects.update_or_create(
             defaults={"retention_days": 90}
         )
         self.stdout.write(
-            f"{'Created' if created else 'Updated'} FaceRecognitionActivityLogsRetention: {face_recognition_retention}"
+            self.style.SUCCESS(
+                f"{'Created' if created else 'Updated'} FaceRecognitionActivityLogsRetention: {face_recognition_retention}"
+            )
         )
