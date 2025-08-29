@@ -5,6 +5,9 @@ import unittest
 import django
 from accounts.tests.tests_api_accounts import ApiAccountsTests
 from accounts.tests.tests_api_auth import ApiAuthTests
+from activity_logs.tests.face_recognition import ApiFaceRecognitionActivityLogsTests
+from activity_logs.tests.retention import ApiActivityLogsRetentionTests
+from activity_logs.tests.system import ApiSystemActivtityLogsTests
 from alarm_logs.tests import ApiAlarmLogsTests
 from django.core.management import call_command
 
@@ -57,6 +60,9 @@ if __name__ == "__main__":
             loader.loadTestsFromTestCase(ApiAuthTests),
             loader.loadTestsFromTestCase(ApiAccountsTests),
             loader.loadTestsFromTestCase(ApiAlarmLogsTests),
+            loader.loadTestsFromTestCase(ApiSystemActivtityLogsTests),
+            loader.loadTestsFromTestCase(ApiFaceRecognitionActivityLogsTests),
+            loader.loadTestsFromTestCase(ApiActivityLogsRetentionTests),
         ]
     )
     test_result = runner.run(suite_test)
