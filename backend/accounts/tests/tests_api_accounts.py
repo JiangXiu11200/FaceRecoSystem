@@ -8,6 +8,7 @@ from django.test import TestCase
 
 
 class ApiAccountsTests(TestCase):
+    """Test cases for the /api/accounts/ endpoint."""
     def setUp(self):
         with open("settings.toml", "rb") as f:
             config = tomli.load(f)
@@ -109,7 +110,9 @@ class ApiAccountsTests(TestCase):
         # 先建立一個 group
         payload = {"group_name": f"tempgroup-{random.randint(1000, 9999)}"}
         create_resp = requests.post(self.group_endpoint, headers=self.auth_headers, json=payload)
-        group_id = create_resp.json()["id"]
+        self.assertEqual(create_resp.status_code, 201, create_resp.text)
+        data = create_resp.json()
+        group_id = data["id"]
 
         # retrieve
         retrieve_resp = requests.get(f"{self.group_endpoint}{group_id}/", headers=self.auth_headers)
