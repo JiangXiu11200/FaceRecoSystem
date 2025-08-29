@@ -34,6 +34,7 @@ def update_s3_temporary_file_cleanup_task(run_at_startup: bool = True):
 
         if run_at_startup:
             from accounts.tasks import cleanup_temporary_data
+
             time.sleep(5)
             cleanup_temporary_data.delay()
 

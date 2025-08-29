@@ -16,6 +16,7 @@ class AlarmLogsSerializer(serializers.ModelSerializer):
             rep["minio_urls"] = urls[s3_object_key]
         return rep
 
+
 class AcknowledgeAlarmLogsSerializer(serializers.ModelSerializer):
     acknowledged = serializers.BooleanField(required=True)
 
