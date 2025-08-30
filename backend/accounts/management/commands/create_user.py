@@ -29,6 +29,12 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"Added app '{app.app_name}' to default group."))
 
         # Create superadmin user
+
+        # Check if the user already exists
+        superadmin_exists = UserProfile.objects.filter(account="superadmin").exists()
+        if superadmin_exists:
+            self.stdout.write(self.style.WARNING("Default user 'superadmin' already exists."))
+            return
         _password = make_hashed_password("superadmin")
         default_user, created = UserProfile.objects.get_or_create(
             defaults={

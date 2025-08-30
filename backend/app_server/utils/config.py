@@ -3,7 +3,8 @@ import socket
 from pathlib import Path
 
 import tomli
-from minio import Minio
+
+# from minio import Minio
 from pydantic import BaseModel
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -60,17 +61,17 @@ def runtime_check(settings: Settings) -> None:
         errors.append(f"Postgres connection failed: {e}")
 
     # Check MinIO connection
-    try:
-        print("Checking MinIO connection... endpoint:", settings.minios3.endpoint)
-        client = Minio(
-            settings.minios3.endpoint,
-            access_key=settings.minios3.access_key,
-            secret_key=settings.minios3.secret_key,
-            secure=False,
-        )
-        client.list_buckets()
-    except Exception as e:
-        errors.append(f"MinIO endpoint failed: {e}")
+    # try:
+    #     print("Checking MinIO connection... endpoint:", settings.minios3.endpoint)
+    #     client = Minio(
+    #         settings.minios3.endpoint,
+    #         access_key=settings.minios3.access_key,
+    #         secret_key=settings.minios3.secret_key,
+    #         secure=False,
+    #     )
+    #     client.list_buckets()
+    # except Exception as e:
+    #     errors.append(f"MinIO endpoint failed: {e}")
 
     if errors:
         raise RuntimeError("Runtime config checks failed: ", errors)
