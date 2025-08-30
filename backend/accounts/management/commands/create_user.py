@@ -6,8 +6,12 @@ from accounts.utils.verify_passward import make_hashed_password
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        # Create a default user group if it doesn't exist
-        default_group, created = UserGroup.objects.get_or_create(defaults={"group_name": "Administrator"})
+        default_group = UserGroup.objects.filter(group_name="Administrator").first()
+        created = False
+
+        if not default_group:
+            # Create a default user group if it doesn't exist
+            default_group, created = UserGroup.objects.get_or_create(defaults={"group_name": "Administrator"})
 
         # Get all system apps
         system_apps = SystemApps.objects.all()
