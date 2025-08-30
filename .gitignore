@@ -12,6 +12,7 @@ __pycache__/
 # Runtime data
 docker-volumes/
 backend/media/
+minio/
 *.m3u8
 
 # Database
