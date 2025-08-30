@@ -109,7 +109,7 @@ function Accounts() {
   const getAccounts = () => {
     const url = searchUser ? `/?account=${searchUser}` : "/"
 
-    accountsAPI("get", `/${url}`, tablePage)
+    accountsAPI("get", `${url}`, tablePage)
       .then((response) => {
         setTableData(response.data.results)
         if (searchUser != "") {
@@ -582,6 +582,12 @@ function Accounts() {
                 className="w-100"
                 value={accountDetails.description}
                 row={3}
+                onChange={(e) =>
+                  setAccountDetails({
+                    ...accountDetails,
+                    description: e.target.value,
+                  })
+                }
               />
             </div>
           </div>
