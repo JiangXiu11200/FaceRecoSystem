@@ -38,8 +38,8 @@ class MinioClient:
     @classmethod
     def get_client(cls):
         """Get MinIO client instance with timeout configuration."""
-        cls.external_base_url = EXTRNAL_BASE_URL
         cls.internal_base = INTERNAL_BASE
+        cls.external_base_url = EXTRNAL_BASE_URL if EXTRNAL_BASE_URL != "" else INTERNAL_BASE
         try:
             if not cls._client:
                 if settings.MINIO.get("enable_ssl", False):
@@ -55,7 +55,6 @@ class MinioClient:
                         http_client=http_client,
                     )
                 else:
-                    print("==> ", settings.MINIO["endpoint"])
                     http_client = urllib3.PoolManager(**POOL_KWARGS)
                     cls._client = Minio(
                         endpoint=settings.MINIO["endpoint"],
@@ -142,7 +141,6 @@ class MinioClient:
                 response_headers={"response-cache-control": f"max-age={expires_in_sec}, public"},
             )
             external_url = cls._convert_to_external_url(url)
-            print("----- Presigned URL:", url)
             return True, {"status": True, "url": external_url}
         except error.S3Error as e:
             return False, {"status": False, "error": str(e)}
