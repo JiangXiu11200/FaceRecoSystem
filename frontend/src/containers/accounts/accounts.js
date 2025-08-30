@@ -598,7 +598,7 @@ function Accounts() {
                 src={
                   accountDetails.profile_picture_url
                     ? accountDetails.profile_picture_url
-                    : "/image/roi_not_found.jpg"
+                    : "/static/image/roi_not_found.jpg"
                 }
                 alt=""
               />

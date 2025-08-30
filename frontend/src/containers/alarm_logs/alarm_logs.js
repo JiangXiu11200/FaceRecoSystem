@@ -267,7 +267,7 @@ const AlarmLogs = () => {
               src={
                 alarmDetails.minio_urls
                   ? alarmDetails.minio_urls
-                  : "/image/roi_not_found.jpg"
+                  : "/static/image/roi_not_found.jpg"
               }
               alt="Alarm"
             />

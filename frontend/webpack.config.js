@@ -4,6 +4,7 @@ const TerserPlugin = require("terser-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const Dotenv = require("dotenv-webpack")
+const CopyWebpackPlugin = require("copy-webpack-plugin")
 
 // const { PurgeCSSPlugin } = require("purgecss-webpack-plugin")
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer")
@@ -82,6 +83,9 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css",
     }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: "static", to: "static" }],
+    }),
     // TAG: Analyze bundle size, if needed, uncomment the following lines
     // new BundleAnalyzerPlugin({
     //   analyzerMode: "disabled",
@@ -97,7 +101,7 @@ module.exports = {
   devServer: {
     port: 3000,
     hot: true,
-    static: path.resolve(__dirname, "static/"),
+    static: path.resolve(__dirname, "/"),
     proxy: [
       {
         context: ["/api"],

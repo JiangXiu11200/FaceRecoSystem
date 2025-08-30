@@ -133,7 +133,7 @@ function Header() {
             style={{ borderBottom: "1px solid #ddd" }}
           >
             <Avatar
-              image={avatarURL ? avatarURL : "/image/user.jpg"}
+              image={avatarURL ? avatarURL : "/static/image/user.jpg"}
               shape="circle"
               size="large"
             />
@@ -178,7 +178,7 @@ function Header() {
           </div>
           <div className="d-flex align-items-center justify-content-end">
             <Avatar
-              image={avatarURL ? avatarURL : "/image/user.jpg"}
+              image={avatarURL ? avatarURL : "/static/image/user.jpg"}
               shape="circle"
               size="large"
               onClick={(event) => menuRight.current.toggle(event)}

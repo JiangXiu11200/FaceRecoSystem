@@ -79,7 +79,7 @@ const ImageROI = ({ image, image_width, image_height, detectionRange }) => {
     <div style={{ position: "relative", display: "inline-block" }}>
       <img
         ref={imgRef}
-        src={image ? image : "/image/not_found.jpg"}
+        src={image ? image : "/static/image/not_found.jpg"}
         alt="roi_canvas"
         style={{ display: "block", width: "100%", height: "auto" }}
       />

@@ -54,7 +54,7 @@ function Table({
       <div className="table-image">
         <Image
           className="table-image-layout"
-          src={image ? image : "/image/roi_not_found.jpg"}
+          src={image ? image : "/static/image/roi_not_found.jpg"}
           alt="headshot"
           preview={true}
         />

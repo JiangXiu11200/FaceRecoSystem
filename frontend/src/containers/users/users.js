@@ -357,7 +357,7 @@ function Users() {
               src={
                 userDetails.register_picture_url
                   ? userDetails.register_picture_url
-                  : "/image/roi_not_found.jpg"
+                  : "/static/image/roi_not_found.jpg"
               }
               alt="User"
             />

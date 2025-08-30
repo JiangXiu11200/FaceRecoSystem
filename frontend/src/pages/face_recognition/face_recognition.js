@@ -157,7 +157,7 @@ function FaceRecognition() {
   // TODO: 辨識過的人臉 ROI 圖例
   // useEffect(() => {
   //   for (let i = 0; i < 10; i++) {
-  //     setROIImages((prevImages) => [...prevImages, "/image/roi_not_found.jpg"])
+  //     setROIImages((prevImages) => [...prevImages, "/static/image/roi_not_found.jpg"])
   //   }
   // }, [])
 
