@@ -62,7 +62,9 @@ class Permission(BasePermission):
 
         allowed_app_names.extend(["token", "auth"])
         api_app_name = path_segments[1]
-        if api_app_name not in allowed_app_names:
+        if api_app_name == "accounts":
+            is_get_avatar = len(path_segments) > 2 and path_segments[2] == "avatars"
+        if api_app_name not in allowed_app_names and not is_get_avatar:
             raise AuthenticationFailed("Access denied.")
 
         return True
