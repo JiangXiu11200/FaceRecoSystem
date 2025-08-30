@@ -1,0 +1,29 @@
+# Python cache
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+
+
+
+# Virtual env
+backend/.venv/
+backend/env/
+
+# Runtime files
+backend/docker-volume/
+backend/db.sqlite3
+backend/media/
+backend/*.pem
+
+# Logs
+backend/*.log
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/static/bundles
+
+# Git
+.git
+.gitignore

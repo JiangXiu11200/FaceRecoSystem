@@ -3,7 +3,7 @@ FROM python:3.11-slim-bookworm
 # Use the official uv image to quickly build the environment
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-WORKDIR /app
+WORKDIR /backend
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
