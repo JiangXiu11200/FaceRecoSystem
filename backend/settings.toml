@@ -1,17 +1,18 @@
 
 [postgres]
-host=""
-port = ""
-name = ""
-user = ""
-password = ""
+host="facereco-postgres"
+port = "5432"
+name = "facereco"
+user = <USERNAME>
+password = <PASSWORD>
 
 [minios3]
 enable_ssl = false
 ca_path = "ca/ca.pem"
-endpoint = ""
-access_key = ""
-secret_key = ""
+endpoint = "facereco-minio:9000"
+external_endpoint = "http://<YOUR_DOMAIN>:3001/minio"
+access_key = <MINIO_USER>
+secret_key = <MINIO_PASSWORD>
 connect_timeout = 3
 read_timeout = 3
 total_timeout = 3
@@ -21,8 +22,8 @@ pool_maxsize = 10
 pool_block = false
 
 [microservice]
-endpoint = "http://127.0.0.1:8001"
+endpoint = "http://<SERVICE_DOMAIN>"
 internal_token = ""
 
 [tests]
-test_server_url = "http://127.0.0.1:8000"
+test_server_url = "http://localhost:8000"

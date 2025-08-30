@@ -6,9 +6,10 @@ from io import BytesIO
 
 import urllib3
 from django.conf import settings
+from urllib3.util.timeout import Timeout
+
 from minio import Minio, error
 from minio.commonconfig import CopySource
-from urllib3.util.timeout import Timeout
 
 TIMEOUT_CONFIG = Timeout(
     connect=settings.MINIO.get("connect_timeout", 1.0),
@@ -27,6 +28,9 @@ POOL_KWARGS = {
     "block": settings.MINIO.get("pool_block", False),
 }
 
+EXTRNAL_BASE_URL = settings.MINIO.get("external_endpoint", settings.MINIO["endpoint"])
+INTERNAL_BASE = f"http://{settings.MINIO['endpoint']}"
+
 
 class MinioClient:
     _client = None
@@ -34,6 +38,8 @@ class MinioClient:
     @classmethod
     def get_client(cls):
         """Get MinIO client instance with timeout configuration."""
+        cls.external_base_url = EXTRNAL_BASE_URL
+        cls.internal_base = INTERNAL_BASE
         try:
             if not cls._client:
                 if settings.MINIO.get("enable_ssl", False):
@@ -49,6 +55,7 @@ class MinioClient:
                         http_client=http_client,
                     )
                 else:
+                    print("==> ", settings.MINIO["endpoint"])
                     http_client = urllib3.PoolManager(**POOL_KWARGS)
                     cls._client = Minio(
                         endpoint=settings.MINIO["endpoint"],
@@ -134,7 +141,9 @@ class MinioClient:
                 expires=datetime.timedelta(seconds=expires_in_sec),
                 response_headers={"response-cache-control": f"max-age={expires_in_sec}, public"},
             )
-            return True, {"status": True, "url": url}
+            external_url = cls._convert_to_external_url(url)
+            print("----- Presigned URL:", url)
+            return True, {"status": True, "url": external_url}
         except error.S3Error as e:
             return False, {"status": False, "error": str(e)}
 
@@ -153,10 +162,15 @@ class MinioClient:
                     expires=datetime.timedelta(seconds=expires_in_sec),
                     response_headers={"response-cache-control": f"max-age={expires_in_sec}, public"},
                 )
-                urls[object_name] = url
+                urls[object_name] = cls._convert_to_external_url(url)
             return True, {"status": True, "urls": urls}
         except error.S3Error as e:
             return False, {"status": False, "error": str(e)}
+
+    @classmethod
+    def _convert_to_external_url(cls, internal_url):
+        external_url = internal_url.replace(cls.internal_base, cls.external_base_url)
+        return external_url
 
     @classmethod
     def move_to_new_bucket(

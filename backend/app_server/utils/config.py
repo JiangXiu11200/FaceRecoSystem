@@ -20,6 +20,7 @@ class PostgresConfig(BaseModel):
 
 class MinioConfig(BaseModel):
     endpoint: str
+    external_endpoint: str
     access_key: str
     secret_key: str
     connect_timeout: int = 5
