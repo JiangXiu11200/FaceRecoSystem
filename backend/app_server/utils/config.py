@@ -38,10 +38,15 @@ class MicroserviceConfig(BaseModel):
     internal_token: str
 
 
+class CeleryConfig(BaseModel):
+    broker: str
+
+
 class Settings(BaseModel):
     postgres: PostgresConfig
     minios3: MinioConfig
     microservice: MicroserviceConfig
+    celery: CeleryConfig
 
 
 def load_settings(path: Path = BASE_DIR / "settings.toml") -> Settings:

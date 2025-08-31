@@ -27,3 +27,7 @@ internal_token = ""
 
 [tests]
 test_server_url = "http://localhost:8000"
+
+[celery]
+broker = "redis://facereco-redis:6379/0"
+

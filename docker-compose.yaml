@@ -23,9 +23,87 @@ services:
       - server_network
     volumes:
       - ./backend/settings.toml:/backend/settings.toml
+    entrypoint: ["/entrypoint.sh"]
+    command: ["uv", "run", "uvicorn", "app_server.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      - postgres
+      - redis
+      - minio
+
+  celery_worker:
+    image: facereco-backend:1.0.0
+    container_name: facereco-celery-worker
+    restart: always
+    networks:
+      - server_network
+    volumes:
+      - ./backend/settings.toml:/backend/settings.toml
     environment:
       POSTGRES_HOST: "facereco-postgres"
       POSTGRES_PORT: "5432"
+      REDIS_HOST: "facereco-redis"
+      REDIS_PORT: "6379"
+      CELERY_BROKER_URL: "redis://facereco-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://facereco-redis:6379/0"
+      C_FORCE_ROOT: "true"
+    command: ["uv", "run", "celery", "-A", "app_server", "worker", "--loglevel=info", "--concurrency=4"]
+    depends_on:
+      - redis
+      - postgres
+      - minio
+
+  celery_beat:
+    image: facereco-backend:1.0.0
+    container_name: facereco-celery-beat
+    restart: always
+    networks:
+      - server_network
+    volumes:
+      - ./backend/settings.toml:/backend/settings.toml
+      - ./docker-volumes/celerybeat-schedule:/app/celerybeat-schedule
+    environment:
+      POSTGRES_HOST: "facereco-postgres"
+      POSTGRES_PORT: "5432"
+      REDIS_HOST: "facereco-redis"
+      REDIS_PORT: "6379"
+      CELERY_BROKER_URL: "redis://facereco-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://facereco-redis:6379/0"
+    command: ["uv", "run", "celery", "-A", "app_server", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
+    depends_on:
+      - redis
+      - postgres
+
+  flower:
+    image: facereco-backend:1.0.0
+    container_name: facereco-flower
+    restart: always
+    ports:
+      - "5555:5555"
+    networks:
+      - server_network
+    volumes:
+      - ./backend/settings.toml:/backend/settings.toml
+    environment:
+      CELERY_BROKER_URL: "redis://facereco-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://facereco-redis:6379/0"
+      FLOWER_BASIC_AUTH: "user:abcde12345"
+    command: ["uv", "run", "celery", "-A", "app_server", "flower", "--port=5555", "--basic_auth=user:abcde12345"]
+    depends_on:
+      - redis
+      - celery_worker
+
+  redis:
+    image: redis:8.0.3
+    container_name: facereco-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - server_network
+    volumes:
+      - ./docker-volumes/redis:/data
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+
 
   minio:
     image: quay.io/minio/minio
