@@ -3,24 +3,23 @@
 Readme Languages: <a href="./README.md">English 🇺🇸</a> / <a href="./README_zh-tw.md">繁體中文版 🇹🇼</a>
 
 
-## 安裝與部署(開發) (Installation & Setup)
+## Install the development environment
 
-開始前，請先安裝 Python 3.10 版本、 uv 套件管理工具與 Docker 環境。
+Before getting started, please install Python 3.10 and the uv package management tool and docker environment.
 
-#### 下載 uv 環境管理工具
+#### Install uv environment tools
 
-下載 uv tools (參考 [GitHub: astral/uv](https://github.com/astral-sh/uv))
-
+Install uv (You can refer to [GitHub: astral/uv](https://github.com/astral-sh/uv))
 ```
 pip install uv
 ```
 
-透過 uv 與 pyproject.toml 建立虛擬環境
+Though uv and pyproject to build virtual environment
 ```
 uv sync
 ```
 
-#### 啟動 PostgreSQ、MinIO S3 與 Redis
+#### Startup PostgreSQ、MinIO S3 and Redis
 
 #### MinIO S3
 
@@ -30,13 +29,13 @@ Pull Minio S3 image
 docker pull quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z
 ```
 
-建立 MinIO S3 本地靜態目錄
+Create a MinIO S3 local static directory
 
 ```bash
 mkdir ./docker-volumes/minio
 ```
 
-啟動 MinIO S3
+Startup MinIO S3
 
 ```bash
 docker run -d \
@@ -57,7 +56,7 @@ docker run -d \
 
 #### MinIO Web UI
 
-成功啟動後，可以透過 `MINIO_BROWSER_REDIRECT_URL` 訪問 MinIO S3 Web，並透過設定的`MINIO_ROOT_USER` 與 `MINIO_ROOT_PASSWORD` 進行登入。
+If successful startup, you can access MinIO S3 Web through `MINIO_BROWSER_REDIRECT_URL` and log in through the configured `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
 
 ![Images](../assets/backend/minios3.png)
 
@@ -70,13 +69,13 @@ Pull PostgreSQL image
 sudo docker pull postgres:16
 ```
 
-建立靜態目錄
+Create a Postgres local static directory
 
 ```bash
 mkdir ./docker-volumes/postgres
 ```
 
-啟動 PostgreSQL
+Startup PostgreSQL
 
 ```bash
 docker run -d \
@@ -99,13 +98,13 @@ Pull redis image
 pull redis:8.0.3
 ```
 
-建立靜態目錄
+Create a Redis local static directory
 
 ```bash
 ./docker-volumes/redis
 ```
 
-啟動 Redis
+Startup Redis
 
 ```bash
 docker run -d \
@@ -118,9 +117,9 @@ docker run -d \
   redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
 ```
 
-#### 後端系統參數配置
+#### Backend configurations
 
-進入 ./backend 目錄，修改 `settings.toml` 設定檔，依照 MinIO 與 Postgres 啟動細節設定參數。
+Go to the ./backend directory, edit the `settings.toml` configuration file, and set the parameters according to the MinIO and Postgres startup details.
 
 ```toml
 [postgres]
@@ -156,9 +155,9 @@ test_server_url = server endpoint
 broker = redis broker endpoint
 ```
 
-#### 啟動 Django
+#### Startup Django
 
-資料庫遷移與初始化設定
+Database migration and initialization settings
 
 ```bash
 uv run python3 manage.py create_apps
@@ -168,32 +167,32 @@ uv run python3 manage.py create_default_config
 uv run python3 manage.py create_minio_buckets
 ```
 
-啟動 Django server
+Startup Django server
 
 ```bash
 uv run uvicorn app_server.asgi:application --host 0.0.0.0 --port 8000 --reload
 ```
 
-#### 啟動 Celery
+#### Startup Celery
 
-- Flower 啟動：
+- Flower：
 ```bash
 uv run celery -A app_server flower --port=5555
 ```
 
-- Celery beat 啟動:
+- Celery beat:
 ```bash
 uv run celery -A app_server beat --loglevel=info
 ```
 
-- Celery worker 啟動:
+- Celery worker:
 ```bash
 uv run celery -A app_server worker --loglevel=info
 ```
 
 ## Run Tests
 
-設定 `settings.toml` 中 tests.test_server_url
+Set tests.test_server_url in `settings.toml` to localhost:8000 or YOUR_IP:8000
 
 ```bash
 uv run python3 run_test.py
