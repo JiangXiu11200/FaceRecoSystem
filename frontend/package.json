@@ -1,6 +1,6 @@
 {
   "name": "facereco-frontend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "axios": "^1.11.0",
@@ -20,8 +20,6 @@
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js",
     "build": "webpack --config webpack.config.js",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" "
   },
