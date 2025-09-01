@@ -43,95 +43,96 @@ Readme Languages: <a href="./README_en.md">English 🇺🇸</a> / <a href="./REA
 Development started, please see: <a href="./frontend/">Frontend </a> or  <a href="./backend/">Backend </a>
 </a>
 
-## 描述
 
-本系統為一套 **人臉辨識系統**，採前後端分離架構：
+## Description
 
-前端(React) 提供即時影像串流顯示、操作介面與各項管理頁面；後端(Django) 負責帳號權限管理、人臉註冊資料、告警日誌與 API服務；人臉辨識核心，則與 [FaceRecognition](https://github.com/JiangXiu11200/FaceRecognition) 服務整合，透過 API 與 WebSocket 實現即時影像串流、臉部偵測、特徵計算等。整體系統透過 Docker 部署於本地端。
+This system is a **Facial Recognition System** built with a front-end/back-end separated architecture.
 
-
-## 功能
-
-#### 核心功能：
-- 登入驗證：採用 JWT 進行身份與權限驗證，使用者依所屬群組自動分配 API 使用權限，確保資料安全與權限隔離。
-- 即時影像串流：支援即時影像輸入(Webcam / IPCAM)，並提供 WebSocket 推送辨識資訊。
-- 辨識告警日誌：自動記錄未經授權的人臉 ROI 影像與時間戳，並可供後續調閱。
-- 活動日誌：區分為人臉辨日誌與系統日誌，前者記載成功登入的人臉 ROI 影像、時間戳與事件，後者則紀錄系統操作行為。
-- 辨識參數設定：管理員可調整辨識框座標、門檻、靈敏度等系統參數，並取得當前影像即時對比。
-
-#### 系統特性
-- 前後端分離架構，具備良好的維護性與擴展性。
-- 非同步任務：透過 Celery 進行週期性任務排程，清理 S3 暫存與過期的系統日誌。
-- 容器化部署：以 Docker compose 多服務同時運行，未來可與 CI/CD 整合。
-- API 測試： Django 透過 Unit test 進行正向、反向、邊緣、Monkey 測試，確保品質。
+The front-end (React) provides real-time video streaming, user interfaces, and various management pages. The back-end (Django) handles account and permission management, user face registration data, alarm logs, and API services. The facial recognition core is integrated with the [FaceRecognition](https://github.com/JiangXiu11200/FaceRecognition) service, using APIs and WebSocket to enable real-time video streaming, face detection, and feature extraction. The entire system is deployed locally using Docker.
 
 
-## 系統架構
+## Features
+
+#### Core Features：
+- Login & Authentication: Uses JWT for identity and permission verification. Users are automatically assigned API access rights based on their group, ensuring data security and permission isolation.
+- Real-time Video Streaming: Supports live video input (Webcam / IPCAM) and provides recognition information via WebSocket.
+- Recognition Alarm Logs: Automatically records unauthorized face ROI images with timestamps for later review.
+- Activity Logs: Divided into facial recognition logs and system logs. Facial recognition logs record successfully recognized faces, timestamps, and events, while system logs capture system operation activities.
+- Recognition Parameter Settings: Administrators can adjust recognition box coordinates, thresholds, sensitivity, and other system parameters, as well as obtain real-time comparisons from the current video stream.
+
+#### System Characteristics
+- Front-end/Back-end Separation: Ensures maintainability and scalability.
+- Asynchronous Tasks: Uses Celery to schedule periodic tasks, such as cleaning S3 temporary files and expired system logs.
+- Containerized Deployment: Runs multiple services simultaneously via Docker Compose, with future CI/CD integration support.
+- API Testing: Django unit tests cover positive, negative, boundary, and monkey testing to ensure system quality.
+
+
+##  System Architecture
 
 ### Use Case
 
-本系統的用例圖依功能與關注點分為三張，以便清楚呈現不同層面的業務流程與系統互動：
+The system’s use case diagrams are divided into three separate diagrams based on functionality and focus, to clearly illustrate different aspects of business processes and system interactions:
 
 #### JWT Authentication (JWTAuth) Use Case Diagram
 
 ![Image](./assets/images/UseCase_JWTAuth.jpg)
 
-- 描述使用者操作系統前與過程中的驗證流程，包括登入與每支 API 的權限檢查。
-- 目的是確保系統安全與隔離用戶權限。
-- 系統透過 Refresh Token 定期更新 Access Token，保障持續存取的安全性。
+- They describe the authentication process before and during user operations, including login and API permission checks.
+- The purpose is to ensure system security and isolate user permissions.
+- The system uses Refresh Tokens to periodically update Access Tokens, ensuring secure continuous access.
 
 #### Main Function Use Case Diagram
 
 ![Image](./assets/images/UseCase_InternalFunc.jpg)
 
-- 描述系統內部的核心業務流程，包括人臉用戶註冊、告警/系統日誌調閱、系統用戶管理、系統參數設定等。
-- 目的是呈現主要業務邏輯，清楚區分各功能間的流程與責任。
+- Describes the system’s core internal business processes, including user face registration, alarm/system log retrieval, system user management, and system parameter configuration.
+- The purpose is to present the main business logic and clearly distinguish the flow and responsibilities of each function.
 
 #### External Access Use Case Diagram
 
 ![Image](./assets/images/UseCase_ExternalAccess.jpg)
 
-- 描述系統與外部服務的互動流程。
-  - Face Recognition Service：提供特徵擷取與比對服務，供 User Registration 調用。
-  - Alarm Logs / Activity Logs：接收外部服務觸發的事件資料。
-  - System Config：更新外部服務的參數配置。
-- 目的是呈現外部依賴與系統邊界，方便設計 API 介面與資料流。
-
+- Describes the interaction flow between the system and external services.
+	- Face Recognition Service: Provides feature extraction and matching services, invoked by User Registration.
+	- Alarm Logs / Activity Logs: Receive event data triggered by external services.
+	- System Config: Updates configuration parameters of external services.
+- The purpose is to illustrate external dependencies and system boundaries, facilitating API design and data flow.
 
 ### High-Level-Desgin
 
 ![Image](./assets/images/HLD.jpg)
 
-- Client 端透過 Nginx 反向代理來存取 Web Server、App Server 與 S3 資源。
-- Storage 用於存放註冊的人臉影像、告警/活動日誌的人臉影像、用戶大頭貼。
-- App Server：FaceRecognition 為人臉辨識核心，透過 Uvicorn 部署 FastAPI，瀏覽器會與其透過 WebSocket 連線，實現即時串流與通訊。詳細可造訪 [FaceRecognition](https://github.com/JiangXiu11200/FaceRecognition)。
-- App Server：FaceRecoSystem 為主要的控制系統，透過 Uvicorn 部署 Django，並建置 JWT 登入與驗證流程。
-- Redis：Redis 作為 Celery 的訊息中介(Broker)，負責任務排程與傳遞。
-- Celery：FaceRecoSystem 的排程任務程序，負責週期性清理 S3 暫存檔與資料庫已過期的系統日誌。
-- Flower：Celery 的監控工具，可由內部網路存取，僅用於監控 Celery 狀態。
+- The client accesses the Web Server, App Server, and S3 resources through an Nginx reverse proxy.
+- Storage is used to store registered face images, face images from alarm/activity logs, and user profile pictures.
+- App Server: FaceRecognition serves as the facial recognition core, deployed with FastAPI via Uvicorn. The browser connects to it via WebSocket for real-time streaming and communication. More details can be found at FaceRecognition.
+- App Server: FaceRecoSystem is the main control system, deployed with Django via Uvicorn, providing JWT login and authentication workflows.
+- Redis: Acts as the message broker for Celery, handling task scheduling and delivery.
+- Celery: Executes periodic tasks for FaceRecoSystem, such as cleaning temporary S3 files and expired system logs in the database.
+- Flower: Monitoring tool for Celery, accessible only within the internal network and used solely for observing Celery’s status.
 
 
 ### Database ER Diagram
 
 ![Image](./assets/images/ERD.jpg)
 
-資料庫部分依功能分類，如上圖所示。其中：
+The database section is categorized by function, as shown in the figure above. Specifically:
 
-- UserProfile 與 UserGroup 建立多對多表：一個用戶可被指派在一個或多個用戶群組，用於設定該用戶的應用程式訪問權限。若無設定，則表示該用戶沒有任何應用程式訪問權限。
-- UserGroup 與 SystemApps 建立多對多表：一個用戶群組可以有一個或多個應用程式訪問權限。
-- SystemActivityLogs：存放系統活動日誌。
-- FaceRecognitionActivityLogs：存放人臉辨識日誌。
-- AlarmLogs：存放人臉辨識失敗時的告警日誌。
-- SystemActivityLogsRetention：設定系統活動日誌保存天數。
-- FaceRecognitionActivityLogsRetention：設定人臉辨識日誌的保存天數。
-- DebugConfig、VideoConfig、RecognitionConfig：人臉辨識服務的系統參數。
+- UserProfile and UserGroup form a many-to-many relationship: a user can be assigned to one or more user groups, which determines the user’s application access permissions. If not assigned, the user has no access to any applications.
+- UserGroup and SystemApps form a many-to-many relationship: a user group can have access to one or more applications.
+- SystemActivityLogs: stores system activity logs.
+- FaceRecognitionActivityLogs: stores facial recognition activity logs.
+- AlarmLogs: stores alarm logs triggered when facial recognition fails.
+- SystemActivityLogsRetention: defines the retention period for system activity logs.
+- FaceRecognitionActivityLogsRetention: defines the retention period for facial recognition activity logs.
+- DebugConfig, VideoConfig, RecognitionConfig: system parameters for the facial recognition service.
 
 
 ### Swagger API
 
-透過 Swagger API 建立 API 文件。
+Generate the API documentation using Swagger API.
 
 ![Image](./assets/images/Swagger_API.png)
+
 
 - **Accounts**
   - GET /api/accounts/ - Retrieve User Accounts
@@ -207,40 +208,41 @@ Development started, please see: <a href="./frontend/">Frontend </a> or  <a href
 
 ### Tests
 
-為了確保系統穩定性與安全性，本專案建立了全面的 API 測試，包括：
+To ensure system stability and security, this project implements comprehensive API testing, including:
 
-- 正向測試 (Positive Test)：驗證 API 在正常輸入與預期使用情境下能正確運作。
-- 反向測試 (Negative Test)：檢查異常或錯誤輸入是否被妥善處理，防止系統崩潰或資料不一致。
-- 邊界測試 (Boundary Test)：驗證 API 在參數極限值或邊界條件下的行為是否正確。
-- Monkey 測試 (Monkey Test)：隨機或非結構化輸入測試，模擬不可預期的操作，評估系統穩定性與容錯能力。
+- Positive Test: Verifies that the API behaves correctly under normal inputs and expected usage scenarios.
+- Negative Test: Checks that abnormal or incorrect inputs are properly handled, preventing system crashes or data inconsistencies.
+- Boundary Test: Validates API behavior at parameter limits or boundary conditions.
+- Monkey Test: Uses random or unstructured inputs to simulate unexpected operations, assessing system stability and fault tolerance.
 
-綜合以上測試，能有效保障系統在各種操作情境下的穩定性、安全性與可靠性。
+Combined, these tests effectively ensure the system’s stability, security, and reliability under various operational scenarios.
+
 
 ![Image](./assets/images/tests-1.png)
 ![Image](./assets/images/tests-2.png)
 
 
-## 安裝與部署
+## Installation & Setup
 
-開始前，請先安裝 Python 3.10 版本、 uv 套件管理工具與 Docker 環境。
+Before getting started, please install Python 3.10, the uv package manager, and a Docker environment.
 
 ### Docker build
 
-前端
+Frontend
 
 ```bash
 DOCKER_BUILDKIT=1 docker build --no-cache -f frontend/Dockerfile -t facereco-frontend:1.0.0 .
 ```
 
-後端
+Backend
 
 ```bash
 DOCKER_BUILDKIT=1 docker build --no-cache -f backend/Dockerfile -t facereco-backend:1.0.0 .
 ```
 
-> NOTE: DOCKER_BUILDKIT=1 用來啟用 Docker 的 BuildKit 建構引擎，使 docker build 更快、更高效並支援安全的秘密管理。
+> NOTE: DOCKER_BUILDKIT=1 enables Docker’s BuildKit build engine, making docker build faster, more efficient, and supporting secure secret management.
 
-### Docker compose 啟動
+### Docker compose startup
 
 ```bash
 docker-compose up
