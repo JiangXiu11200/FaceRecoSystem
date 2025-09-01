@@ -4,17 +4,15 @@
   <a href="https://www.python.org/downloads/release/python-3100/">
     <img src="https://img.shields.io/badge/Python-v3.10-356d9f?logo=python" alt="Python"/>
   </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/Node.js-v10.2-%235FA04E?style=flat&logo=Node.js&logoColor=Node.js
-    " alt="nodejs"/>
+  <a href="https://nodejs.org/en">
+    <img src="https://img.shields.io/badge/Node.js-v10.2-%235FA04E?logo=node.js" alt="nodejs"/>
   </a>
   <a href="https://www.django-rest-framework.org/">
-    <img src="https://img.shields.io/badge/Django%20DRF-v3.16-%23092E20?style=flat&logo=django&logoColor=%23092E20
-    " alt="DjangoDRF"/>
+    <img src="https://img.shields.io/badge/Django%20DRF-v3.16-%23092E20?logo=django&logoColor=django"
+     alt="DjangoDRF"/>
   </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/PrimeReact-v10.9-%2303C4E8?style=flat&logo=primereact&logoColor=primereact
-    " alt="primereact">
+  <a href="https://primereact.org/">
+    <img src="https://img.shields.io/badge/PrimeReact-v10.9-%2303C4E8?logo=PrimeReact" alt="primereact">
   </a>
   <a href="https://www.min.io/">
     <img src="https://img.shields.io/badge/MinIO-v7.2-C52944?logo=minio" alt="MinIO"/>
@@ -23,15 +21,13 @@
     <img src="https://img.shields.io/badge/PostgreSQL-v16-%230064a5?logo=postgresql" alt="PostgreSQL"/>
   </a>
 
-  <a href="">
-    <img src="https://img.shields.io/badge/NGINX-v1.28-%23009639?style=flat&logo=nginx&logoColor=nginx
-    " alt="nginx">
+  <a href="https://nginx.org/">
+    <img src="https://img.shields.io/badge/NGINX-v1.28-%23009639?logo=nginx" alt="nginx">
   </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/Celery-v5.5-%2337814A?style=flat&logo=Celery&logoColor=%2337814A
-    " alt="celery">
+  <a href="https://docs.celeryq.dev/en/stable/#">
+    <img src="https://img.shields.io/badge/Celery-v5.5-%2337814A?logo=Celery&logoColor=%2337814A" alt="celery">
   </a>
-  <a href="">
+  <a href="https://www.docker.com/">
   <img src="https://img.shields.io/badge/Docker-v28.3-%232496ED?style=flat&logo=docker&logoColor=docker" alt="docker">
   </a>
 </p>
