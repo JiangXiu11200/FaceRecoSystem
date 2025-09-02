@@ -222,3 +222,5 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # Optional: Celery timezone settings
 CELERY_TIMEZONE = "Asia/Taipei"
 CELERY_ENABLE_UTC = False
+
+SOFTWARE_VERSION = "1.0.0"
