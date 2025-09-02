@@ -36,8 +36,12 @@
 Readme Languages: <a href="./README_en.md">English 🇺🇸</a> / <a href="./README.md">繁體中文版 🇹🇼</a>
 </p>
 <p align="center">
-Development started, please see: <a href="./frontend/">Frontend </a> or  <a href="./backend/">Backend </a>
+Development started, please see: <a href="./frontend/">Frontend </a> and <a href="./backend/">Backend </a>
 </a>
+<p align="center">
+GUI User Guide: <a href="https://hackmd.io/@MV1MNu9pSWqPmTx9CRvHbA/Hy-MD0mqgg">Face Recognition System GUI 操作指南 (Hackmd.io) </a>
+</a>
+
 
 ## 描述
 
